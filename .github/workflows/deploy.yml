@@ -1,0 +1,29 @@
+name: "Exportar a Itch.io"
+on:
+  push:
+    branches:
+      - main # O la rama que estés usando, como 'mejora-login-bd'
+
+jobs:
+  export_and_deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout del código
+        uses: actions/checkout@v4
+
+      - name: Exportar para Web
+        uses: firebelley/godot-export@v5.2.1
+        with:
+          godot_executable_download_url: https://github.com/godotengine/godot/releases/download/4.6.1-stable/Godot_v4.6.1-stable_linux_headless.64.zip
+          template_download_url: https://github.com/godotengine/godot/releases/download/4.6.1-stable/Godot_v4.6.1-stable_export_templates.tpz
+          relative_project_path: ./
+          archive_export_output: true
+
+      - name: Publicar en Itch.io
+        uses: manleydev/butler-publish-itchio-action@master
+        env:
+          BUTLER_CREDENTIALS: ${{ secrets.BUTLER_API_KEY }}
+          CHANNEL: web
+          ITCH_GAME: tablero-didactico
+          ITCH_USER: rafax20
+          PACKAGE: build/web.zip
