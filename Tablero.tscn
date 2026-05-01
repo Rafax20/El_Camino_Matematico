@@ -1,0 +1,23 @@
+[gd_scene format=3 uid="uid://3sndlsy3yhub"]
+
+[ext_resource type="Script" uid="uid://bgt1uuidxt2g" path="res://prueba_export.gd" id="1_gg416"]
+[ext_resource type="Texture2D" uid="uid://n5e7wjmtqfbq" path="res://Frames Saltando/PixVerse-V5-Image-Text-360P-ha-unscreen/unscreen-022-removebg-preview.png" id="2_vsja1"]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_0hol4"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("2_vsja1")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
+
+[node name="Node2D" type="Node2D" unique_id=482028138]
+script = ExtResource("1_gg416")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=828676852]
+position = Vector2(91.00001, 89.00001)
+scale = Vector2(0.49166667, 0.4861111)
+sprite_frames = SubResource("SpriteFrames_0hol4")

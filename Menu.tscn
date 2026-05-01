@@ -1,0 +1,14 @@
+[gd_scene format=3 uid="uid://rer72pm8ucwf"]
+
+[node name="Node2D" type="Node2D" unique_id=1460850462]
+
+[node name="Boton_Jugar" type="Button" parent="." unique_id=880563155]
+offset_right = 8.0
+offset_bottom = 8.0
+text = "Jugar"
+
+[node name="Boton_Instrucciones" type="Button" parent="." unique_id=1239628299]
+offset_top = 31.0
+offset_right = 112.0
+offset_bottom = 62.0
+text = "Instrucciones"
