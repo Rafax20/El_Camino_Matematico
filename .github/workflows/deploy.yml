@@ -2,7 +2,7 @@ name: "Exportar a Itch.io"
 on:
   push:
     branches:
-      - main # O la rama que estés usando, como 'mejora-login-bd'
+      - main 
 
 jobs:
   export_and_deploy:
@@ -14,16 +14,17 @@ jobs:
       - name: Exportar para Web
         uses: firebelley/godot-export@v5.2.1
         with:
-          godot_executable_download_url: https://github.com/godotengine/godot/releases/download/4.6.1-stable/Godot_v4.6.1-stable_linux_headless.64.zip
-          template_download_url: https://github.com/godotengine/godot/releases/download/4.6.1-stable/Godot_v4.6.1-stable_export_templates.tpz
+          # Usamos la 4.3 que es la estable actual. Si usas la 4.2.1, cambia el 4.3 por 4.2.1
+          godot_executable_download_url: https://github.com/godotengine/godot/releases/download/4.3-stable/Godot_v4.3-stable_linux_headless.x86_64.zip
+          godot_export_templates_download_url: https://github.com/godotengine/godot/releases/download/4.3-stable/Godot_v4.3-stable_export_templates.tpz
           relative_project_path: ./
-          archive_export_output: true
+          archive_output: true
 
       - name: Publicar en Itch.io
         uses: manleydev/butler-publish-itchio-action@master
         env:
           BUTLER_CREDENTIALS: ${{ secrets.BUTLER_API_KEY }}
           CHANNEL: web
-          ITCH_GAME: tablero-didactico
-          ITCH_USER: rafax20
-          PACKAGE: build/web.zip
+          ITCH_GAME: rafax20/tablero-didactico # REEMPLAZA ESTO
+          ITCH_USER: rafax20                 # REEMPLAZA ESTO
+          PACKAGE: /home/runner/work/${{ github.event.repository.name }}/${{ github.event.repository.name }}/build/web.zip
