@@ -25,6 +25,6 @@ jobs:
         env:
           BUTLER_CREDENTIALS: ${{ secrets.BUTLER_API_KEY }}
           CHANNEL: web
-          ITCH_GAME: rafax20/tablero-didactico
+          ITCH_GAME: tablero-didactico
           ITCH_USER: rafax20       
           PACKAGE: /home/runner/work/${{ github.event.repository.name }}/${{ github.event.repository.name }}/build/web.zip
