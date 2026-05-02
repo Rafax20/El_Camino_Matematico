@@ -14,9 +14,8 @@ jobs:
       - name: Exportar para Web
         uses: firebelley/godot-export@v5.2.1
         with:
-          # Usamos la 4.3 que es la estable actual. Si usas la 4.2.1, cambia el 4.3 por 4.2.1
-          godot_executable_download_url: https://github.com/godotengine/godot/releases/download/4.6.1-stable/Godot_v4.6.1-stable_linux_x86_64.zip
-          godot_export_templates_download_url: https://github.com/godotengine/godot/releases/download/4.6.1-stable/Godot_v4.6.1-stable_export_templates.tpz
+          godot_executable_download_url: https://downloads.godotengine.org/4.6.1/Godot_v4.6.1-stable_linux.x86_64.zip
+          godot_export_templates_download_url: https://downloads.godotengine.org/4.3/Godot_v4.3-stable_export_templates.tpz
           relative_project_path: ./
           archive_output: true
 
@@ -25,6 +24,6 @@ jobs:
         env:
           BUTLER_CREDENTIALS: ${{ secrets.BUTLER_API_KEY }}
           CHANNEL: web
-          ITCH_GAME: rafax20/tablero-didactico # REEMPLAZA ESTO
-          ITCH_USER: rafax20                 # REEMPLAZA ESTO
+          ITCH_GAME: rafax20/tablero-didactico
+          ITCH_USER: rafax20       
           PACKAGE: /home/runner/work/${{ github.event.repository.name }}/${{ github.event.repository.name }}/build/web.zip
