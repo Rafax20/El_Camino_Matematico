@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="Videojuego_Didactico"
-run/main_scene="uid://3sndlsy3yhub"
+run/main_scene="uid://rer72pm8ucwf"
 config/features=PackedStringArray("4.6", "GL Compatibility")
 config/icon="res://icon.svg"
 
