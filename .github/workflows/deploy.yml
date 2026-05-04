@@ -28,4 +28,4 @@ jobs:
           CHANNEL: web
           ITCH_GAME: tablero-didactico
           ITCH_USER: rafax20       
-          PACKAGE: /home/runner/work/${{ github.event.repository.name }}/${{ github.event.repository.name }}/build/web.zip
+          PACKAGE: build/web.zip
