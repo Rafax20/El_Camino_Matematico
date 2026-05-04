@@ -35,4 +35,4 @@ jobs:
           ITCH_GAME: tablero-didactico
           ITCH_USER: rafax20        
           # Intentamos con la ruta directa al archivo generado en la raíz
-          PACKAGE: web.zip
+          PACKAGE: Web.zip
