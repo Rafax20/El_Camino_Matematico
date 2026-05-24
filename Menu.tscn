@@ -1,58 +1,34 @@
 [gd_scene format=3 uid="uid://rer72pm8ucwf"]
 
 [ext_resource type="Script" uid="uid://cit56mwt4hpd6" path="res://menu.gd" id="1_uubjt"]
-
-[sub_resource type="LabelSettings" id="LabelSettings_uubjt"]
-font_size = 44
+[ext_resource type="Texture2D" uid="uid://dxhrw1bvtsmr6" path="res://assets/Gemini_Generated_Image_53phjf53phjf53ph.png" id="2_5yleq"]
 
 [node name="Node2D" type="Node2D" unique_id=1460850462]
 script = ExtResource("1_uubjt")
 
 [node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=381282370]
 
-[node name="Menu Principal" type="Control" parent="CanvasLayer" unique_id=1397428335]
-layout_mode = 3
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-
-[node name="CenterContainer" type="CenterContainer" parent="CanvasLayer/Menu Principal" unique_id=1406621542]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-
-[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/Menu Principal/CenterContainer" unique_id=182991314]
-layout_mode = 2
-theme_override_constants/separation = 15
-
-[node name="Titulo" type="Label" parent="CanvasLayer/Menu Principal/CenterContainer/VBoxContainer" unique_id=589211455]
-layout_mode = 2
-theme_override_font_sizes/font_size = 64
-text = "El Camino 
-Matemático"
-label_settings = SubResource("LabelSettings_uubjt")
-horizontal_alignment = 1
-
-[node name="Boton_Jugar" type="Button" parent="CanvasLayer/Menu Principal/CenterContainer/VBoxContainer" unique_id=880563155]
+[node name="Boton_Jugar" type="Button" parent="CanvasLayer" unique_id=880563155]
 custom_minimum_size = Vector2(300, 60)
-layout_mode = 2
+offset_left = 393.0
+offset_top = 248.0
+offset_right = 772.0
+offset_bottom = 308.0
 theme_override_font_sizes/font_size = 32
 text = "Jugar"
 
-[node name="Boton_Instrucciones" type="Button" parent="CanvasLayer/Menu Principal/CenterContainer/VBoxContainer" unique_id=1239628299]
+[node name="Boton_Instrucciones" type="Button" parent="CanvasLayer" unique_id=1239628299]
 custom_minimum_size = Vector2(200, 60)
-layout_mode = 2
+offset_left = 431.0
+offset_top = 362.0
+offset_right = 691.0
+offset_bottom = 422.0
 theme_override_font_sizes/font_size = 32
 text = "Instrucciones"
 
-[node name="RichTextLabel" type="RichTextLabel" parent="CanvasLayer/Menu Principal/CenterContainer/VBoxContainer" unique_id=1798188654]
-custom_minimum_size = Vector2(0, 60)
-layout_mode = 2
-text = "aaaa"
+[node name="GeminiGeneratedImage53Phjf53Phjf53Ph" type="Sprite2D" parent="CanvasLayer" unique_id=1238011277]
+position = Vector2(582, 323.99997)
+scale = Vector2(0.8224431, 0.8255209)
+texture = ExtResource("2_5yleq")
 
-[connection signal="pressed" from="CanvasLayer/Menu Principal/CenterContainer/VBoxContainer/Boton_Jugar" to="." method="_on_boton_jugar_pressed"]
+[connection signal="pressed" from="CanvasLayer/Boton_Jugar" to="." method="_on_boton_jugar_pressed"]

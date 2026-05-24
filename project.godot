@@ -15,9 +15,17 @@ run/main_scene="uid://rer72pm8ucwf"
 config/features=PackedStringArray("4.6", "GL Compatibility")
 config/icon="res://icon.svg"
 
+[autoload]
+
+Supabase="*uid://du7ds4l02a4uu"
+
 [display]
 
 window/stretch/mode="canvas_items"
+
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/supabase/plugin.cfg")
 
 [physics]
 

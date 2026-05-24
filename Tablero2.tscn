@@ -1,0 +1,42 @@
+[gd_scene format=3 uid="uid://dm06re2c3dhp2"]
+
+[ext_resource type="Texture2D" uid="uid://b5txfu2x333ur" path="res://assets/magnific_puedes-crear-un-camino-di_EqnJX9VuuO.svg" id="1_aslhq"]
+[ext_resource type="Texture2D" uid="uid://n5e7wjmtqfbq" path="res://Frames Saltando/PixVerse-V5-Image-Text-360P-ha-unscreen/unscreen-022-removebg-preview.png" id="2_lpjcr"]
+
+[sub_resource type="Curve2D" id="Curve2D_85yh5"]
+_data = {
+"points": PackedVector2Array(0, 0, 0, 0, 121, 591, 0, 0, 0, 0, 232, 598, 0, 0, 0, 0, 315, 603, 0, 0, 0, 0, 417, 598, 0, 0, 0, 0, 614, 591, 0, 0, 0, 0, 725, 541, 0, 0, 0, 0, 767, 464, 0, 0, 0, 0, 725, 384, 0, 0, 0, 0, 652, 349, 0, 0, 0, 0, 493, 340, 0, 0, 0, 0, 429, 361, 0, 0, 0, 0, 344, 363, 0, 0, 0, 0, 260, 347, 0, 0, 0, 0, 214, 263, 0, 0, 0, 0, 264, 196, 0, 0, 0, 0, 342, 153, 0, 0, 0, 0, 426, 155, 0, 0, 0, 0, 509, 174, 0, 0, 0, 0, 554, 192, 0, 0, 0, 0, 634, 208, 0, 0, 0, 0, 719, 185)
+}
+point_count = 21
+
+[node name="Node2D" type="Node2D" unique_id=1700597054]
+
+[node name="MagnificPuedesCrearUnCaminoDiEqnJx9VuuO" type="Sprite2D" parent="." unique_id=2128471961]
+position = Vector2(536, 368.5)
+scale = Vector2(1.1914064, 1.1013514)
+texture = ExtResource("1_aslhq")
+region_enabled = true
+region_rect = Rect2(0, 134.19177, 1024, 740.4403)
+
+[node name="MagnificPuedesCrearUnCaminoDiEqnJx9VuuO" type="Sprite2D" parent="MagnificPuedesCrearUnCaminoDiEqnJx9VuuO" unique_id=377513493]
+position = Vector2(350.8459, -121.4233)
+scale = Vector2(0.62214243, 0.63705456)
+texture = ExtResource("1_aslhq")
+region_enabled = true
+region_rect = Rect2(312.32266, 784.6747, 22.941437, 25.25879)
+
+[node name="Camera2D" type="Camera2D" parent="." unique_id=1426866304]
+position = Vector2(575, 324)
+
+[node name="Path2D" type="Path2D" parent="." unique_id=2134460068]
+curve = SubResource("Curve2D_85yh5")
+
+[node name="PathFollow2D" type="PathFollow2D" parent="Path2D" unique_id=292056439]
+position = Vector2(121, 591)
+rotation = 0.06297966
+rotates = false
+
+[node name="Sprite2D" type="Sprite2D" parent="Path2D/PathFollow2D" unique_id=1730844895]
+position = Vector2(7.6424766, -53.587254)
+scale = Vector2(0.461, 0.388)
+texture = ExtResource("2_lpjcr")
