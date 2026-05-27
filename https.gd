@@ -29,7 +29,7 @@ func _on_boton_dado_pressed():
 	
 	# 3. ENVIAR A LA BASE DE DATOS
 	# Aquí enviamos el nombre del usuario y su nueva posición
-	# enviar_puntuacion("Jugador1", casilla_actual)
+	enviar_puntuacion("Jugador1", casilla_actual)
 
 func avanzar_casillas(cantidad):
 	if casilla_actual + cantidad > total_casillas:
