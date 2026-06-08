@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://3sndlsy3yhub"]
 
 [ext_resource type="Script" uid="uid://b8kldw5nfap3y" path="res://https.gd" id="1_4uepw"]
+[ext_resource type="PackedScene" uid="uid://6cu6p1u6fgt6" path="res://interfaz_Pregunta.tscn" id="4_alv5u"]
 [ext_resource type="Texture2D" uid="uid://n5e7wjmtqfbq" path="res://Frames Saltando/PixVerse-V5-Image-Text-360P-ha-unscreen/unscreen-022-removebg-preview.png" id="6_4uepw"]
 [ext_resource type="Texture2D" uid="uid://cyfggdcbya1em" path="res://assets/Tablero_sin_Numeros (1).svg" id="6_vauqj"]
 
@@ -57,4 +58,7 @@ texture = ExtResource("6_vauqj")
 region_enabled = true
 region_rect = Rect2(997.1593, 444.49103, 19.372742, 52.15744)
 
+[node name="Interfaz" parent="." unique_id=562769401 instance=ExtResource("4_alv5u")]
+
 [connection signal="pressed" from="BotonDado" to="." method="_on_boton_dado_pressed"]
+[connection signal="respuesta_completada" from="Interfaz" to="." method="_on_interfaz_respuesta_completada"]

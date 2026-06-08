@@ -1,0 +1,46 @@
+[gd_scene format=3 uid="uid://6cu6p1u6fgt6"]
+
+[ext_resource type="Script" uid="uid://doum8qjwkqs62" path="res://interfaz_pregunta.gd" id="1_bm7xs"]
+
+[node name="Interfaz" type="CanvasLayer" unique_id=562769401]
+script = ExtResource("1_bm7xs")
+
+[node name="Panel" type="Panel" parent="." unique_id=116650527]
+offset_right = 111.0
+offset_bottom = 88.0
+
+[node name="Label" type="Label" parent="Panel" unique_id=1969170603]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_top = 6.0
+offset_bottom = 35.0
+grow_horizontal = 2
+horizontal_alignment = 1
+
+[node name="GridContainer" type="GridContainer" parent="Panel" unique_id=1462593226]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -9.5
+offset_top = 8.0
+offset_right = 10.5
+offset_bottom = 33.0
+grow_horizontal = 2
+grow_vertical = 2
+columns = 2
+
+[node name="Button" type="Button" parent="Panel/GridContainer" unique_id=1003620496]
+layout_mode = 2
+
+[node name="Button2" type="Button" parent="Panel/GridContainer" unique_id=2144798552]
+layout_mode = 2
+
+[node name="Button3" type="Button" parent="Panel/GridContainer" unique_id=1253912626]
+layout_mode = 2
+
+[node name="Button4" type="Button" parent="Panel/GridContainer" unique_id=1614244594]
+layout_mode = 2
