@@ -35,8 +35,6 @@ texture = ExtResource("6_vauqj")
 region_enabled = true
 region_rect = Rect2(997.1593, 444.49103, 19.372742, 52.15744)
 
-[node name="Interfaz" parent="." unique_id=562769401 instance=ExtResource("4_alv5u")]
-
 [node name="Camera2D" type="Camera2D" parent="." unique_id=1504346046]
 position = Vector2(573, 321)
 
@@ -59,6 +57,10 @@ scale = Vector2(9.576865, 1.4948236)
 texture = ExtResource("6_vauqj")
 region_enabled = true
 region_rect = Rect2(997.1593, 444.49103, 19.372742, 52.15744)
+
+[node name="Interfaz" parent="." unique_id=562769401 instance=ExtResource("4_alv5u")]
+
+[node name="ClienteHTTP" type="HTTPRequest" parent="." unique_id=1024595746]
 
 [connection signal="pressed" from="BotonDado" to="." method="_on_boton_dado_pressed"]
 [connection signal="respuesta_completada" from="Interfaz" to="." method="_on_interfaz_respuesta_completada"]
