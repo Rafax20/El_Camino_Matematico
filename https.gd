@@ -34,13 +34,14 @@ func _ready():
 	descargar_preguntas_nativo()
 
 func descargar_preguntas_nativo():
-	print("⏳ Conectando directamente a Supabase mediante HTTP REST nativo...")
+	print("⏳ Conectando directamente a Supabase mediante HTTP REST nativo (Modo Plano)...")
 	
-	# Definimos las cabeceras HTTP puras. Al no tocar las cookies, el iframe lo deja pasar.
+	# Añadimos la última línea para apagar Gzip de raíz en esta petición
 	var headers = [
 		"apikey: " + SUPABASE_ANON_KEY,
 		"Authorization: Bearer " + SUPABASE_ANON_KEY,
-		"Content-Type: application/json"
+		"Content-Type: application/json",
+		"Accept-Encoding: identity" 
 	]
 	
 	var error = cliente_http.request(SUPABASE_URL, headers, HTTPClient.METHOD_GET)
@@ -49,26 +50,27 @@ func descargar_preguntas_nativo():
 
 # Se ejecuta automáticamente cuando Supabase responde a través de la red web
 func _on_peticion_http_completada(result, response_code, headers, body):
+	# Imprimimos lo que llegó del servidor en la consola web
+	var respuesta_cruda = body.get_string_from_utf8()
+	print("📡 RESPUESTA DEL SERVIDOR: ", respuesta_cruda)
+
 	if response_code == 200:
 		var json = JSON.new()
-		var error_parseo = json.parse(body.get_string_from_utf8())
+		var error_parseo = json.parse(respuesta_cruda)
 		
 		if error_parseo == OK:
 			lista_preguntas = json.data
-			print("🎉 ¡ÉXITO TOTAL EN ITCH.IO! Preguntas obtenidas: ", lista_preguntas.size())
+			print("🎉 ¡ÉXITO! Preguntas obtenidas: ", lista_preguntas.size())
 			
 			if lista_preguntas.size() > 0:
-				lista_preguntas.shuffle() # Mezclamos las preguntas para el niño
+				lista_preguntas.shuffle()
 				servidor_listo = true
 				boton_dado.disabled = false
-				print("🎲 ¡Dado desbloqueado! El juego está listo.")
 				mostrar_pregunta_en_pantalla()
-			else:
-				print("⚠️ Alerta: Conectó con éxito pero la tabla 'preguntas' no tiene registros.")
 		else:
 			print("❌ Error de parseo: El formato JSON recibido está corrupto.")
 	else:
-		print("❌ Solicitud rechazada por el servidor web. Código de error HTTP: ", response_code)
+		print("❌ Solicitud rechazada. Código HTTP: ", response_code)
 
 func _on_boton_dado_pressed():
 	if not servidor_listo or lista_preguntas.size() == 0:
