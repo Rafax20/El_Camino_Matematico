@@ -34,14 +34,16 @@ func _ready():
 	descargar_preguntas_nativo()
 
 func descargar_preguntas_nativo():
-	print("⏳ Conectando directamente a Supabase mediante HTTP REST nativo (Modo Plano)...")
+	print("⏳ Conectando directamente a Supabase mediante HTTP REST nativo...")
 	
-	# Añadimos la última línea para apagar Gzip de raíz en esta petición
+	# 🛠️ LA SOLUCIÓN REQUERIDA: Le prohibimos al nodo HTTPRequest aceptar Gzip por software.
+	# Esto evita por completo que se ejecute el "stream_peer_gzip.cpp" en la Web.
+	cliente_http.accept_gzip = false
+	
 	var headers = [
 		"apikey: " + SUPABASE_ANON_KEY,
 		"Authorization: Bearer " + SUPABASE_ANON_KEY,
-		"Content-Type: application/json",
-		"Accept-Encoding: identity" 
+		"Content-Type: application/json"
 	]
 	
 	var error = cliente_http.request(SUPABASE_URL, headers, HTTPClient.METHOD_GET)
