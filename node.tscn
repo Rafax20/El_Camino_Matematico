@@ -1,0 +1,54 @@
+[gd_scene format=3 uid="uid://dqppd6655ghfu"]
+
+[ext_resource type="Script" uid="uid://c8kyeybi4c8ik" path="res://node.gd" id="1_sy5k4"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_sy5k4"]
+
+[node name="Node" type="Node" unique_id=15176424]
+script = ExtResource("1_sy5k4")
+
+[node name="Ventana" type="CanvasLayer" parent="." unique_id=319725906]
+
+[node name="Registro" type="Panel" parent="Ventana" unique_id=476627171]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Label" type="Label" parent="Ventana/Registro" unique_id=1038958942]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -44.0
+offset_right = 44.0
+offset_bottom = 23.0
+grow_horizontal = 2
+text = "Registrarse"
+label_settings = SubResource("LabelSettings_sy5k4")
+
+[node name="Registrarse" type="Button" parent="Ventana/Registro" unique_id=40385692]
+layout_mode = 0
+offset_right = 8.0
+offset_bottom = 8.0
+
+[node name="Login" type="Panel" parent="Ventana" unique_id=1973815306]
+visible = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Label" type="Label" parent="Ventana/Login" unique_id=291290955]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 23.0
+
+[node name="Iniciar_Sesion" type="Button" parent="Ventana/Login" unique_id=1077569592]
+layout_mode = 0
+offset_right = 8.0
+offset_bottom = 8.0
+
+[node name="HTTPRequest" type="HTTPRequest" parent="." unique_id=1560494755]
