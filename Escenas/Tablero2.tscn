@@ -18,7 +18,7 @@ texture = ExtResource("1_aslhq")
 region_enabled = true
 region_rect = Rect2(0, 134.19177, 1024, 740.4403)
 
-[node name="MagnificPuedesCrearUnCaminoDiEqnJx9VuuO" type="Sprite2D" parent="MagnificPuedesCrearUnCaminoDiEqnJx9VuuO" unique_id=377513493]
+[node name="2" type="Sprite2D" parent="MagnificPuedesCrearUnCaminoDiEqnJx9VuuO" unique_id=377513493]
 position = Vector2(350.8459, -121.4233)
 scale = Vector2(0.62214243, 0.63705456)
 texture = ExtResource("1_aslhq")

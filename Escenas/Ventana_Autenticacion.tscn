@@ -1,0 +1,67 @@
+[gd_scene format=3 uid="uid://dqppd6655ghfu"]
+
+[ext_resource type="Script" uid="uid://c8kyeybi4c8ik" path="res://Scripts_gd/Inicio_Sesion.gd" id="1_sy5k4"]
+
+[node name="Ventana_Autenticacion" type="Control" unique_id=845431727]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_sy5k4")
+
+[node name="OscurecerFondo" type="ColorRect" parent="." unique_id=322653096]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.39215687)
+
+[node name="ContenedorPopup" type="PanelContainer" parent="." unique_id=412689118]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="ContenedorPopup" unique_id=1341650917]
+layout_mode = 2
+theme_override_constants/separation = 100
+
+[node name="BotonCerrar" type="Button" parent="ContenedorPopup/VBoxContainer" unique_id=2120011034]
+layout_mode = 2
+size_flags_horizontal = 8
+text = "Cerrar"
+
+[node name="Titulo" type="Label" parent="ContenedorPopup/VBoxContainer" unique_id=116092541]
+layout_mode = 2
+text = "titulo"
+horizontal_alignment = 1
+
+[node name="InputUsuario" type="LineEdit" parent="ContenedorPopup/VBoxContainer" unique_id=842941499]
+layout_mode = 2
+placeholder_text = "Usuario"
+
+[node name="InputClave" type="LineEdit" parent="ContenedorPopup/VBoxContainer" unique_id=113832560]
+layout_mode = 2
+placeholder_text = "Clave"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="ContenedorPopup/VBoxContainer" unique_id=445639278]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_constants/separation = 51
+alignment = 1
+
+[node name="BotonEntrar" type="Button" parent="ContenedorPopup/VBoxContainer/HBoxContainer" unique_id=1060836112]
+layout_mode = 2
+text = "Entrar"
+
+[node name="BotonRegistrar" type="Button" parent="ContenedorPopup/VBoxContainer/HBoxContainer" unique_id=151743197]
+layout_mode = 2
+text = "Registrar"
+
+[node name="HTTPRequest" type="HTTPRequest" parent="." unique_id=1560494755]

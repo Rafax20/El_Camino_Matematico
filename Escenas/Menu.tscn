@@ -1,10 +1,11 @@
 [gd_scene format=3 uid="uid://rer72pm8ucwf"]
 
-[ext_resource type="Script" uid="uid://cit56mwt4hpd6" path="res://menu.gd" id="1_uubjt"]
-[ext_resource type="Texture2D" uid="uid://dxhrw1bvtsmr6" path="res://assets/Gemini_Generated_Image_53phjf53phjf53ph.png" id="2_5yleq"]
+[ext_resource type="Script" uid="uid://cit56mwt4hpd6" path="res://Scripts_gd/menu.gd" id="1_o2l53"]
+[ext_resource type="Texture2D" uid="uid://dxhrw1bvtsmr6" path="res://assets/Gemini_Generated_Image_53phjf53phjf53ph.png" id="2_425bc"]
+[ext_resource type="PackedScene" uid="uid://dqppd6655ghfu" path="res://Escenas/Ventana_Autenticacion.tscn" id="3_j7eae"]
 
 [node name="Node2D" type="Node2D" unique_id=1460850462]
-script = ExtResource("1_uubjt")
+script = ExtResource("1_o2l53")
 
 [node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=381282370]
 
@@ -12,7 +13,7 @@ script = ExtResource("1_uubjt")
 custom_minimum_size = Vector2(300, 60)
 offset_left = 393.0
 offset_top = 248.0
-offset_right = 772.0
+offset_right = 775.0
 offset_bottom = 308.0
 theme_override_font_sizes/font_size = 32
 text = "Jugar"
@@ -29,6 +30,13 @@ text = "Instrucciones"
 [node name="GeminiGeneratedImage53Phjf53Phjf53Ph" type="Sprite2D" parent="CanvasLayer" unique_id=1238011277]
 position = Vector2(582, 323.99997)
 scale = Vector2(0.8224431, 0.8255209)
-texture = ExtResource("2_5yleq")
+texture = ExtResource("2_425bc")
+
+[node name="Ventana_Autenticacion" parent="CanvasLayer" unique_id=845431727 instance=ExtResource("3_j7eae")]
+anchors_preset = 13
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -245.0
+offset_right = 257.0
 
 [connection signal="pressed" from="CanvasLayer/Boton_Jugar" to="." method="_on_boton_jugar_pressed"]
