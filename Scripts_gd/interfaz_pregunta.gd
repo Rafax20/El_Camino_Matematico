@@ -37,7 +37,24 @@ func _on_button_4_pressed(): verificar_respuesta(boton4.text)
 func verificar_respuesta(texto_boton: String):
 	if int(texto_boton) == respuesta_correcta:
 		print("¡Correcto! 🎉")
+		
+		# 🥳 FEEDBACK INFANTIL VISUAL DIRECTO EN EL TITULO
+		label_operacion.text = "¡Excelente! 🎉🎯"
+		label_operacion.modulate = Color(0.2, 1, 0.2) # Verde alegre
+		
+		# Esperamos un segundo para que el niño lea el logro
+		await get_tree().create_timer(1.2).timeout
+		
+		# Restauramos el color original blanco y avisamos al tablero
+		label_operacion.modulate = Color(1, 1, 1)
 		respuesta_completada.emit(true)
 	else:
-		print("Incorrecto... ❌ Inténtalo de nuevo.")
+		print("Incorrecto... ❌")
+		
+		label_operacion.text = "¡Oh, no! Ocurrió un error ❌"
+		label_operacion.modulate = Color(1, 0.2, 0.2) # Rojo advertencia
+		
+		await get_tree().create_timer(1.2).timeout
+		
+		label_operacion.modulate = Color(1, 1, 1)
 		respuesta_completada.emit(false)

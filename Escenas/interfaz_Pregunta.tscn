@@ -56,3 +56,8 @@ layout_mode = 2
 
 [node name="Button4" type="Button" parent="Panel/GridContainer" unique_id=1614244594]
 layout_mode = 2
+
+[connection signal="pressed" from="Panel/GridContainer/Button" to="." method="_on_button_pressed"]
+[connection signal="pressed" from="Panel/GridContainer/Button2" to="." method="_on_button_2_pressed"]
+[connection signal="pressed" from="Panel/GridContainer/Button3" to="." method="_on_button_3_pressed"]
+[connection signal="pressed" from="Panel/GridContainer/Button4" to="." method="_on_button_4_pressed"]

@@ -7,7 +7,7 @@ extends Control
 @onready var input_clave = $ContenedorPopup/VBoxContainer/InputClave
 @onready var texto_error = $ContenedorPopup/VBoxContainer/Titulo
 
-# --- REFERENCIA AL SCRIPT DE SUPABASE ---
+# --- REFERENCIA AL SCRIPT DE SUPABASE (CONEXIÓN NATIVA) ---
 @onready var http_request = $HTTPRequest 
 
 const SUPABASE_URL_USUARIOS = "https://zwgiwmspfuebqvbsttto.supabase.co/rest/v1/usuarios"
@@ -21,7 +21,7 @@ func _ready():
 	contenedor.pivot_offset = contenedor.size / 2 
 	self.visible = false
 	
-	# Conectar respuesta de red de forma segura por código
+	# Conectar respuesta de red nativa de forma segura
 	if not http_request.request_completed.is_connected(_on_request_completed):
 		http_request.request_completed.connect(_on_request_completed)
 	http_request.accept_gzip = false
@@ -43,36 +43,36 @@ func _on_boton_cerrar_pressed() -> void:
 	self.visible = false
 
 # ==========================================
-# 📡 ENVIAR DATOS (LOGIN / REGISTRO)
+# 📡 ENVIAR DATOS (LOGIN / REGISTRO) - NATIVO SEGURO
 # ==========================================
 
-# Asegúrate de conectar este método a la señal pressed() de tu BotonEntrar
 func _on_boton_entrar_pressed() -> void:
 	var usuario = input_usuario.text.to_lower().strip_edges()
 	var clave = input_clave.text.strip_edges()
-	
-	print("🔍 Intentando iniciar sesión con Usuario: '" + usuario + "'")
 	
 	if usuario == "" or clave == "":
 		animar_error_infantil("¡Faltan datos por escribir!")
 		return
 		
 	operacion_actual = "LOGIN"
+	print("🔍 Intentando iniciar sesión con Usuario: '" + usuario + "'")
+	
+	# URL mapeada a tu columna real "usuario"
 	var url = SUPABASE_URL_USUARIOS + "?usuario=eq." + usuario + "&clave=eq." + clave
 	enviar_peticion_supabase(url, HTTPClient.METHOD_GET, "")
 
-# Asegúrate de conectar este método a la señal pressed() de tu BotonRegistrar
 func _on_boton_registrar_pressed() -> void:
 	var usuario = input_usuario.text.to_lower().strip_edges()
 	var clave = input_clave.text.strip_edges()
-	
-	print("📝 Intentando registrar al Usuario: '" + usuario + "'")
 	
 	if usuario == "" or clave == "":
 		animar_error_infantil("¡Escribe un nombre y clave!")
 		return
 		
 	operacion_actual = "REGISTRO"
+	print("📝 Intentando registrar al Usuario: '" + usuario + "'")
+	
+	# Mapeado exacto a tus columnas de Supabase
 	var datos = { "usuario": usuario, "clave": clave }
 	enviar_peticion_supabase(SUPABASE_URL_USUARIOS, HTTPClient.METHOD_POST, JSON.stringify(datos))
 
@@ -94,13 +94,12 @@ func enviar_peticion_supabase(url: String, metodo: int, cuerpo: String):
 func _on_request_completed(result, response_code, headers, body):
 	var respuesta = body.get_string_from_utf8()
 	print("📡 Servidor respondió con código: " + str(response_code))
-	print("📄 Cuerpo de la respuesta: " + respuesta)
 	
 	var json = JSON.new()
 	var error_parseo = json.parse(respuesta)
 	
 	if response_code != 200 and response_code != 201:
-		print("❌ Error de comunicación con la API. Código de estado inválido.")
+		print("❌ Error de comunicación con la API. Respuesta: " + respuesta)
 		animar_error_infantil("¡Error de conexión!")
 		return
 
@@ -108,19 +107,32 @@ func _on_request_completed(result, response_code, headers, body):
 
 	if operacion_actual == "LOGIN":
 		if datos_recibidos is Array and datos_recibidos.size() > 0:
-			print("🎉 ¡Inicio exitoso! Bienvenido de vuelta: " + str(datos_recibidos[0].get("nombre", "")))
+			var user_data = datos_recibidos[0]
+			
+			# ========================================================
+			# 💾 ¡AQUÍ ESTÁ LA MAGIA! GUARDAMOS EN EL SCRIPT GLOBAL
+			# ========================================================
+			DatosUsuario.esta_conectado_a_la_nube = true
+			DatosUsuario.usuario_id_db = int(user_data.get("id", 0))
+			DatosUsuario.usuario_uuid = str(user_data.get("user_id", ""))
+			DatosUsuario.nombre_usuario = str(user_data.get("usuario", ""))
+			DatosUsuario.pregunta_pendiente = bool(user_data.get("pregunta_pendiente", false))
+			var casilla_guardada = int(user_data.get("casilla_actual", 0))
+			
+			print("🎉 ¡Sesión guardada con éxito en Globales!")
+			print("👤 Usuario activo: " + DatosUsuario.nombre_usuario)
+			print("🆔 ID de Base de Datos: " + str(DatosUsuario.usuario_id_db))
+			
 			_on_boton_cerrar_pressed() 
 		else:
-			print("❌ Login fallido: El usuario no existe o la contraseña está mal.")
+			print("❌ Login fallido: Credenciales incorrectas.")
 			animar_error_infantil("¡Usuario o Clave incorrectos!")
 
 	elif operacion_actual == "REGISTRO":
-		if response_code == 201:
-			print("🎉 ¡Registro exitoso en Supabase!")
-			_on_boton_cerrar_pressed()
-		else:
-			print("❌ Registro fallido: Posible nombre duplicado.")
-			animar_error_infantil("¡Ese nombre ya existe!")
+		print("🎉 ¡Registro exitoso en la nube!")
+		# Al registrarse con éxito, ejecutamos el login automático 
+		# para que se guarden sus datos de una vez sin obligar al niño a escribir de nuevo
+		_on_boton_entrar_pressed()
 
 # ==========================================
 # 💥 ANIMACIÓN INFANTIL DE ERROR (Juice Effect)
@@ -129,19 +141,17 @@ func animar_error_infantil(mensaje: String):
 	print("💥 Error mostrado al niño: '" + mensaje + "'")
 	
 	texto_error.text = mensaje
-	texto_error.modulate = Color(1, 0.3, 0.3) # Rojo amigable
+	texto_error.modulate = Color(1, 0.3, 0.3)
 	
 	var posicion_original = contenedor.position
 	var tween_shake = create_tween()
 	
-	# Efecto Shake corregido para compatibilidad de vectores en Godot 4
 	tween_shake.tween_property(contenedor, "position", Vector2(posicion_original.x - 15, posicion_original.y), 0.05)
 	tween_shake.tween_property(contenedor, "position", Vector2(posicion_original.x + 15, posicion_original.y), 0.05)
 	tween_shake.tween_property(contenedor, "position", Vector2(posicion_original.x - 10, posicion_original.y), 0.05)
 	tween_shake.tween_property(contenedor, "position", Vector2(posicion_original.x + 10, posicion_original.y), 0.05)
 	tween_shake.tween_property(contenedor, "position", posicion_original, 0.05)
 	
-	# Efecto elástico de escala
 	var tween_scale = create_tween()
 	contenedor.pivot_offset = contenedor.size / 2
 	tween_scale.tween_property(contenedor, "scale", Vector2(0.9, 0.9), 0.1)
