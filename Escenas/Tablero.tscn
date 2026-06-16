@@ -2,7 +2,6 @@
 
 [ext_resource type="Script" uid="uid://b8kldw5nfap3y" path="res://Scripts_gd/Tablero.gd" id="1_4uepw"]
 [ext_resource type="PackedScene" uid="uid://6cu6p1u6fgt6" path="res://Escenas/interfaz_Pregunta.tscn" id="4_alv5u"]
-[ext_resource type="Texture2D" uid="uid://2pebrvvh41x6" path="res://Frames Saltando/PixVerse-V5-Image-Text-360P-ha-unscreen/unscreen-024.png" id="5_qcf8k"]
 [ext_resource type="Texture2D" uid="uid://n5e7wjmtqfbq" path="res://Frames Saltando/PixVerse-V5-Image-Text-360P-ha-unscreen/unscreen-022-removebg-preview.png" id="6_4uepw"]
 [ext_resource type="Texture2D" uid="uid://cyfggdcbya1em" path="res://assets/Tablero_sin_Numeros (1).svg" id="6_vauqj"]
 
@@ -55,11 +54,10 @@ region_rect = Rect2(997.1593, 444.49103, 19.372742, 52.15744)
 [node name="Interfaz" parent="." unique_id=562769401 instance=ExtResource("4_alv5u")]
 
 [node name="BotonDado" type="Button" parent="." unique_id=1849345758]
-offset_left = 596.0
-offset_top = 152.0
-offset_right = 964.0
-offset_bottom = 520.0
-icon = ExtResource("5_qcf8k")
+offset_left = 907.0
+offset_top = 412.0
+offset_right = 1143.0
+offset_bottom = 612.0
 
 [node name="ClienteHTTP" type="HTTPRequest" parent="." unique_id=1024595746]
 

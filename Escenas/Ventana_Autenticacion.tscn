@@ -65,3 +65,7 @@ layout_mode = 2
 text = "Registrar"
 
 [node name="HTTPRequest" type="HTTPRequest" parent="." unique_id=1560494755]
+
+[connection signal="pressed" from="ContenedorPopup/VBoxContainer/BotonCerrar" to="." method="_on_boton_cerrar_pressed"]
+[connection signal="pressed" from="ContenedorPopup/VBoxContainer/HBoxContainer/BotonEntrar" to="." method="_on_boton_entrar_pressed"]
+[connection signal="pressed" from="ContenedorPopup/VBoxContainer/HBoxContainer/BotonRegistrar" to="." method="_on_boton_registrar_pressed"]

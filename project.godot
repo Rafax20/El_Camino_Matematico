@@ -18,6 +18,7 @@ config/icon="res://icon.svg"
 [autoload]
 
 Supabase="*uid://du7ds4l02a4uu"
+DatosUsuario="*uid://cjhw7knj003td"
 
 [display]
 
