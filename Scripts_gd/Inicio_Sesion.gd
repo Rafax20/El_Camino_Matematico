@@ -11,6 +11,7 @@ extends Control
 @onready var http_request = $HTTPRequest 
 
 const SUPABASE_URL_USUARIOS = "https://zwgiwmspfuebqvbsttto.supabase.co/rest/v1/usuarios"
+const SUPABASE_URL_PROGRESO = "https://zwgiwmspfuebqvbsttto.supabase.co/rest/v1/progreso"
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp3Z2l3bXNwZnVlYnF2YnN0dHRvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg1ODg2MjMsImV4cCI6MjA5NDE2NDYyM30.tkM_AYmXhLEqfCLgvpTczRMigV-hL44bpHCs5Z-sHuc"
 
 var operacion_actual: String = ""
@@ -21,14 +22,10 @@ func _ready():
 	contenedor.pivot_offset = contenedor.size / 2 
 	self.visible = false
 	
-	# Conectar respuesta de red nativa de forma segura
 	if not http_request.request_completed.is_connected(_on_request_completed):
 		http_request.request_completed.connect(_on_request_completed)
 	http_request.accept_gzip = false
 
-# ==========================================
-# 🎬 ANIMACIONES DE ENTRADA Y SALIDA
-# ==========================================
 func aparecer():
 	self.visible = true
 	var tween = create_tween().set_parallel(true)
@@ -42,10 +39,6 @@ func _on_boton_cerrar_pressed() -> void:
 	await tween.finished
 	self.visible = false
 
-# ==========================================
-# 📡 ENVIAR DATOS (LOGIN / REGISTRO) - NATIVO SEGURO
-# ==========================================
-
 func _on_boton_entrar_pressed() -> void:
 	var usuario = input_usuario.text.to_lower().strip_edges()
 	var clave = input_clave.text.strip_edges()
@@ -57,7 +50,6 @@ func _on_boton_entrar_pressed() -> void:
 	operacion_actual = "LOGIN"
 	print("🔍 Intentando iniciar sesión con Usuario: '" + usuario + "'")
 	
-	# URL mapeada a tu columna real "usuario"
 	var url = SUPABASE_URL_USUARIOS + "?usuario=eq." + usuario + "&clave=eq." + clave
 	enviar_peticion_supabase(url, HTTPClient.METHOD_GET, "")
 
@@ -72,7 +64,6 @@ func _on_boton_registrar_pressed() -> void:
 	operacion_actual = "REGISTRO"
 	print("📝 Intentando registrar al Usuario: '" + usuario + "'")
 	
-	# Mapeado exacto a tus columnas de Supabase
 	var datos = { "usuario": usuario, "clave": clave }
 	enviar_peticion_supabase(SUPABASE_URL_USUARIOS, HTTPClient.METHOD_POST, JSON.stringify(datos))
 
@@ -96,8 +87,10 @@ func _on_request_completed(result, response_code, headers, body):
 	print("📡 Servidor respondió con código: " + str(response_code))
 	
 	var json = JSON.new()
-	var error_parseo = json.parse(respuesta)
-	
+	if json.parse(respuesta) != OK:
+		print("❌ Error al parsear JSON")
+		return
+		
 	if response_code != 200 and response_code != 201:
 		print("❌ Error de comunicación con la API. Respuesta: " + respuesta)
 		animar_error_infantil("¡Error de conexión!")
@@ -109,37 +102,51 @@ func _on_request_completed(result, response_code, headers, body):
 		if datos_recibidos is Array and datos_recibidos.size() > 0:
 			var user_data = datos_recibidos[0]
 			
-			# ========================================================
-			# 💾 ¡AQUÍ ESTÁ LA MAGIA! GUARDAMOS EN EL SCRIPT GLOBAL
-			# ========================================================
 			DatosUsuario.esta_conectado_a_la_nube = true
 			DatosUsuario.usuario_id_db = int(user_data.get("id", 0))
 			DatosUsuario.usuario_uuid = str(user_data.get("user_id", ""))
 			DatosUsuario.nombre_usuario = str(user_data.get("usuario", ""))
-			DatosUsuario.pregunta_pendiente = bool(user_data.get("pregunta_pendiente", false))
-			var casilla_guardada = int(user_data.get("casilla_actual", 0))
 			
-			print("🎉 ¡Sesión guardada con éxito en Globales!")
-			print("👤 Usuario activo: " + DatosUsuario.nombre_usuario)
-			print("🆔 ID de Base de Datos: " + str(DatosUsuario.usuario_id_db))
+			print("👤 Usuario validado. Buscando su progreso en la base de datos...")
 			
-			_on_boton_cerrar_pressed() 
+			# 🆕 CAMBIO CLAVE: Cambiamos el estado a PROGRESO y descargamos la fila de la otra tabla
+			operacion_actual = "PROGRESO"
+			var url_progreso = SUPABASE_URL_PROGRESO + "?usuario_id=eq." + str(DatosUsuario.usuario_id_db)
+			enviar_peticion_supabase(url_progreso, HTTPClient.METHOD_GET, "")
 		else:
 			print("❌ Login fallido: Credenciales incorrectas.")
 			animar_error_infantil("¡Usuario o Clave incorrectos!")
 
+	elif operacion_actual == "PROGRESO":
+		# 🆕 PROCESAMOS LOS DATOS DE LA TABLA PROGRESO
+		if datos_recibidos is Array and datos_recibidos.size() > 0:
+			var progreso_data = datos_recibidos[0]
+			
+			# Ahora sí extraemos las columnas de la tabla 'progreso'
+			DatosUsuario.pregunta_pendiente_db = bool(progreso_data.get("pregunta_pendiente", false))
+			DatosUsuario.casilla_actual_db = int(progreso_data.get("casilla_actual", 0))
+			
+			print("🎉 ¡Sesión y progreso guardados con éxito en Globales!")
+			print("👤 Usuario activo: " + DatosUsuario.nombre_usuario)
+			print("🆔 ID de Base de Datos: " + str(DatosUsuario.usuario_id_db))
+			print("⏱️ Casilla Real Recuperada: " + str(DatosUsuario.casilla_actual_db))
+			
+			_on_boton_cerrar_pressed()
+		else:
+			# Si por alguna razón el usuario existe en 'usuarios' pero no tiene fila en 'progreso'
+			print("🆕 El usuario no tiene fila de progreso. Seteando valores en 0.")
+			DatosUsuario.pregunta_pendiente_db = false
+			DatosUsuario.casilla_actual_db = 0
+			_on_boton_cerrar_pressed()
+
 	elif operacion_actual == "REGISTRO":
 		print("🎉 ¡Registro exitoso en la nube!")
-		# Al registrarse con éxito, ejecutamos el login automático 
-		# para que se guarden sus datos de una vez sin obligar al niño a escribir de nuevo
 		_on_boton_entrar_pressed()
 
 # ==========================================
-# 💥 ANIMACIÓN INFANTIL DE ERROR (Juice Effect)
+# 💥 ANIMACIÓN INFANTIL DE ERROR
 # ==========================================
 func animar_error_infantil(mensaje: String):
-	print("💥 Error mostrado al niño: '" + mensaje + "'")
-	
 	texto_error.text = mensaje
 	texto_error.modulate = Color(1, 0.3, 0.3)
 	

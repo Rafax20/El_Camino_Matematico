@@ -5,7 +5,8 @@ var esta_conectado_a_la_nube: bool = false
 var usuario_id_db: int = 0
 var usuario_uuid: String = ""
 var nombre_usuario: String = ""
-var pregunta_pendiente : bool = false
+var casilla_actual_db: int = 0
+var pregunta_pendiente_db : bool = false
 
 # Método para resetear la sesión si el niño sale al menú principal
 func cerrar_sesion():

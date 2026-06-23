@@ -8,6 +8,7 @@ extends CanvasLayer
 @onready var boton4 = $Panel/GridContainer/Button4
 
 var respuesta_correcta = 0
+var tiempo_inicio: float = 0.0
 signal respuesta_completada(es_correcta)
 
 func actualizar_datos_pantalla(datos_pregunta: Dictionary):
@@ -27,6 +28,9 @@ func actualizar_datos_pantalla(datos_pregunta: Dictionary):
 	boton2.text = str(opciones[1])
 	boton3.text = str(opciones[2])
 	boton4.text = str(opciones[3])
+	
+	tiempo_inicio = Time.get_ticks_msec() # Guarda el milisegundo exacto de inicio
+	print("Tiempo transcurrido para tiempo_inicio: ", tiempo_inicio)
 
 # Funciones de clicks limpias usando las variables en caché
 func _on_button_pressed(): verificar_respuesta(boton1.text)
@@ -35,6 +39,11 @@ func _on_button_3_pressed(): verificar_respuesta(boton3.text)
 func _on_button_4_pressed(): verificar_respuesta(boton4.text)
 
 func verificar_respuesta(texto_boton: String):
+	var tiempo_final = Time.get_ticks_msec()
+	print("Tiempo transcurrido al presionar respuesta: ", tiempo_final)
+	var segundos_tardados = (tiempo_final - tiempo_inicio) / 1000.0
+	print("Segundos transcurridos para responder: ", int(segundos_tardados))
+	
 	if int(texto_boton) == respuesta_correcta:
 		print("¡Correcto! 🎉")
 		
@@ -47,7 +56,7 @@ func verificar_respuesta(texto_boton: String):
 		
 		# Restauramos el color original blanco y avisamos al tablero
 		label_operacion.modulate = Color(1, 1, 1)
-		respuesta_completada.emit(true)
+		respuesta_completada.emit(true, segundos_tardados)
 	else:
 		print("Incorrecto... ❌")
 		
@@ -57,4 +66,4 @@ func verificar_respuesta(texto_boton: String):
 		await get_tree().create_timer(1.2).timeout
 		
 		label_operacion.modulate = Color(1, 1, 1)
-		respuesta_completada.emit(false)
+		respuesta_completada.emit(false, segundos_tardados)

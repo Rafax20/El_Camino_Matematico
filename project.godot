@@ -19,6 +19,7 @@ config/icon="res://icon.svg"
 
 Supabase="*uid://du7ds4l02a4uu"
 DatosUsuario="*uid://cjhw7knj003td"
+ConexionSupabase="*uid://snojl0p28q50"
 
 [display]
 
