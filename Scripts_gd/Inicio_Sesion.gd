@@ -144,7 +144,7 @@ func _on_request_completed(result, response_code, headers, body):
 		_on_boton_entrar_pressed()
 
 # ==========================================
-# 💥 ANIMACIÓN INFANTIL DE ERROR
+# 💥 ANIMACIÓN INFANTIL DE ERROR_
 # ==========================================
 func animar_error_infantil(mensaje: String):
 	texto_error.text = mensaje
