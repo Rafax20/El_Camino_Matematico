@@ -11,6 +11,7 @@ func descargar_preguntas():
 	print("⏳ [API] Descargando banco de preguntas...")
 	var cliente_http = HTTPRequest.new()
 	add_child(cliente_http)
+	cliente_http.accept_gzip = false
 	cliente_http.request_completed.connect(func(result, response_code, headers, body):
 		if response_code == 200:
 			var json = JSON.new()
@@ -29,13 +30,14 @@ func pedir_progreso_usuario():
 	
 	var http_get = HTTPRequest.new()
 	add_child(http_get)
+	http_get.accept_gzip = false # ✅ Protegido para la Web
 	http_get.request_completed.connect(func(result, response_code, headers, body):
 		if response_code == 200:
 			var json = JSON.new()
 			if json.parse(body.get_string_from_utf8()) == OK:
 				progreso_recibido.emit(json.data)
 		else:
-			progreso_recibido.emit([]) # Retorna vacío si falla
+			progreso_recibido.emit([]) 
 		http_get.queue_free()
 	)
 	
@@ -46,6 +48,7 @@ func pedir_progreso_usuario():
 func crear_fila_inicial_progreso():
 	var http_insert = HTTPRequest.new()
 	add_child(http_insert)
+	http_insert.accept_gzip = false # ✅ Protegido para la Web
 	http_insert.request_completed.connect(func(result, response_code, headers, body):
 		if response_code in [200, 201]:
 			progreso_creado_exito.emit()
@@ -68,6 +71,7 @@ func actualizar_progreso_en_nube(casilla: int, pendiente: bool):
 	
 	var http_update = HTTPRequest.new()
 	add_child(http_update)
+	http_update.accept_gzip = false # ✅ Protegido para la Web
 	http_update.request_completed.connect(func(r, rc, h, b): http_update.queue_free())
 	
 	var datos_a_guardar = {"casilla_actual": casilla, "pregunta_pendiente": pendiente}
@@ -75,3 +79,5 @@ func actualizar_progreso_en_nube(casilla: int, pendiente: bool):
 	var headers = ["apikey: " + SUPABASE_ANON_KEY, "Authorization: Bearer " + SUPABASE_ANON_KEY, "Content-Type: application/json", "Prefer: return=minimal"]
 	
 	http_update.request(url_update, headers, HTTPClient.METHOD_PATCH, JSON.stringify(datos_a_guardar))
+	
+	
