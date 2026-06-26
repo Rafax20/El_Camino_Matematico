@@ -12,6 +12,8 @@ var lista_preguntas: Array = []
 var pregunta_actual_indice: int = 0
 var servidor_listo: bool = false
 
+var pregunta_actual: Dictionary = {}
+
 # Coordenadas de ratio de tu Path2D para cada casilla
 var casilla_destino = [
 	0.0537, 0.107, 0.1521, 0.1972, 0.2423, 0.2874, 0.3407, 0.3776, 0.4145, 0.4473,
@@ -87,24 +89,37 @@ func _mover_ficha_visualmente(casilla: int, instantaneo: bool):
 func mostrar_pregunta_en_pantalla():
 	if lista_preguntas.size() == 0: return
 	
-	# 🧭 FILTRADO INTELIGENTE: Creamos una sublista con las preguntas de la dificultad actual
+	# 1. 🧭 FILTRADO: Creamos la sublista con la dificultad del niño
 	var preguntas_filtradas = lista_preguntas.filter(func(pregunta):
 		return int(pregunta.get("dificultad", 0)) == DatosUsuario.dificultad_actual
 	)
 	
-	# 🚨 Control de seguridad: Si no hay preguntas de esa dificultad, usamos todo el banco
+	# Control de seguridad por si las moscas
 	if preguntas_filtradas.size() == 0:
-		print("⚠️ No se encontraron preguntas específicas para la dificultad: ", DatosUsuario.dificultad_actual)
+		print("⚠️ No hay preguntas para la dificultad: ", DatosUsuario.dificultad_actual)
 		preguntas_filtradas = lista_preguntas
 
-	# Barajamos la sublista filtrada para que no salgan en el mismo orden
-	preguntas_filtradas.shuffle()
+	# 2. 🔄 CONTROL DEL MAZO: ¿Se acabaron las preguntas de esta dificultad?
+	if pregunta_actual_indice >= preguntas_filtradas.size():
+		print("🔄 [Mazo Agotado] El niño respondió todas las preguntas de nivel ", DatosUsuario.dificultad_actual, ". Reiniciando mazo...")
+		pregunta_actual_indice = 0
+		# Barajamos la lista principal para que el nuevo ciclo sea totalmente aleatorio
+		lista_preguntas.shuffle()
 		
-	# Tomamos la primera pregunta disponible de la lista filtrada
-	var datos_pregunta = preguntas_filtradas[0]
-	$Interfaz.visible = true
-	$Interfaz.actualizar_datos_pantalla(datos_pregunta)
+		# Re-filtramos para asegurarnos de tener el mazo fresco y barajado
+		preguntas_filtradas = lista_preguntas.filter(func(pregunta):
+			return int(pregunta.get("dificultad", 0)) == DatosUsuario.dificultad_actual
+		)
+
+	# 3. 🎯 ASIGNACIÓN: Tomamos la pregunta usando el índice correlativo
+	pregunta_actual = preguntas_filtradas[pregunta_actual_indice]
+	
+	# 4. 📈 AVANCE: Incrementamos el índice para la siguiente casilla
 	pregunta_actual_indice += 1
+	
+	# 5. 📺 INTERFAZ: Mostramos en pantalla
+	$Interfaz.visible = true
+	$Interfaz.actualizar_datos_pantalla(pregunta_actual)
 
 # ==========================================
 # ⚙️ RESPUESTA DEL NIÑO DESDE LA INTERFAZ
@@ -113,22 +128,29 @@ func _on_interfaz_respuesta_completada(es_correcta: bool, tiempo_tardado: float)
 	$Interfaz.visible = false
 	DatosUsuario.pregunta_pendiente_db = false
 	
-	# ====================================================================
-	# 🧠 EVALUACIÓN DEL SISTEMA EXPERTO
-	# ====================================================================
+	# 1. 🧠 EVALUACIÓN DEL SISTEMA EXPERTO
 	var dificultad_anterior = DatosUsuario.dificultad_actual
-	
-	# El motor de inferencia analiza el resultado y nos da la nueva dificultad
 	DatosUsuario.dificultad_actual = SistemaExperto.evaluar_desempeno(
 		dificultad_anterior, 
 		es_correcta, 
 		tiempo_tardado
 	)
 	
-	# Aquí puedes usar DatosUsuario.dificultad_actual para filtrar qué tipo 
-	# de preguntas le vas a mostrar al niño en el siguiente turno.
-	# ====================================================================
+	# Si el número que devolvió el SE es diferente al que teníamos, reiniciamos el índice
+	if DatosUsuario.dificultad_actual != dificultad_anterior:
+		print("🧠 Tablero: El Sistema Experto cambió el nivel. Reiniciando pregunta_actual_indice a 0.")
+		pregunta_actual_indice = 0
 	
+	# 2. 📊 REGISTRO EN LA TABLA DE HISTORIAL INDEPENDIENTE
+	var categoria_actual = "matematicas" # Por si acaso, un valor por defecto
+	
+	# Ahora 'pregunta_actual' es reconocida perfectamente porque es una variable del script
+	if pregunta_actual.has("categoria"):
+		categoria_actual = str(pregunta_actual.get("categoria"))
+		
+	ConexionSupabase.registrar_en_historial(categoria_actual, es_correcta, tiempo_tardado)
+	
+	# 3. 💾 ACTUALIZACIÓN DEL PROGRESO ACTUAL DEL JUEGO
 	if es_correcta:
 		print("🎯 ¡Correcta! El niño tardó: ", tiempo_tardado, " segundos.")
 		ConexionSupabase.actualizar_progreso_en_nube(casilla_actual, false)

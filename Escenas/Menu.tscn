@@ -52,5 +52,7 @@ texture_normal = ExtResource("4_2a5i7")
 texture_hover = ExtResource("5_2ahv8")
 script = ExtResource("6_8shpa")
 
+[node name="HTTPRequest" type="HTTPRequest" parent="." unique_id=983556898]
+
 [connection signal="pressed" from="CanvasLayer/Boton_Jugar" to="." method="_on_boton_jugar_pressed"]
 [connection signal="pressed" from="CanvasLayer/Boton Iniciar_Sesion" to="." method="_on_boton_iniciar_sesion_pressed"]

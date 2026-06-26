@@ -107,12 +107,20 @@ func _on_request_completed(result, response_code, headers, body):
 			DatosUsuario.usuario_uuid = str(user_data.get("user_id", ""))
 			DatosUsuario.nombre_usuario = str(user_data.get("usuario", ""))
 			DatosUsuario.dificultad_actual = int(user_data.get("dificultad", 0))
+			DatosUsuario.rol = str(user_data.get("rol", "estudiante"))
 			
 			print("👤 Usuario validado. Buscando su progreso en la base de datos...")
+			print("👤 Usuario validado con rol: " + DatosUsuario.rol)
 			
-			operacion_actual = "PROGRESO"
-			var url_progreso = SUPABASE_URL_PROGRESO + "?usuario_id=eq." + str(DatosUsuario.usuario_id_db)
-			enviar_peticion_supabase(url_progreso, HTTPClient.METHOD_GET, "")
+			if DatosUsuario.rol == "maestro":
+				print("👨‍🏫 Bienvenido Maestro. Abriendo Panel de Analítica...")
+				_on_boton_cerrar_pressed()
+				get_tree().change_scene_to_file("res://Escenas/PanelMaestro.tscn") # 👈 Tu futura escena de maestro
+			else:
+				print("🎒 Bienvenido Estudiante. Buscando progreso...")
+				operacion_actual = "PROGRESO"
+				var url_progreso = SUPABASE_URL_PROGRESO + "?usuario_id=eq." + str(DatosUsuario.usuario_id_db)
+				enviar_peticion_supabase(url_progreso, HTTPClient.METHOD_GET, "")
 		else:
 			print("❌ Login fallido: Credenciales incorrectas.")
 			animar_error_infantil("¡Usuario o Clave incorrectos!")
@@ -131,7 +139,8 @@ func _on_request_completed(result, response_code, headers, body):
 			print("👤 Usuario activo: " + DatosUsuario.nombre_usuario)
 			print("🆔 ID de Base de Datos: " + str(DatosUsuario.usuario_id_db))
 			print("⏱️ Casilla Real Recuperada: " + str(DatosUsuario.casilla_actual_db))
-			print("   Dificultad Real Recuperada: " + str(DatosUsuario.dificultad_actual))
+			print("Habia Pregunta Pendiente: " + str(DatosUsuario.pregunta_pendiente_db))
+			print("Dificultad Real Recuperada: " + str(DatosUsuario.dificultad_actual))
 			
 			_on_boton_cerrar_pressed()
 		else:

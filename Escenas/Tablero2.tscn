@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://dm06re2c3dhp2"]
 
-[ext_resource type="Texture2D" uid="uid://b5txfu2x333ur" path="res://assets/magnific_puedes-crear-un-camino-di_EqnJX9VuuO.svg" id="1_aslhq"]
+[ext_resource type="Texture2D" uid="uid://wo3upt2qeo15" path="res://assets/Tablero2.png" id="2_2xxau"]
 [ext_resource type="Texture2D" uid="uid://n5e7wjmtqfbq" path="res://Frames Saltando/PixVerse-V5-Image-Text-360P-ha-unscreen/unscreen-022-removebg-preview.png" id="2_lpjcr"]
 
 [sub_resource type="Curve2D" id="Curve2D_85yh5"]
@@ -10,20 +10,6 @@ _data = {
 point_count = 21
 
 [node name="Node2D" type="Node2D" unique_id=1700597054]
-
-[node name="MagnificPuedesCrearUnCaminoDiEqnJx9VuuO" type="Sprite2D" parent="." unique_id=2128471961]
-position = Vector2(536, 368.5)
-scale = Vector2(1.1914064, 1.1013514)
-texture = ExtResource("1_aslhq")
-region_enabled = true
-region_rect = Rect2(0, 134.19177, 1024, 740.4403)
-
-[node name="2" type="Sprite2D" parent="MagnificPuedesCrearUnCaminoDiEqnJx9VuuO" unique_id=377513493]
-position = Vector2(350.8459, -121.4233)
-scale = Vector2(0.62214243, 0.63705456)
-texture = ExtResource("1_aslhq")
-region_enabled = true
-region_rect = Rect2(312.32266, 784.6747, 22.941437, 25.25879)
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=1426866304]
 position = Vector2(575, 324)
@@ -40,3 +26,8 @@ rotates = false
 position = Vector2(7.6424766, -53.587254)
 scale = Vector2(0.461, 0.388)
 texture = ExtResource("2_lpjcr")
+
+[node name="Tablero2" type="Sprite2D" parent="." unique_id=276478482]
+position = Vector2(575.075, 323.09998)
+scale = Vector2(0.8937988, 0.78161764)
+texture = ExtResource("2_2xxau")

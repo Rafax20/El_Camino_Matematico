@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cdso8obcaj8jp"
-path="res://.godot/imported/Assets.png-ae16721b5ea0e2666d1329955e8ebdfa.ctex"
+uid="uid://4ejjlp4qtmu8"
+path="res://.godot/imported/Gemini_Generated_Image_f318utf318utf318.svg-adc6d2af2ad921420729ec3b020235dd.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Tiles/Tiles/Assets/Assets.png"
-dest_files=["res://.godot/imported/Assets.png-ae16721b5ea0e2666d1329955e8ebdfa.ctex"]
+source_file="res://assets/Gemini_Generated_Image_f318utf318utf318.svg"
+dest_files=["res://.godot/imported/Gemini_Generated_Image_f318utf318utf318.svg-adc6d2af2ad921420729ec3b020235dd.ctex"]
 
 [params]
 
@@ -38,3 +38,6 @@ process/hdr_as_srgb=false
 process/hdr_clamp_exposure=false
 process/size_limit=0
 detect_3d/compress_to=1
+svg/scale=0.7
+editor/scale_with_editor_scale=false
+editor/convert_colors_with_editor_theme=false

@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://v2r3ny7rsoi3"
-path="res://.godot/imported/entrance.png-a7280e510e90ea01a2dcf88297d27ac8.ctex"
+uid="uid://yuq0qolax7w8"
+path="res://.godot/imported/Boton_Negro.png-831028a31d2db8a0db906f88e09c9d28.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Tiles/Tiles/Social/entrance.png"
-dest_files=["res://.godot/imported/entrance.png-a7280e510e90ea01a2dcf88297d27ac8.ctex"]
+source_file="res://assets/Iconos_Interfaz_Pregunta/Boton_Negro.png"
+dest_files=["res://.godot/imported/Boton_Negro.png-831028a31d2db8a0db906f88e09c9d28.ctex"]
 
 [params]
 

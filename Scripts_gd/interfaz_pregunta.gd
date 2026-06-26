@@ -39,6 +39,10 @@ func _on_button_3_pressed(): verificar_respuesta(boton3.text)
 func _on_button_4_pressed(): verificar_respuesta(boton4.text)
 
 func verificar_respuesta(texto_boton: String):
+	boton1.disabled = true
+	boton2.disabled = true
+	boton3.disabled = true
+	boton4.disabled = true
 	var tiempo_final = Time.get_ticks_msec()
 	print("Tiempo transcurrido al presionar respuesta: ", tiempo_final)
 	var segundos_tardados = (tiempo_final - tiempo_inicio) / 1000.0

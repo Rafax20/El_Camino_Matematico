@@ -1,13 +1,13 @@
 [gd_scene format=3 uid="uid://3sndlsy3yhub"]
 
 [ext_resource type="Script" uid="uid://b8kldw5nfap3y" path="res://Scripts_gd/Tablero.gd" id="1_4uepw"]
+[ext_resource type="Texture2D" uid="uid://4ejjlp4qtmu8" path="res://assets/Gemini_Generated_Image_f318utf318utf318.svg" id="2_qcf8k"]
 [ext_resource type="PackedScene" uid="uid://6cu6p1u6fgt6" path="res://Escenas/interfaz_Pregunta.tscn" id="4_alv5u"]
 [ext_resource type="Texture2D" uid="uid://n5e7wjmtqfbq" path="res://Frames Saltando/PixVerse-V5-Image-Text-360P-ha-unscreen/unscreen-022-removebg-preview.png" id="6_4uepw"]
-[ext_resource type="Texture2D" uid="uid://cyfggdcbya1em" path="res://assets/Tablero_sin_Numeros (1).svg" id="6_vauqj"]
 
 [sub_resource type="Curve2D" id="Curve2D_vauqj"]
 _data = {
-"points": PackedVector2Array(0, 0, 0, 0, 106, 569, 0, 0, 0, 0, 228, 575, 0, 0, 0, 0, 329, 570, 0, 0, 0, 0, 429, 573, 0, 0, 0, 0, 523, 570, 0, 0, 0, 0, 617, 567, 0, 0, 0, 0, 717, 564, 0, 0, 0, 0, 798, 537, 0, 0, 0, 0, 820, 460, 0, 0, 0, 0, 778, 391, 0, 0, 0, 0, 699, 366, 0, 0, 0, 0, 614, 366, 0, 0, 0, 0, 525, 371, 0, 0, 0, 0, 443, 376, 0, 0, 0, 0, 357, 378, 0, 0, 0, 0, 256, 366, 0, 0, 0, 0, 217, 274, 0, 0, 0, 0, 275, 215, 0, 0, 0, 0, 367, 184, 0, 0, 0, 0, 451, 186, 0, 0, 0, 0, 528, 205, 0, 0, 0, 0, 604, 229, 0, 0, 0, 0, 692, 234, 0, 0, 0, 0, 781, 219)
+"points": PackedVector2Array(0, 0, 0, 0, 205, 569, 0, 0, 0, 0, 296, 567, 0, 0, 0, 0, 379, 566, 0, 0, 0, 0, 458, 564, 0, 0, 0, 0, 533, 563, 0, 0, 0, 0, 609, 561, 0, 0, 0, 0, 687, 564, 0, 0, 0, 0, 753, 538, 0, 0, 0, 0, 778, 483, 0, 0, 0, 0, 743, 428, 0, 0, 0, 0, 676, 410, 0, 0, 0, 0, 607, 412, 0, 0, 0, 0, 541, 413, 0, 0, 0, 0, 471, 415, 0, 0, 0, 0, 404, 420, 0, 0, 0, 0, 318, 406, 0, 0, 0, 0, 293, 347, 0, 0, 0, 0, 336, 298, 0, 0, 0, 0, 404, 278, 0, 0, 0, 0, 475, 274, 0, 0, 0, 0, 533, 284, 0, 0, 0, 0, 598, 309, 0, 0, 0, 0, 665, 318, 0, 0, 0, 0, 737, 306)
 }
 point_count = 24
 
@@ -15,18 +15,11 @@ point_count = 24
 script = ExtResource("1_4uepw")
 
 [node name="Tablero(1)" type="Sprite2D" parent="." unique_id=36715906]
-position = Vector2(541, 357)
-scale = Vector2(1.17658, 1.4604167)
-texture = ExtResource("6_vauqj")
+position = Vector2(574.0174, 321.49997)
+scale = Vector2(1.3225404, 1.4884259)
+texture = ExtResource("2_qcf8k")
 region_enabled = true
-region_rect = Rect2(130.20216, 140.87183, 1076.9402, 480.16443)
-
-[node name="morado2" type="Sprite2D" parent="." unique_id=1770717514]
-position = Vector2(1016.00006, 505.49997)
-scale = Vector2(7.5789447, 3.4038455)
-texture = ExtResource("6_vauqj")
-region_enabled = true
-region_rect = Rect2(997.1593, 444.49103, 19.372742, 52.15744)
+region_rect = Rect2(44.85138, -0.8974533, 868.1537, 432.50278)
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=1504346046]
 position = Vector2(573, 321)
@@ -35,31 +28,25 @@ position = Vector2(573, 321)
 curve = SubResource("Curve2D_vauqj")
 
 [node name="PathFollow2D" type="PathFollow2D" parent="Path2D" unique_id=824580815]
-position = Vector2(106, 569)
+position = Vector2(290.64838, 567.1176)
 rotation = 0.049140736
+progress = 85.68575
 rotates = false
 
 [node name="Sprite2D" type="Sprite2D" parent="Path2D/PathFollow2D" unique_id=129189860]
 position = Vector2(7.4440565, -43.927048)
-scale = Vector2(0.4606949, 0.38846102)
+scale = Vector2(0.43, 0.362)
 texture = ExtResource("6_4uepw")
-
-[node name="morado" type="Sprite2D" parent="." unique_id=648079275]
-position = Vector2(1041, 555)
-scale = Vector2(9.576865, 1.4948236)
-texture = ExtResource("6_vauqj")
-region_enabled = true
-region_rect = Rect2(997.1593, 444.49103, 19.372742, 52.15744)
 
 [node name="Interfaz" parent="." unique_id=562769401 instance=ExtResource("4_alv5u")]
 
 [node name="BotonDado" type="Button" parent="." unique_id=1849345758]
-offset_left = 907.0
-offset_top = 412.0
-offset_right = 1143.0
-offset_bottom = 612.0
+offset_left = 880.0
+offset_top = 437.0
+offset_right = 1063.0
+offset_bottom = 592.0
 
-[node name="ClienteHTTP" type="HTTPRequest" parent="." unique_id=1024595746]
+[node name="HTTPRequest" type="HTTPRequest" parent="." unique_id=2062687948]
 
 [connection signal="respuesta_completada" from="Interfaz" to="." method="_on_interfaz_respuesta_completada"]
 [connection signal="pressed" from="BotonDado" to="." method="_on_boton_dado_pressed"]

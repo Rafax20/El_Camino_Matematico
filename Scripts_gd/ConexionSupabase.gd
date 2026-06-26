@@ -85,3 +85,39 @@ func actualizar_progreso_en_nube(casilla: int, pendiente: bool):
 	
 	http_update.request(url_update, headers, HTTPClient.METHOD_PATCH, JSON.stringify(datos_a_guardar))
 	
+func registrar_en_historial(categoria: String, es_correcta: bool, tiempo: float):
+	if not DatosUsuario.esta_conectado_a_la_nube: return
+	
+	var http_historial = HTTPRequest.new()
+	add_child(http_historial)
+	http_historial.accept_gzip = false # Enfoque web seguro
+	
+	# Al terminar la petición, simplemente liberamos el nodo de la memoria
+	http_historial.request_completed.connect(func(result, response_code, headers, body):
+		print("📡 --- DIAGNÓSTICO HISTORIAL ---")
+		print("Código de Respuesta HTTP: ", response_code)
+		if response_code != 201 and response_code != 200:
+			print("❌ Error de Supabase: ", body.get_string_from_utf8())
+		else:
+			print("✅ ¡Registro exitoso en el historial de Supabase!")
+		print("---------------------------------")
+		http_historial.queue_free()
+	)
+	
+	# El cuerpo del JSON con los datos que definimos para la tabla
+	var nueva_jugada = {
+		"usuario_id": DatosUsuario.usuario_id_db,
+		"categoria": categoria,
+		"es_correcta": es_correcta,
+		"tiempo_tardado": tiempo
+	}
+	
+	var url_historial = "https://zwgiwmspfuebqvbsttto.supabase.co/rest/v1/historial_respuestas"
+	var headers = [
+		"apikey: " + SUPABASE_ANON_KEY, 
+		"Authorization: Bearer " + SUPABASE_ANON_KEY, 
+		"Content-Type: application/json", 
+		"Prefer: return=minimal"
+	]
+	
+	http_historial.request(url_historial, headers, HTTPClient.METHOD_POST, JSON.stringify(nueva_jugada))
