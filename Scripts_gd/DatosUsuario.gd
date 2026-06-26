@@ -6,7 +6,9 @@ var usuario_id_db: int = 0
 var usuario_uuid: String = ""
 var nombre_usuario: String = ""
 var casilla_actual_db: int = 0
-var pregunta_pendiente_db : bool = false
+var pregunta_pendiente_db: bool = false
+var id_pregunta_pendiente_db: int = 0
+var dificultad_actual: int = 0 # 0 = Fácil, 1 = Media, 2 = Difícil
 
 # Método para resetear la sesión si el niño sale al menú principal
 func cerrar_sesion():

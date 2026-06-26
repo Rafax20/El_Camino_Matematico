@@ -106,10 +106,10 @@ func _on_request_completed(result, response_code, headers, body):
 			DatosUsuario.usuario_id_db = int(user_data.get("id", 0))
 			DatosUsuario.usuario_uuid = str(user_data.get("user_id", ""))
 			DatosUsuario.nombre_usuario = str(user_data.get("usuario", ""))
+			DatosUsuario.dificultad_actual = int(user_data.get("dificultad", 0))
 			
 			print("👤 Usuario validado. Buscando su progreso en la base de datos...")
 			
-			# 🆕 CAMBIO CLAVE: Cambiamos el estado a PROGRESO y descargamos la fila de la otra tabla
 			operacion_actual = "PROGRESO"
 			var url_progreso = SUPABASE_URL_PROGRESO + "?usuario_id=eq." + str(DatosUsuario.usuario_id_db)
 			enviar_peticion_supabase(url_progreso, HTTPClient.METHOD_GET, "")
@@ -125,11 +125,13 @@ func _on_request_completed(result, response_code, headers, body):
 			# Ahora sí extraemos las columnas de la tabla 'progreso'
 			DatosUsuario.pregunta_pendiente_db = bool(progreso_data.get("pregunta_pendiente", false))
 			DatosUsuario.casilla_actual_db = int(progreso_data.get("casilla_actual", 0))
+			DatosUsuario.dificultad_actual = int(progreso_data.get("dificultad", 0))
 			
 			print("🎉 ¡Sesión y progreso guardados con éxito en Globales!")
 			print("👤 Usuario activo: " + DatosUsuario.nombre_usuario)
 			print("🆔 ID de Base de Datos: " + str(DatosUsuario.usuario_id_db))
 			print("⏱️ Casilla Real Recuperada: " + str(DatosUsuario.casilla_actual_db))
+			print("   Dificultad Real Recuperada: " + str(DatosUsuario.dificultad_actual))
 			
 			_on_boton_cerrar_pressed()
 		else:

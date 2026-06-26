@@ -62,7 +62,8 @@ func crear_fila_inicial_progreso():
 		"monedas": 0,
 		"casilla_actual": 0,
 		"tablero_actual": "Tablero_1",
-		"pregunta_pendiente": false
+		"pregunta_pendiente": false,
+		"dificultad": 0
 	}
 	http_insert.request(url, headers, HTTPClient.METHOD_POST, JSON.stringify(nuevo_registro))
 
@@ -74,10 +75,13 @@ func actualizar_progreso_en_nube(casilla: int, pendiente: bool):
 	http_update.accept_gzip = false # ✅ Protegido para la Web
 	http_update.request_completed.connect(func(r, rc, h, b): http_update.queue_free())
 	
-	var datos_a_guardar = {"casilla_actual": casilla, "pregunta_pendiente": pendiente}
+	var datos_a_guardar = {
+		"casilla_actual": casilla, 
+		"pregunta_pendiente": pendiente,
+		"dificultad": DatosUsuario.dificultad_actual
+		}
 	var url_update = "https://zwgiwmspfuebqvbsttto.supabase.co/rest/v1/progreso?usuario_id=eq." + str(DatosUsuario.usuario_id_db)
 	var headers = ["apikey: " + SUPABASE_ANON_KEY, "Authorization: Bearer " + SUPABASE_ANON_KEY, "Content-Type: application/json", "Prefer: return=minimal"]
 	
 	http_update.request(url_update, headers, HTTPClient.METHOD_PATCH, JSON.stringify(datos_a_guardar))
-	
 	

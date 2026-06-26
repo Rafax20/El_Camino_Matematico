@@ -87,11 +87,21 @@ func _mover_ficha_visualmente(casilla: int, instantaneo: bool):
 func mostrar_pregunta_en_pantalla():
 	if lista_preguntas.size() == 0: return
 	
-	if pregunta_actual_indice >= lista_preguntas.size():
-		lista_preguntas.shuffle()
-		pregunta_actual_indice = 0
+	# 🧭 FILTRADO INTELIGENTE: Creamos una sublista con las preguntas de la dificultad actual
+	var preguntas_filtradas = lista_preguntas.filter(func(pregunta):
+		return int(pregunta.get("dificultad", 0)) == DatosUsuario.dificultad_actual
+	)
+	
+	# 🚨 Control de seguridad: Si no hay preguntas de esa dificultad, usamos todo el banco
+	if preguntas_filtradas.size() == 0:
+		print("⚠️ No se encontraron preguntas específicas para la dificultad: ", DatosUsuario.dificultad_actual)
+		preguntas_filtradas = lista_preguntas
+
+	# Barajamos la sublista filtrada para que no salgan en el mismo orden
+	preguntas_filtradas.shuffle()
 		
-	var datos_pregunta = lista_preguntas[pregunta_actual_indice]
+	# Tomamos la primera pregunta disponible de la lista filtrada
+	var datos_pregunta = preguntas_filtradas[0]
 	$Interfaz.visible = true
 	$Interfaz.actualizar_datos_pantalla(datos_pregunta)
 	pregunta_actual_indice += 1
@@ -101,16 +111,26 @@ func mostrar_pregunta_en_pantalla():
 # ==========================================
 func _on_interfaz_respuesta_completada(es_correcta: bool, tiempo_tardado: float) -> void:
 	$Interfaz.visible = false
-	
-	# Guardamos que ya no debe preguntas en local
 	DatosUsuario.pregunta_pendiente_db = false
+	
+	# ====================================================================
+	# 🧠 EVALUACIÓN DEL SISTEMA EXPERTO
+	# ====================================================================
+	var dificultad_anterior = DatosUsuario.dificultad_actual
+	
+	# El motor de inferencia analiza el resultado y nos da la nueva dificultad
+	DatosUsuario.dificultad_actual = SistemaExperto.evaluar_desempeno(
+		dificultad_anterior, 
+		es_correcta, 
+		tiempo_tardado
+	)
+	
+	# Aquí puedes usar DatosUsuario.dificultad_actual para filtrar qué tipo 
+	# de preguntas le vas a mostrar al niño en el siguiente turno.
+	# ====================================================================
 	
 	if es_correcta:
 		print("🎯 ¡Correcta! El niño tardó: ", tiempo_tardado, " segundos.")
-		
-		# 🧠 AQUÍ PODRÁS LLAMAR A TU IA PRÓXIMAMENTE:
-		# var nueva_dificultad = calcular_proxima_dificultad(es_correcta, tiempo_tardado)
-		
 		ConexionSupabase.actualizar_progreso_en_nube(casilla_actual, false)
 		boton_dado.disabled = false
 	else:
@@ -119,8 +139,6 @@ func _on_interfaz_respuesta_completada(es_correcta: bool, tiempo_tardado: float)
 		DatosUsuario.casilla_actual_db = casilla_actual
 		
 		ConexionSupabase.actualizar_progreso_en_nube(casilla_actual, false)
-		
-		# Animación regresando la ficha físicamente
 		await _mover_ficha_visualmente(casilla_actual, false)
 		boton_dado.disabled = false
 
