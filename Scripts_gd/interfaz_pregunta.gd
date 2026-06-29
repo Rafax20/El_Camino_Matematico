@@ -2,16 +2,25 @@ extends CanvasLayer
 
 # Usamos @onready con la ruta jerárquica real de tu árbol de escenas
 @onready var label_operacion = $Panel/Label
-@onready var boton1 = $Panel/GridContainer/Button
-@onready var boton2 = $Panel/GridContainer/Button2
-@onready var boton3 = $Panel/GridContainer/Button3
-@onready var boton4 = $Panel/GridContainer/Button4
+@onready var boton1 = $Panel/GridContainer/Boton1
+@onready var boton2 = $Panel/GridContainer/Boton2
+@onready var boton3 = $Panel/GridContainer/Boton3
+@onready var boton4 = $Panel/GridContainer/Boton4
+@onready var label1 = $Panel/GridContainer/Boton1/Resultado1
+@onready var label2 = $Panel/GridContainer/Boton2/Resultado2
+@onready var label3 = $Panel/GridContainer/Boton3/Resultado3
+@onready var label4 = $Panel/GridContainer/Boton4/Resultado4
+
 
 var respuesta_correcta = 0
 var tiempo_inicio: float = 0.0
 signal respuesta_completada(es_correcta)
 
 func actualizar_datos_pantalla(datos_pregunta: Dictionary):
+	boton1.disabled = false
+	boton2.disabled = false
+	boton3.disabled = false
+	boton4.disabled = false
 	# Ahora el código es totalmente seguro y mucho más rápido
 	label_operacion.text = datos_pregunta["operacion"]
 	respuesta_correcta = datos_pregunta["respuesta_correcta"]
@@ -24,19 +33,19 @@ func actualizar_datos_pantalla(datos_pregunta: Dictionary):
 	]
 	opciones.shuffle()
 	
-	boton1.text = str(opciones[0])
-	boton2.text = str(opciones[1])
-	boton3.text = str(opciones[2])
-	boton4.text = str(opciones[3])
+	label1.text = str(opciones[0])
+	label2.text = str(opciones[1])
+	label3.text = str(opciones[2])
+	label4.text = str(opciones[3])
 	
 	tiempo_inicio = Time.get_ticks_msec() # Guarda el milisegundo exacto de inicio
 	print("Tiempo transcurrido para tiempo_inicio: ", tiempo_inicio)
 
 # Funciones de clicks limpias usando las variables en caché
-func _on_button_pressed(): verificar_respuesta(boton1.text)
-func _on_button_2_pressed(): verificar_respuesta(boton2.text)
-func _on_button_3_pressed(): verificar_respuesta(boton3.text)
-func _on_button_4_pressed(): verificar_respuesta(boton4.text)
+func _on_boton_1_pressed(): verificar_respuesta(label1.text)
+func _on_boton_2_pressed(): verificar_respuesta(label2.text)
+func _on_boton_3_pressed(): verificar_respuesta(label3.text)
+func _on_boton_4_pressed(): verificar_respuesta(label4.text)
 
 func verificar_respuesta(texto_boton: String):
 	boton1.disabled = true
