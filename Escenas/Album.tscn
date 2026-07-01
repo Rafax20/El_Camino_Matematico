@@ -1,6 +1,9 @@
 [gd_scene format=3 uid="uid://dqun3fgllqd1w"]
 
 [ext_resource type="Texture2D" uid="uid://c7ifq1nq5cfsy" path="res://assets/Interfaz_Menu/messi-1805.jpg" id="1_mqij0"]
+[ext_resource type="Texture2D" uid="uid://cay7rraob4uqq" path="res://assets/Boton_Volver.png" id="2_vidjf"]
+[ext_resource type="Texture2D" uid="uid://bb1a12tdtvavi" path="res://assets/Boton_Volver_Presionado.png" id="3_6fgrd"]
+[ext_resource type="Script" uid="uid://bgomtc5pyiuqx" path="res://Escenas/volver_menu.gd" id="4_6fgrd"]
 
 [node name="Node2D" type="CanvasLayer" unique_id=516295986]
 
@@ -8,3 +11,13 @@
 scale = Vector2(0.9023438, 0.8958333)
 texture = ExtResource("1_mqij0")
 centered = false
+
+[node name="Volver_Menu" type="TextureButton" parent="." unique_id=192262953]
+offset_right = 606.0
+offset_bottom = 606.0
+scale = Vector2(0.18, 0.18)
+texture_normal = ExtResource("2_vidjf")
+texture_pressed = ExtResource("3_6fgrd")
+script = ExtResource("4_6fgrd")
+
+[connection signal="pressed" from="Volver_Menu" to="Volver_Menu" method="_on_boton_volver_pressed"]
