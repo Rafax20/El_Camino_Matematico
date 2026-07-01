@@ -1,58 +1,103 @@
 [gd_scene format=3 uid="uid://rer72pm8ucwf"]
 
 [ext_resource type="Script" uid="uid://cit56mwt4hpd6" path="res://Scripts_gd/menu.gd" id="1_o2l53"]
-[ext_resource type="Texture2D" uid="uid://dxhrw1bvtsmr6" path="res://assets/Gemini_Generated_Image_53phjf53phjf53ph.png" id="2_425bc"]
 [ext_resource type="PackedScene" uid="uid://dqppd6655ghfu" path="res://Escenas/Ventana_Autenticacion.tscn" id="3_j7eae"]
-[ext_resource type="Texture2D" uid="uid://crdvwp45mjaud" path="res://assets/Libro.png" id="4_2a5i7"]
-[ext_resource type="Texture2D" uid="uid://c4nlp8upwa24n" path="res://assets/Libro_Hover.png" id="5_2ahv8"]
+[ext_resource type="Texture2D" uid="uid://koi0nw6y63j6" path="res://assets/Interfaz_Menu/Boton_Jugar.png" id="3_m10g6"]
+[ext_resource type="Texture2D" uid="uid://crdvwp45mjaud" path="res://assets/Interfaz_Menu/Libro.png" id="4_2ahv8"]
+[ext_resource type="Texture2D" uid="uid://c4nlp8upwa24n" path="res://assets/Interfaz_Menu/Libro_Hover.png" id="5_8shpa"]
 [ext_resource type="Script" uid="uid://dqsyaihxqlevf" path="res://Scripts_gd/texture_button.gd" id="6_8shpa"]
+[ext_resource type="FontFile" uid="uid://btqpguoupa7eh" path="res://Fredoka-VariableFont_wdth,wght.ttf" id="7_arsku"]
+[ext_resource type="Texture2D" uid="uid://dyom2ylwape35" path="res://assets/Interfaz_Menu/Menu.png" id="7_m10g6"]
+[ext_resource type="FontFile" uid="uid://cvwfc51hrkou3" path="res://Fuentes/Fredoka/static/Fredoka-Bold.ttf" id="8_bcw8w"]
+[ext_resource type="Texture2D" uid="uid://tngpiue2scxd" path="res://assets/Interfaz_Menu/Logros.png" id="8_y57nq"]
+[ext_resource type="Texture2D" uid="uid://db6fk04h4y028" path="res://assets/Interfaz_Menu/Logros_Hover.png" id="9_ik8kc"]
 
 [node name="Node2D" type="Node2D" unique_id=1460850462]
 script = ExtResource("1_o2l53")
 
 [node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=381282370]
 
-[node name="Boton_Jugar" type="Button" parent="CanvasLayer" unique_id=880563155]
-custom_minimum_size = Vector2(300, 60)
-offset_left = 393.0
-offset_top = 248.0
-offset_right = 775.0
-offset_bottom = 308.0
-theme_override_font_sizes/font_size = 32
-text = "Jugar"
+[node name="Menu" type="Sprite2D" parent="CanvasLayer" unique_id=1638479562]
+position = Vector2(577.5, 323)
+scale = Vector2(0.83793604, 0.8411459)
+texture = ExtResource("7_m10g6")
 
-[node name="Boton_Instrucciones" type="Button" parent="CanvasLayer" unique_id=1239628299]
-custom_minimum_size = Vector2(200, 60)
-offset_left = 431.0
-offset_top = 362.0
-offset_right = 691.0
-offset_bottom = 422.0
-theme_override_font_sizes/font_size = 32
-text = "Instrucciones"
+[node name="Boton Iniciar_Sesion" type="TextureButton" parent="CanvasLayer/Menu" unique_id=1995980933]
+offset_left = -524.50305
+offset_top = 27.428558
+offset_right = 122.49695
+offset_bottom = 714.4286
+scale = Vector2(0.24, 0.24)
+texture_normal = ExtResource("4_2ahv8")
+texture_hover = ExtResource("5_8shpa")
+script = ExtResource("6_8shpa")
 
-[node name="GeminiGeneratedImage53Phjf53Phjf53Ph" type="Sprite2D" parent="CanvasLayer" unique_id=1238011277]
-position = Vector2(577.49994, 325.49997)
-scale = Vector2(0.81747144, 0.83984375)
-texture = ExtResource("2_425bc")
+[node name="Boton_Jugar" type="TextureButton" parent="CanvasLayer/Menu" unique_id=1875968279]
+offset_left = -233.31134
+offset_top = -123.640854
+offset_right = 1319.6887
+offset_bottom = 260.35913
+scale = Vector2(0.29, 0.29)
+texture_normal = ExtResource("3_m10g6")
 
-[node name="Ventana_Autenticacion" parent="CanvasLayer" unique_id=845431727 instance=ExtResource("3_j7eae")]
+[node name="RichTextLabel" type="RichTextLabel" parent="CanvasLayer/Menu/Boton_Jugar" unique_id=2005389419]
+layout_mode = 0
+offset_left = 341.56183
+offset_top = 86.089455
+offset_right = 1469.1267
+offset_bottom = 270.56693
+mouse_filter = 2
+theme_override_colors/default_color = Color(0.9372549, 0.95686275, 0.42352942, 1)
+theme_override_colors/font_outline_color = Color(0.13725491, 0.31764707, 0, 1)
+theme_override_constants/outline_size = 28
+theme_override_fonts/normal_font = ExtResource("7_arsku")
+theme_override_fonts/bold_font = ExtResource("8_bcw8w")
+theme_override_font_sizes/normal_font_size = 100
+theme_override_font_sizes/bold_font_size = 112
+bbcode_enabled = true
+text = "[b]¡EMPEZAR EL JUEGO![b]"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Boton_Logros" type="TextureButton" parent="CanvasLayer/Menu" unique_id=238238525]
+offset_left = 302.52905
+offset_top = 29.81366
+offset_right = 1496.529
+offset_bottom = 716.81366
+scale = Vector2(0.24, 0.24)
+texture_normal = ExtResource("8_y57nq")
+texture_hover = ExtResource("9_ik8kc")
+
+[node name="RichTextLabel" type="RichTextLabel" parent="CanvasLayer/Menu" unique_id=779805543]
+offset_left = -414.70947
+offset_top = -335.25693
+offset_right = 421.86987
+offset_bottom = -192.59444
+theme_override_colors/default_color = Color(0.31764707, 0.69803923, 0.6392157, 1)
+theme_override_colors/font_outline_color = Color(0.57254905, 0.27450982, 0.09411765, 1)
+theme_override_colors/font_shadow_color = Color(1, 1, 1, 1)
+theme_override_constants/shadow_outline_size = 35
+theme_override_constants/outline_size = 14
+theme_override_fonts/normal_font = ExtResource("7_arsku")
+theme_override_fonts/bold_font = ExtResource("8_bcw8w")
+theme_override_font_sizes/normal_font_size = 64
+theme_override_font_sizes/bold_font_size = 80
+bbcode_enabled = true
+text = "[b][color=#fbc34e]El Camino[/color] [outline_color=065852][color=#51b2a3]Matemático[/color][b]"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Ventana_Autenticacion" parent="CanvasLayer/Menu" unique_id=845431727 instance=ExtResource("3_j7eae")]
 anchors_preset = 13
 anchor_left = 0.5
 anchor_right = 0.5
-offset_left = -245.0
-offset_right = 257.0
-
-[node name="Boton Iniciar_Sesion" type="TextureButton" parent="CanvasLayer" unique_id=1995980933]
-offset_left = 138.0
-offset_top = 347.0
-offset_right = 785.0
-offset_bottom = 1034.0
-scale = Vector2(0.2, 0.2)
-texture_normal = ExtResource("4_2a5i7")
-texture_hover = ExtResource("5_2ahv8")
-script = ExtResource("6_8shpa")
+offset_left = -982.1752
+offset_top = -383.99994
+offset_right = -378.31042
+offset_bottom = -383.99994
 
 [node name="HTTPRequest" type="HTTPRequest" parent="." unique_id=983556898]
 
-[connection signal="pressed" from="CanvasLayer/Boton_Jugar" to="." method="_on_boton_jugar_pressed"]
-[connection signal="pressed" from="CanvasLayer/Boton Iniciar_Sesion" to="." method="_on_boton_iniciar_sesion_pressed"]
+[connection signal="pressed" from="CanvasLayer/Menu/Boton Iniciar_Sesion" to="." method="_on_boton_iniciar_sesion_pressed"]
+[connection signal="pressed" from="CanvasLayer/Menu/Boton_Jugar" to="." method="_on_boton_jugar_pressed"]
+[connection signal="pressed" from="CanvasLayer/Menu/Boton_Logros" to="." method="_on_boton_logros_pressed"]

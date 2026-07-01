@@ -1,14 +1,15 @@
 [gd_scene format=3 uid="uid://6cu6p1u6fgt6"]
 
 [ext_resource type="Script" uid="uid://doum8qjwkqs62" path="res://Scripts_gd/interfaz_pregunta.gd" id="1_bm7xs"]
-[ext_resource type="Texture2D" uid="uid://yuq0qolax7w8" path="res://assets/Iconos_Interfaz_Pregunta/Boton_Negro.png" id="2_fhsys"]
-[ext_resource type="Texture2D" uid="uid://brnj6cqr36obx" path="res://assets/Iconos_Interfaz_Pregunta/Boton_Dorado.png" id="3_nthj1"]
-[ext_resource type="Texture2D" uid="uid://3w7ahpnsd3jq" path="res://assets/Iconos_Interfaz_Pregunta/Boton_Negro_Presionado.png" id="3_t11l8"]
-[ext_resource type="Texture2D" uid="uid://d3wk7r6n3jj2a" path="res://assets/Iconos_Interfaz_Pregunta/Boton_Contraste.png" id="4_4rab8"]
-[ext_resource type="Texture2D" uid="uid://byt6njww4x3ti" path="res://assets/Iconos_Interfaz_Pregunta/Boton_Dorado_Presionado.png" id="5_1q2be"]
-[ext_resource type="Texture2D" uid="uid://oil24wh1ntho" path="res://assets/Iconos_Interfaz_Pregunta/Boton_Celeste.png" id="5_aj4mp"]
-[ext_resource type="Texture2D" uid="uid://cd1lrqwl2xq7k" path="res://assets/Iconos_Interfaz_Pregunta/Boton_Celeste_Presionado.png" id="6_4rab8"]
-[ext_resource type="Texture2D" uid="uid://c1yy4orfj1a43" path="res://assets/Iconos_Interfaz_Pregunta/Boton_Contraste_Presionado.png" id="7_a7k8j"]
+[ext_resource type="Texture2D" uid="uid://yuq0qolax7w8" path="res://assets/Interfaz_Pregunta/Boton_Negro.png" id="2_fhsys"]
+[ext_resource type="Texture2D" uid="uid://brnj6cqr36obx" path="res://assets/Interfaz_Pregunta/Boton_Dorado.png" id="3_nthj1"]
+[ext_resource type="Texture2D" uid="uid://3w7ahpnsd3jq" path="res://assets/Interfaz_Pregunta/Boton_Negro_Presionado.png" id="3_t11l8"]
+[ext_resource type="Texture2D" uid="uid://d3wk7r6n3jj2a" path="res://assets/Interfaz_Pregunta/Boton_Contraste.png" id="4_4rab8"]
+[ext_resource type="Texture2D" uid="uid://byt6njww4x3ti" path="res://assets/Interfaz_Pregunta/Boton_Dorado_Presionado.png" id="5_1q2be"]
+[ext_resource type="Texture2D" uid="uid://oil24wh1ntho" path="res://assets/Interfaz_Pregunta/Boton_Celeste.png" id="5_aj4mp"]
+[ext_resource type="Texture2D" uid="uid://cd1lrqwl2xq7k" path="res://assets/Interfaz_Pregunta/Boton_Celeste_Presionado.png" id="6_4rab8"]
+[ext_resource type="Texture2D" uid="uid://c1yy4orfj1a43" path="res://assets/Interfaz_Pregunta/Boton_Contraste_Presionado.png" id="7_a7k8j"]
+[ext_resource type="Texture2D" uid="uid://b42nyq0w2q0ee" path="res://assets/Interfaz_Pregunta/Nino_Espacial.png" id="10_1q2be"]
 
 [node name="Interfaz" type="CanvasLayer" unique_id=562769401]
 script = ExtResource("1_bm7xs")
@@ -36,6 +37,11 @@ offset_bottom = 35.0
 grow_horizontal = 2
 horizontal_alignment = 1
 
+[node name="NinoEspacial" type="Sprite2D" parent="Panel" unique_id=1037439100]
+position = Vector2(188, 100)
+scale = Vector2(0.1, 0.1)
+texture = ExtResource("10_1q2be")
+
 [node name="GridContainer" type="GridContainer" parent="Panel" unique_id=1462593226]
 layout_mode = 1
 anchors_preset = 8
@@ -43,10 +49,10 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -159.125
-offset_top = -53.25
-offset_right = 160.875
-offset_bottom = 100.75
+offset_left = -109.25
+offset_top = -5.25
+offset_right = 110.75
+offset_bottom = 102.75
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_constants/h_separation = 20

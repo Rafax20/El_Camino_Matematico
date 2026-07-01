@@ -1,0 +1,10 @@
+[gd_scene format=3 uid="uid://dqun3fgllqd1w"]
+
+[ext_resource type="Texture2D" uid="uid://c7ifq1nq5cfsy" path="res://assets/Interfaz_Menu/messi-1805.jpg" id="1_mqij0"]
+
+[node name="Node2D" type="CanvasLayer" unique_id=516295986]
+
+[node name="Messi1805" type="Sprite2D" parent="." unique_id=1005739969]
+scale = Vector2(0.9023438, 0.8958333)
+texture = ExtResource("1_mqij0")
+centered = false
