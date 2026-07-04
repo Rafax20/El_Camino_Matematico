@@ -3,6 +3,7 @@ extends Node2D
 
 @onready var path_follow = $Path2D/PathFollow2D
 @onready var boton_dado = $BotonDado 
+@onready var Menu_Volver =  $Tablero/Volver_Menu
 
 var total_casillas = 23
 var casilla_actual = 0
@@ -56,6 +57,7 @@ func _on_boton_dado_pressed():
 	if not servidor_listo or lista_preguntas.size() == 0: return
 	
 	boton_dado.disabled = true
+	Menu_Volver.disabled = true
 	casilla_anterior = casilla_actual
 	
 	var resultado = randi_range(1, 6)
@@ -155,6 +157,7 @@ func _on_interfaz_respuesta_completada(es_correcta: bool, tiempo_tardado: float)
 		print("🎯 ¡Correcta! El niño tardó: ", tiempo_tardado, " segundos.")
 		ConexionSupabase.actualizar_progreso_en_nube(casilla_actual, false)
 		boton_dado.disabled = false
+		Menu_Volver.disabled = false
 	else:
 		print("❌ ¡Incorrecta! Regresando a casilla anterior: ", casilla_anterior)
 		casilla_actual = casilla_anterior
@@ -163,6 +166,7 @@ func _on_interfaz_respuesta_completada(es_correcta: bool, tiempo_tardado: float)
 		ConexionSupabase.actualizar_progreso_en_nube(casilla_actual, false)
 		await _mover_ficha_visualmente(casilla_actual, false)
 		boton_dado.disabled = false
+		Menu_Volver.disabled = false
 
 func enviar_puntuacion(nombre_jugador: String, puntos: int):
 	var datos = {

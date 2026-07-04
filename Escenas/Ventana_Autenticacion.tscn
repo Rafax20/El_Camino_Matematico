@@ -1,7 +1,10 @@
 [gd_scene format=3 uid="uid://dqppd6655ghfu"]
 
 [ext_resource type="Script" uid="uid://c8kyeybi4c8ik" path="res://Scripts_gd/Inicio_Sesion.gd" id="1_sy5k4"]
+[ext_resource type="FontFile" uid="uid://cvwfc51hrkou3" path="res://Fuentes/Fredoka/static/Fredoka-Bold.ttf" id="2_cs2op"]
+[ext_resource type="Texture2D" uid="uid://do4xc2ec2is71" path="res://assets/Interfaz_Login/Boton_X.png" id="2_klwgf"]
 [ext_resource type="Script" uid="uid://35judelhcfe2" path="res://Escenas/input_Line_Edit.gd" id="2_rhq5f"]
+[ext_resource type="Texture2D" uid="uid://3p2biq4ud0vf" path="res://assets/Interfaz_Login/Boton_X_Presionado.png" id="3_6s7ev"]
 
 [node name="Ventana_Autenticacion" type="Control" unique_id=845431727]
 layout_mode = 3
@@ -29,47 +32,89 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="VBoxContainer" type="VBoxContainer" parent="ContenedorPopup" unique_id=1341650917]
+[node name="Panel" type="Panel" parent="ContenedorPopup" unique_id=753938779]
 layout_mode = 2
-theme_override_constants/separation = 100
 
-[node name="BotonCerrar" type="Button" parent="ContenedorPopup/VBoxContainer" unique_id=2120011034]
-layout_mode = 2
+[node name="TextureButton" type="TextureButton" parent="ContenedorPopup/Panel" unique_id=68930469]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -100.0
+offset_bottom = 100.0
+grow_horizontal = 0
 size_flags_horizontal = 8
-text = "Cerrar"
+size_flags_vertical = 4
+texture_normal = ExtResource("2_klwgf")
+texture_pressed = ExtResource("3_6s7ev")
 
-[node name="Titulo" type="Label" parent="ContenedorPopup/VBoxContainer" unique_id=116092541]
-layout_mode = 2
-text = "titulo"
+[node name="Titulo" type="Label" parent="ContenedorPopup/Panel" unique_id=116092541]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -262.5
+offset_top = 5.0
+offset_right = 262.5
+offset_bottom = 60.0
+grow_horizontal = 2
+size_flags_vertical = 1
+theme_override_colors/font_color = Color(0.78431374, 0.78431374, 0.78431374, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 12
+theme_override_fonts/font = ExtResource("2_cs2op")
+theme_override_font_sizes/font_size = 45
+text = "Ingresa tu nombre y clave"
 horizontal_alignment = 1
 
-[node name="InputUsuario" type="LineEdit" parent="ContenedorPopup/VBoxContainer" unique_id=842941499]
-layout_mode = 2
+[node name="InputUsuario" type="LineEdit" parent="ContenedorPopup/Panel" unique_id=842941499]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -262.5
+offset_right = 262.5
+offset_bottom = 56.0
+grow_horizontal = 2
 placeholder_text = "Usuario"
-max_length = 30
 script = ExtResource("2_rhq5f")
 
-[node name="InputClave" type="LineEdit" parent="ContenedorPopup/VBoxContainer" unique_id=113832560]
-layout_mode = 2
+[node name="InputClave" type="LineEdit" parent="ContenedorPopup/Panel" unique_id=113832560]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -221.0
+offset_right = 221.0
+offset_bottom = 68.0
+grow_horizontal = 2
 placeholder_text = "Clave"
-max_length = 30
 
-[node name="HBoxContainer" type="HBoxContainer" parent="ContenedorPopup/VBoxContainer" unique_id=445639278]
-layout_mode = 2
+[node name="HBoxContainer" type="HBoxContainer" parent="ContenedorPopup/Panel" unique_id=445639278]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -93.0
+offset_right = 93.0
+offset_bottom = 180.0
+grow_horizontal = 2
 size_flags_horizontal = 4
 theme_override_constants/separation = 51
 alignment = 1
 
-[node name="BotonEntrar" type="Button" parent="ContenedorPopup/VBoxContainer/HBoxContainer" unique_id=1060836112]
+[node name="BotonEntrar" type="Button" parent="ContenedorPopup/Panel/HBoxContainer" unique_id=1060836112]
 layout_mode = 2
 text = "Entrar"
 
-[node name="BotonRegistrar" type="Button" parent="ContenedorPopup/VBoxContainer/HBoxContainer" unique_id=151743197]
+[node name="BotonRegistrar" type="Button" parent="ContenedorPopup/Panel/HBoxContainer" unique_id=151743197]
 layout_mode = 2
 text = "Registrar"
 
+[node name="Sprite2D" type="Sprite2D" parent="ContenedorPopup/Panel" unique_id=1611748771]
+
 [node name="HTTPRequest" type="HTTPRequest" parent="." unique_id=969168010]
 
-[connection signal="pressed" from="ContenedorPopup/VBoxContainer/BotonCerrar" to="." method="_on_boton_cerrar_pressed"]
-[connection signal="pressed" from="ContenedorPopup/VBoxContainer/HBoxContainer/BotonEntrar" to="." method="_on_boton_entrar_pressed"]
-[connection signal="pressed" from="ContenedorPopup/VBoxContainer/HBoxContainer/BotonRegistrar" to="." method="_on_boton_registrar_pressed"]
+[connection signal="pressed" from="ContenedorPopup/Panel/TextureButton" to="." method="_on_boton_cerrar_pressed"]
+[connection signal="pressed" from="ContenedorPopup/Panel/HBoxContainer/BotonEntrar" to="." method="_on_boton_entrar_pressed"]
+[connection signal="pressed" from="ContenedorPopup/Panel/HBoxContainer/BotonRegistrar" to="." method="_on_boton_registrar_pressed"]

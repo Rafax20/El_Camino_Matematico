@@ -5,7 +5,7 @@ extends Control
 @onready var fondo_oscuro = $OscurecerFondo
 @onready var input_usuario = $ContenedorPopup/VBoxContainer/InputUsuario
 @onready var input_clave = $ContenedorPopup/VBoxContainer/InputClave
-@onready var texto_error = $ContenedorPopup/VBoxContainer/Titulo
+@onready var texto_titulo = $ContenedorPopup/VBoxContainer/Titulo
 
 # --- REFERENCIA AL SCRIPT DE SUPABASE (CONEXIÓN NATIVA) ---
 @onready var http_request = $HTTPRequest 
@@ -141,13 +141,18 @@ func _on_request_completed(result, response_code, headers, body):
 			print("⏱️ Casilla Real Recuperada: " + str(DatosUsuario.casilla_actual_db))
 			print("Habia Pregunta Pendiente: " + str(DatosUsuario.pregunta_pendiente_db))
 			print("Dificultad Real Recuperada: " + str(DatosUsuario.dificultad_actual))
-			
+			texto_titulo.text = "Bienvenido de Nuevo estudiante " + str(DatosUsuario.nombre_usuario)
+			texto_titulo.modulate = Color(0.375, 0.677, 0.218, 1.0)
+			await get_tree().create_timer(2.0).timeout
 			_on_boton_cerrar_pressed()
 		else:
 			# Si por alguna razón el usuario existe en 'usuarios' pero no tiene fila en 'progreso'
 			print("🆕 El usuario no tiene fila de progreso. Seteando valores en 0.")
 			DatosUsuario.pregunta_pendiente_db = false
 			DatosUsuario.casilla_actual_db = 0
+			texto_titulo.text = "Bienvenido de Nuevo estudiante " + str(DatosUsuario.nombre_usuario)
+			texto_titulo.modulate = Color(0.375, 0.677, 0.218, 1.0)
+			await get_tree().create_timer(2.0).timeout
 			_on_boton_cerrar_pressed()
 
 	elif operacion_actual == "REGISTRO":
@@ -158,8 +163,8 @@ func _on_request_completed(result, response_code, headers, body):
 # 💥 ANIMACIÓN INFANTIL DE ERROR_
 # ==========================================
 func animar_error_infantil(mensaje: String):
-	texto_error.text = mensaje
-	texto_error.modulate = Color(1, 0.3, 0.3)
+	texto_titulo.text = mensaje
+	texto_titulo.modulate = Color(1, 0.3, 0.3)
 	
 	var posicion_original = contenedor.position
 	var tween_shake = create_tween()

@@ -137,7 +137,6 @@ horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="Ventana_Autenticacion" parent="CanvasLayer/Menu" unique_id=845431727 instance=ExtResource("3_j7eae")]
-visible = false
 anchors_preset = 13
 anchor_left = 0.5
 anchor_right = 0.5

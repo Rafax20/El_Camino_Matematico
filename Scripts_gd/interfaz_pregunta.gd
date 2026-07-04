@@ -1,7 +1,7 @@
 extends CanvasLayer
 
 # Usamos @onready con la ruta jerárquica real de tu árbol de escenas
-@onready var label_operacion = $Panel/Label
+@onready var label_operacion = $Panel/RichTextLabel
 @onready var boton1 = $Panel/GridContainer/Boton1
 @onready var boton2 = $Panel/GridContainer/Boton2
 @onready var boton3 = $Panel/GridContainer/Boton3
@@ -23,6 +23,7 @@ func actualizar_datos_pantalla(datos_pregunta: Dictionary):
 	boton4.disabled = false
 	# Ahora el código es totalmente seguro y mucho más rápido
 	label_operacion.text = datos_pregunta["operacion"]
+	label_operacion.modulate = Color(0.0, 0.0, 0.0, 1.0)
 	respuesta_correcta = datos_pregunta["respuesta_correcta"]
 	
 	var opciones = [
