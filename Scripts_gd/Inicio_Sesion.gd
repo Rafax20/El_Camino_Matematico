@@ -3,9 +3,9 @@ extends Control
 # --- NODOS DE INTERFAZ ---
 @onready var contenedor = $ContenedorPopup
 @onready var fondo_oscuro = $OscurecerFondo
-@onready var input_usuario = $ContenedorPopup/VBoxContainer/InputUsuario
-@onready var input_clave = $ContenedorPopup/VBoxContainer/InputClave
-@onready var texto_titulo = $ContenedorPopup/VBoxContainer/Titulo
+@onready var input_usuario = $ContenedorPopup/Panel/Ventana/Fondo_Usuario/InputUsuario
+@onready var input_clave = $ContenedorPopup/Panel/Ventana/Fondo_Clave/InputClave
+@onready var texto_titulo = $ContenedorPopup/Panel/Ventana/Titulo
 
 # --- REFERENCIA AL SCRIPT DE SUPABASE (CONEXIÓN NATIVA) ---
 @onready var http_request = $HTTPRequest 

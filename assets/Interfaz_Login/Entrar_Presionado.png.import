@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bwsisq80upn5w"
-path="res://.godot/imported/Gemini_Generated_Image_vf9zvmvf9zvmvf9z.png-60ffb7fb42b5b20ca649f86d7a4a0738.ctex"
+uid="uid://b7mth2mxjt0q0"
+path="res://.godot/imported/Entrar_Presionado.png-67bb7abdf884d070783c10f6108e9198.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/Interfaz_Login/Gemini_Generated_Image_vf9zvmvf9zvmvf9z.png"
-dest_files=["res://.godot/imported/Gemini_Generated_Image_vf9zvmvf9zvmvf9z.png-60ffb7fb42b5b20ca649f86d7a4a0738.ctex"]
+source_file="res://assets/Interfaz_Login/Entrar_Presionado.png"
+dest_files=["res://.godot/imported/Entrar_Presionado.png-67bb7abdf884d070783c10f6108e9198.ctex"]
 
 [params]
 

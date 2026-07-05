@@ -140,10 +140,10 @@ vertical_alignment = 1
 anchors_preset = 13
 anchor_left = 0.5
 anchor_right = 0.5
-offset_left = -982.1752
-offset_top = -383.99994
-offset_right = -378.31042
-offset_bottom = -383.99994
+offset_left = -1272.1735
+offset_top = -335.25696
+offset_right = -81.15173
+offset_bottom = -449.3871
 
 [node name="HTTPRequest" type="HTTPRequest" parent="." unique_id=983556898]
 

@@ -1,10 +1,25 @@
 [gd_scene format=3 uid="uid://dqppd6655ghfu"]
 
 [ext_resource type="Script" uid="uid://c8kyeybi4c8ik" path="res://Scripts_gd/Inicio_Sesion.gd" id="1_sy5k4"]
+[ext_resource type="Texture2D" uid="uid://cs08pnltajc6c" path="res://assets/Interfaz_Login/Ventana.png" id="2_3n8ys"]
 [ext_resource type="FontFile" uid="uid://cvwfc51hrkou3" path="res://Fuentes/Fredoka/static/Fredoka-Bold.ttf" id="2_cs2op"]
 [ext_resource type="Texture2D" uid="uid://do4xc2ec2is71" path="res://assets/Interfaz_Login/Boton_X.png" id="2_klwgf"]
-[ext_resource type="Script" uid="uid://35judelhcfe2" path="res://Escenas/input_Line_Edit.gd" id="2_rhq5f"]
 [ext_resource type="Texture2D" uid="uid://3p2biq4ud0vf" path="res://assets/Interfaz_Login/Boton_X_Presionado.png" id="3_6s7ev"]
+[ext_resource type="Texture2D" uid="uid://bruspcerii8sv" path="res://assets/Interfaz_Login/Fondo_Usuario.png" id="6_7a7fe"]
+[ext_resource type="Texture2D" uid="uid://cqpyg1kn15bep" path="res://assets/Interfaz_Login/Entrar.png" id="8_o07o6"]
+[ext_resource type="Texture2D" uid="uid://b7mth2mxjt0q0" path="res://assets/Interfaz_Login/Entrar_Presionado.png" id="9_udb7k"]
+[ext_resource type="Texture2D" uid="uid://8nuiyx02ek57" path="res://assets/Interfaz_Login/Registrar.png" id="10_st4cy"]
+[ext_resource type="Texture2D" uid="uid://bd4wd8cajcfui" path="res://assets/Interfaz_Login/Registrar_Presionado.png" id="11_571if"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_st4cy"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_3n8ys"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_7a7fe"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_o07o6"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_udb7k"]
 
 [node name="Ventana_Autenticacion" type="Control" unique_id=845431727]
 layout_mode = 3
@@ -31,32 +46,45 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxEmpty_st4cy")
 
 [node name="Panel" type="Panel" parent="ContenedorPopup" unique_id=753938779]
 layout_mode = 2
 
-[node name="TextureButton" type="TextureButton" parent="ContenedorPopup/Panel" unique_id=68930469]
+[node name="Ventana" type="TextureRect" parent="ContenedorPopup/Panel" unique_id=540575596]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_3n8ys")
+
+[node name="TextureButton" type="TextureButton" parent="ContenedorPopup/Panel/Ventana" unique_id=68930469]
 layout_mode = 1
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
-offset_left = -100.0
-offset_bottom = 100.0
+offset_left = -85.0
+offset_top = 0.99999994
+offset_right = 15.0
+offset_bottom = 101.0
 grow_horizontal = 0
+scale = Vector2(0.8, 0.8)
 size_flags_horizontal = 8
 size_flags_vertical = 4
 texture_normal = ExtResource("2_klwgf")
 texture_pressed = ExtResource("3_6s7ev")
 
-[node name="Titulo" type="Label" parent="ContenedorPopup/Panel" unique_id=116092541]
+[node name="Titulo" type="Label" parent="ContenedorPopup/Panel/Ventana" unique_id=116092541]
 layout_mode = 1
 anchors_preset = 5
 anchor_left = 0.5
 anchor_right = 0.5
 offset_left = -262.5
-offset_top = 5.0
+offset_top = 100.0
 offset_right = 262.5
-offset_bottom = 60.0
+offset_bottom = 155.0
 grow_horizontal = 2
 size_flags_vertical = 1
 theme_override_colors/font_color = Color(0.78431374, 0.78431374, 0.78431374, 1)
@@ -67,54 +95,144 @@ theme_override_font_sizes/font_size = 45
 text = "Ingresa tu nombre y clave"
 horizontal_alignment = 1
 
-[node name="InputUsuario" type="LineEdit" parent="ContenedorPopup/Panel" unique_id=842941499]
+[node name="Fondo_Usuario" type="TextureRect" parent="ContenedorPopup/Panel/Ventana" unique_id=1400777270]
 layout_mode = 1
 anchors_preset = 5
 anchor_left = 0.5
 anchor_right = 0.5
-offset_left = -262.5
-offset_right = 262.5
-offset_bottom = 56.0
+offset_left = -304.5
+offset_top = 180.0
+offset_right = 304.5
+offset_bottom = 296.0
 grow_horizontal = 2
-placeholder_text = "Usuario"
-script = ExtResource("2_rhq5f")
+texture = ExtResource("6_7a7fe")
 
-[node name="InputClave" type="LineEdit" parent="ContenedorPopup/Panel" unique_id=113832560]
+[node name="InputUsuario" type="LineEdit" parent="ContenedorPopup/Panel/Ventana/Fondo_Usuario" unique_id=842941499]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -244.0
+offset_top = -26.5
+offset_right = 244.0
+offset_bottom = 26.5
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("2_cs2op")
+theme_override_font_sizes/font_size = 25
+theme_override_styles/normal = SubResource("StyleBoxEmpty_3n8ys")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_7a7fe")
+placeholder_text = "Usuario"
+
+[node name="Fondo_Clave" type="TextureRect" parent="ContenedorPopup/Panel/Ventana" unique_id=1572823516]
 layout_mode = 1
 anchors_preset = 5
 anchor_left = 0.5
 anchor_right = 0.5
-offset_left = -221.0
-offset_right = 221.0
-offset_bottom = 68.0
+offset_left = -304.5
+offset_top = 320.0
+offset_right = 304.5
+offset_bottom = 436.0
 grow_horizontal = 2
+texture = ExtResource("6_7a7fe")
+
+[node name="InputClave" type="LineEdit" parent="ContenedorPopup/Panel/Ventana/Fondo_Clave" unique_id=1345505691]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -244.0
+offset_top = -26.5
+offset_right = 244.0
+offset_bottom = 26.5
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("2_cs2op")
+theme_override_font_sizes/font_size = 25
+theme_override_styles/normal = SubResource("StyleBoxEmpty_o07o6")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_udb7k")
 placeholder_text = "Clave"
 
-[node name="HBoxContainer" type="HBoxContainer" parent="ContenedorPopup/Panel" unique_id=445639278]
+[node name="HBoxContainer" type="HBoxContainer" parent="ContenedorPopup/Panel/Ventana" unique_id=445639278]
 layout_mode = 1
-anchors_preset = 5
+anchors_preset = 7
 anchor_left = 0.5
+anchor_top = 1.0
 anchor_right = 0.5
-offset_left = -93.0
-offset_right = 93.0
-offset_bottom = 180.0
+anchor_bottom = 1.0
+offset_left = -334.5
+offset_top = -203.0
+offset_right = 334.5
+offset_bottom = -22.0
 grow_horizontal = 2
+grow_vertical = 0
 size_flags_horizontal = 4
 theme_override_constants/separation = 51
 alignment = 1
 
-[node name="BotonEntrar" type="Button" parent="ContenedorPopup/Panel/HBoxContainer" unique_id=1060836112]
+[node name="Boton_Entrar" type="TextureButton" parent="ContenedorPopup/Panel/Ventana/HBoxContainer" unique_id=191232398]
 layout_mode = 2
+texture_normal = ExtResource("8_o07o6")
+texture_pressed = ExtResource("9_udb7k")
+
+[node name="Entrar" type="RichTextLabel" parent="ContenedorPopup/Panel/Ventana/HBoxContainer/Boton_Entrar" unique_id=2083508398]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -77.0
+offset_top = -47.5
+offset_right = 96.0
+offset_bottom = 20.5
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 11
+theme_override_fonts/normal_font = ExtResource("2_cs2op")
+theme_override_font_sizes/normal_font_size = 50
 text = "Entrar"
+horizontal_alignment = 1
+vertical_alignment = 1
 
-[node name="BotonRegistrar" type="Button" parent="ContenedorPopup/Panel/HBoxContainer" unique_id=151743197]
+[node name="Boton_Registrar" type="TextureButton" parent="ContenedorPopup/Panel/Ventana/HBoxContainer" unique_id=1317917647]
 layout_mode = 2
-text = "Registrar"
+toggle_mode = true
+texture_normal = ExtResource("10_st4cy")
+texture_pressed = ExtResource("11_571if")
 
-[node name="Sprite2D" type="Sprite2D" parent="ContenedorPopup/Panel" unique_id=1611748771]
+[node name="Registrar" type="RichTextLabel" parent="ContenedorPopup/Panel/Ventana/HBoxContainer/Boton_Registrar" unique_id=326218954]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -106.0
+offset_top = -46.5
+offset_right = 115.0
+offset_bottom = 21.5
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 11
+theme_override_fonts/normal_font = ExtResource("2_cs2op")
+theme_override_font_sizes/normal_font_size = 50
+text = "Registrar"
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="HTTPRequest" type="HTTPRequest" parent="." unique_id=969168010]
 
-[connection signal="pressed" from="ContenedorPopup/Panel/TextureButton" to="." method="_on_boton_cerrar_pressed"]
-[connection signal="pressed" from="ContenedorPopup/Panel/HBoxContainer/BotonEntrar" to="." method="_on_boton_entrar_pressed"]
-[connection signal="pressed" from="ContenedorPopup/Panel/HBoxContainer/BotonRegistrar" to="." method="_on_boton_registrar_pressed"]
+[connection signal="pressed" from="ContenedorPopup/Panel/Ventana/TextureButton" to="." method="_on_boton_cerrar_pressed"]
+[connection signal="pressed" from="ContenedorPopup/Panel/Ventana/HBoxContainer/Boton_Entrar" to="." method="_on_boton_entrar_pressed"]
+[connection signal="pressed" from="ContenedorPopup/Panel/Ventana/HBoxContainer/Boton_Registrar" to="." method="_on_boton_registrar_pressed"]

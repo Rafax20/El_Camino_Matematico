@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dix12s86mf8sm"
-path="res://.godot/imported/Gemini_Generated_Image_g9znovg9znovg9zn.png-77e45dcd6b172fdbd41e9b2e6a414052.ctex"
+uid="uid://8nuiyx02ek57"
+path="res://.godot/imported/Registrar.png-334ed80e53a2595c1cc966475933aff4.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/Interfaz_Login/Gemini_Generated_Image_g9znovg9znovg9zn.png"
-dest_files=["res://.godot/imported/Gemini_Generated_Image_g9znovg9znovg9zn.png-77e45dcd6b172fdbd41e9b2e6a414052.ctex"]
+source_file="res://assets/Interfaz_Login/Registrar.png"
+dest_files=["res://.godot/imported/Registrar.png-334ed80e53a2595c1cc966475933aff4.ctex"]
 
 [params]
 
