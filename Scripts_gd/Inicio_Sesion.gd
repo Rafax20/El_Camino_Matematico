@@ -2,7 +2,6 @@ extends Control
 
 # --- NODOS DE INTERFAZ ---
 @onready var contenedor = $ContenedorPopup
-@onready var fondo_oscuro = $OscurecerFondo
 @onready var input_usuario = $ContenedorPopup/Panel/Ventana/Fondo_Usuario/InputUsuario
 @onready var input_clave = $ContenedorPopup/Panel/Ventana/Fondo_Clave/InputClave
 @onready var texto_titulo = $ContenedorPopup/Panel/Ventana/Titulo
@@ -47,6 +46,8 @@ func _on_boton_entrar_pressed() -> void:
 		animar_error_infantil("¡Faltan datos por escribir!")
 		return
 		
+	texto_titulo.text = "Conectando... "
+	texto_titulo.modulate = Color(1.0, 1.0, 1.0, 1.0)
 	operacion_actual = "LOGIN"
 	print("🔍 Intentando iniciar sesión con Usuario: '" + usuario + "'")
 	

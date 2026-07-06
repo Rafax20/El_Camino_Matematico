@@ -22,7 +22,8 @@ func actualizar_datos_pantalla(datos_pregunta: Dictionary):
 	boton3.disabled = false
 	boton4.disabled = false
 	# Ahora el código es totalmente seguro y mucho más rápido
-	label_operacion.text = datos_pregunta["operacion"]
+	label_operacion.text = str("¿Cuánto es " + datos_pregunta["operacion"] + "?")
+	GestionAudio.decir_frase(label_operacion.text)
 	label_operacion.modulate = Color(0.0, 0.0, 0.0, 1.0)
 	respuesta_correcta = datos_pregunta["respuesta_correcta"]
 	
@@ -62,22 +63,20 @@ func verificar_respuesta(texto_boton: String):
 		print("¡Correcto! 🎉")
 		
 		# 🥳 FEEDBACK INFANTIL VISUAL DIRECTO EN EL TITULO
-		label_operacion.text = "¡Excelente! 🎉🎯"
+		label_operacion.text = "¡Excelente! "
 		label_operacion.modulate = Color(0.2, 1, 0.2) # Verde alegre
 		
 		# Esperamos un segundo para que el niño lea el logro
 		await get_tree().create_timer(1.2).timeout
 		
 		# Restauramos el color original blanco y avisamos al tablero
-		label_operacion.modulate = Color(1, 1, 1)
 		respuesta_completada.emit(true, segundos_tardados)
 	else:
-		print("Incorrecto... ❌")
+		print("Incorrecto... ")
 		
-		label_operacion.text = "¡Oh, no! Ocurrió un error ❌"
+		label_operacion.text = "¡Oh, no! Ocurrió un error "
 		label_operacion.modulate = Color(1, 0.2, 0.2) # Rojo advertencia
 		
 		await get_tree().create_timer(1.2).timeout
 		
-		label_operacion.modulate = Color(1, 1, 1)
 		respuesta_completada.emit(false, segundos_tardados)

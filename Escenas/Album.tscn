@@ -1,11 +1,16 @@
 [gd_scene format=3 uid="uid://dqun3fgllqd1w"]
 
+[ext_resource type="Script" uid="uid://ctc8hvkp6mvvh" path="res://Escenas/Album.gd" id="1_6y1de"]
 [ext_resource type="Texture2D" uid="uid://c7ifq1nq5cfsy" path="res://assets/Interfaz_Menu/messi-1805.jpg" id="1_mqij0"]
 [ext_resource type="Texture2D" uid="uid://cay7rraob4uqq" path="res://assets/Boton_Volver.png" id="2_vidjf"]
 [ext_resource type="Texture2D" uid="uid://bb1a12tdtvavi" path="res://assets/Boton_Volver_Presionado.png" id="3_6fgrd"]
-[ext_resource type="Script" uid="uid://bgomtc5pyiuqx" path="res://Escenas/volver_menu.gd" id="4_6fgrd"]
+[ext_resource type="Script" uid="uid://bgomtc5pyiuqx" path="res://Scripts_gd/volver_menu.gd" id="4_6fgrd"]
+[ext_resource type="PackedScene" uid="uid://d3wbv0pugucoi" path="res://Escenas/RanuraLamina.tscn" id="7_rar1c"]
 
-[node name="Node2D" type="CanvasLayer" unique_id=516295986]
+[node name="Album" type="Control" unique_id=1846142326]
+layout_mode = 3
+anchors_preset = 0
+script = ExtResource("1_6y1de")
 
 [node name="Messi1805" type="Sprite2D" parent="." unique_id=1005739969]
 scale = Vector2(0.9023438, 0.8958333)
@@ -13,11 +18,28 @@ texture = ExtResource("1_mqij0")
 centered = false
 
 [node name="Volver_Menu" type="TextureButton" parent="." unique_id=192262953]
+layout_mode = 0
 offset_right = 606.0
 offset_bottom = 606.0
 scale = Vector2(0.18, 0.18)
 texture_normal = ExtResource("2_vidjf")
 texture_pressed = ExtResource("3_6fgrd")
 script = ExtResource("4_6fgrd")
+
+[node name="GridLaminas" type="GridContainer" parent="." unique_id=510856114]
+layout_mode = 0
+offset_left = 413.0
+offset_top = 195.0
+offset_right = 453.0
+offset_bottom = 235.0
+columns = 4
+
+[node name="TextureRect" parent="GridLaminas" unique_id=697692061 instance=ExtResource("7_rar1c")]
+layout_mode = 2
+id_lamina = 1
+
+[node name="TextureRect2" parent="GridLaminas" unique_id=1323923304 instance=ExtResource("7_rar1c")]
+layout_mode = 2
+id_lamina = 2
 
 [connection signal="pressed" from="Volver_Menu" to="Volver_Menu" method="_on_boton_volver_pressed"]

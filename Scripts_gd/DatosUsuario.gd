@@ -10,6 +10,8 @@ var pregunta_pendiente_db: bool = false
 var id_pregunta_pendiente_db: int = 0
 var dificultad_actual: int = 0 # 0 = Fácil, 1 = Media, 2 = Difícil
 var rol: String = "estudiante" # Puede ser "estudiante" o "maestro"
+# ⚽ Guardará los IDs de las láminas que posee el niño (ej: [1, 5, 11])
+var laminas_poseidas: Array = []
 
 # Método para resetear la sesión si el niño sale al menú principal
 func cerrar_sesion():

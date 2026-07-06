@@ -5,7 +5,7 @@
 [ext_resource type="Texture2D" uid="uid://cay7rraob4uqq" path="res://assets/Boton_Volver.png" id="3_ao76r"]
 [ext_resource type="PackedScene" uid="uid://6cu6p1u6fgt6" path="res://Escenas/interfaz_Pregunta.tscn" id="4_alv5u"]
 [ext_resource type="Texture2D" uid="uid://bb1a12tdtvavi" path="res://assets/Boton_Volver_Presionado.png" id="4_yvbnv"]
-[ext_resource type="Script" uid="uid://bgomtc5pyiuqx" path="res://Escenas/volver_menu.gd" id="5_yvbnv"]
+[ext_resource type="Script" uid="uid://bgomtc5pyiuqx" path="res://Scripts_gd/volver_menu.gd" id="5_yvbnv"]
 [ext_resource type="Texture2D" uid="uid://n5e7wjmtqfbq" path="res://Frames Saltando/PixVerse-V5-Image-Text-360P-ha-unscreen/unscreen-022-removebg-preview.png" id="6_4uepw"]
 
 [sub_resource type="Curve2D" id="Curve2D_vauqj"]
@@ -16,6 +16,12 @@ point_count = 24
 
 [node name="Nivel1" type="Node2D" unique_id=482028138]
 script = ExtResource("1_4uepw")
+
+[node name="BotonDado" type="Button" parent="." unique_id=1849345758]
+offset_left = 880.0
+offset_top = 437.0
+offset_right = 1063.0
+offset_bottom = 592.0
 
 [node name="Tablero" type="Sprite2D" parent="." unique_id=36715906]
 position = Vector2(574.0174, 321.49997)
@@ -38,6 +44,7 @@ script = ExtResource("5_yvbnv")
 position = Vector2(573, 321)
 
 [node name="Path2D" type="Path2D" parent="." unique_id=756505470]
+visible = false
 curve = SubResource("Curve2D_vauqj")
 
 [node name="PathFollow2D" type="PathFollow2D" parent="Path2D" unique_id=824580815]
@@ -51,15 +58,12 @@ scale = Vector2(0.43, 0.362)
 texture = ExtResource("6_4uepw")
 
 [node name="Interfaz" parent="." unique_id=562769401 instance=ExtResource("4_alv5u")]
-
-[node name="BotonDado" type="Button" parent="." unique_id=1849345758]
-offset_left = 880.0
-offset_top = 437.0
-offset_right = 1063.0
-offset_bottom = 592.0
+visible = false
 
 [node name="HTTPRequest" type="HTTPRequest" parent="." unique_id=2062687948]
 
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="." unique_id=634392206]
+
+[connection signal="pressed" from="BotonDado" to="." method="_on_boton_dado_pressed"]
 [connection signal="pressed" from="Tablero/Volver_Menu" to="Tablero/Volver_Menu" method="_on_boton_volver_pressed"]
 [connection signal="respuesta_completada" from="Interfaz" to="." method="_on_interfaz_respuesta_completada"]
-[connection signal="pressed" from="BotonDado" to="." method="_on_boton_dado_pressed"]

@@ -121,3 +121,50 @@ func registrar_en_historial(categoria: String, es_correcta: bool, tiempo: float)
 	]
 	
 	http_historial.request(url_historial, headers, HTTPClient.METHOD_POST, JSON.stringify(nueva_jugada))
+
+# res://Scripts_gd/ConexionSupabase.gd
+
+# 1. 📂 CARGAR ÁLBUM: Descarga la lista de láminas del niño desde la nube
+# res://Scripts_gd/ConexionSupabase.gd
+
+# 1. 📂 CARGAR ÁLBUM: Descarga la lista de láminas del niño desde la nube
+func cargar_album_nube():
+	var user_id = DatosUsuario.usuario_id_db
+	
+	# Hacemos la consulta a tu nueva tabla progreso_album
+	var query = SupabaseQuery.new().from("progreso_album").select(["laminas_poseidas"]).eq("user_id", user_id)
+	var task: DatabaseTask = await Supabase.database.query(query)
+	
+	# ✅ REPARACIÓN: Accedemos a task.data que es donde está el Array de filas devueltas
+	if task.data and task.data.size() > 0:
+		# Si ya tiene registro, guardamos sus láminas en la RAM
+		DatosUsuario.laminas_poseidas = task.data[0].get("laminas_poseidas", [])
+		print("⚽ Álbum cargado con éxito. Láminas del niño: ", DatosUsuario.laminas_poseidas)
+	else:
+		# Si es un estudiante nuevo y no tiene fila, se la creamos vacía de una vez
+		DatosUsuario.laminas_poseidas = []
+		var datos_nuevos = {
+			"user_id": user_id,
+			"laminas_poseidas": [] # Array vacío en Supabase
+		}
+		var insert_query = SupabaseQuery.new().from("progreso_album").insert([datos_nuevos])
+		await Supabase.database.query(insert_query)
+		print("⚽ Registro de álbum creado para el nuevo usuario.")
+
+# 2. 🎁 GANAR LÁMINA: Agrega una lámina al array sin duplicarla y actualiza la nube
+func registrar_lamina_ganada(id_lamina: int):
+	# Evitamos duplicados: si el niño ya la tiene, no hace falta añadirla otra vez
+	if not DatosUsuario.laminas_poseidas.has(id_lamina):
+		DatosUsuario.laminas_poseidas.append(id_lamina)
+		
+		var user_id = DatosUsuario.usuario_id_db
+		var datos_actualizados = {
+			"laminas_poseidas": DatosUsuario.laminas_poseidas
+		}
+		
+		# Hacemos el UPDATE directo en la base de datos
+		var query = SupabaseQuery.new().from("progreso_album").update(datos_actualizados).eq("user_id", user_id)
+		await Supabase.database.query(query) # Aquí no necesitas guardar el resultado en una variable si no vas a chequear errores
+		print("🎉 ¡Nube sincronizada! El niño ganó la lámina ID: ", id_lamina)
+	else:
+		print("🃏 Lámina repetida (ID: ", id_lamina, "), no se añade al álbum.")

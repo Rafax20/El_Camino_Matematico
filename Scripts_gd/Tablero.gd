@@ -122,12 +122,14 @@ func mostrar_pregunta_en_pantalla():
 	# 5. 📺 INTERFAZ: Mostramos en pantalla
 	$Interfaz.visible = true
 	$Interfaz.actualizar_datos_pantalla(pregunta_actual)
+	
+	
 
 # ==========================================
 # ⚙️ RESPUESTA DEL NIÑO DESDE LA INTERFAZ
 # ==========================================
 func _on_interfaz_respuesta_completada(es_correcta: bool, tiempo_tardado: float) -> void:
-	$Interfaz.visible = false
+	# 🚨 REMOVIDO: Ya no cerramos la interfaz aquí arriba de golpe.
 	DatosUsuario.pregunta_pendiente_db = false
 	
 	# 1. 🧠 EVALUACIÓN DEL SISTEMA EXPERTO
@@ -138,33 +140,59 @@ func _on_interfaz_respuesta_completada(es_correcta: bool, tiempo_tardado: float)
 		tiempo_tardado
 	)
 	
-	# Si el número que devolvió el SE es diferente al que teníamos, reiniciamos el índice
 	if DatosUsuario.dificultad_actual != dificultad_anterior:
 		print("🧠 Tablero: El Sistema Experto cambió el nivel. Reiniciando pregunta_actual_indice a 0.")
 		pregunta_actual_indice = 0
 	
 	# 2. 📊 REGISTRO EN LA TABLA DE HISTORIAL INDEPENDIENTE
-	var categoria_actual = "matematicas" # Por si acaso, un valor por defecto
-	
-	# Ahora 'pregunta_actual' es reconocida perfectamente porque es una variable del script
+	var categoria_actual = "matematicas"
 	if pregunta_actual.has("categoria"):
 		categoria_actual = str(pregunta_actual.get("categoria"))
 		
 	ConexionSupabase.registrar_en_historial(categoria_actual, es_correcta, tiempo_tardado)
 	
-	# 3. 💾 ACTUALIZACIÓN DEL PROGRESO ACTUAL DEL JUEGO
+	# 3. 💾 MANEJO DE RESPUESTA, AUDIOS Y FLUJO VISUAL
 	if es_correcta:
 		print("🎯 ¡Correcta! El niño tardó: ", tiempo_tardado, " segundos.")
+		
+		# 🗣️ Mandamos a reproducir el elogio inmediatamente con la ventana abierta
+		var elogios = ["¡Excelente! ¡Lo hiciste genial!", "¡Muy bien! Sigue así.", "¡Fabuloso! Respuesta correcta."]
+		GestionAudio.decir_frase(elogios.pick_random())
+		
+		# ⏳ Esperamos 2 segundos en pantalla para que el niño procese su éxito y escuche el audio
+		await get_tree().create_timer(2.0).timeout
+		
+		# 📺 Ahora sí, cerramos la ventana de manera natural
+		$Interfaz.visible = false
+		
 		ConexionSupabase.actualizar_progreso_en_nube(casilla_actual, false)
 		boton_dado.disabled = false
 		Menu_Volver.disabled = false
+		
+		if randf() < 0.30:
+			var lamina_sorpresa = randi_range(1, 12) # Cambia 12 por el total de tus láminas
+			ConexionSupabase.registrar_lamina_ganada(lamina_sorpresa)
+		
 	else:
 		print("❌ ¡Incorrecta! Regresando a casilla anterior: ", casilla_anterior)
+		
+		# 🗣️ Mandamos a reproducir el ánimo pedagógico
+		var animos = ["¡Buen intento! Vamos a practicar otra.", "¡Casi lo tienes! Inténtalo de nuevo.", "No te preocupes, ¡tú puedes lograrlo!"]
+		GestionAudio.decir_frase(animos.pick_random())
+		
+		# ⏳ Esperamos 2 segundos para que escuche el mensaje de aliento antes de mover la ficha
+		await get_tree().create_timer(2.0).timeout
+		
+		# 📺 Cerramos la ventana
+		$Interfaz.visible = false
+		
+		# Ajustamos coordenadas y hacemos el movimiento de retroceso visual
 		casilla_actual = casilla_anterior
 		DatosUsuario.casilla_actual_db = casilla_actual
 		
 		ConexionSupabase.actualizar_progreso_en_nube(casilla_actual, false)
 		await _mover_ficha_visualmente(casilla_actual, false)
+		
 		boton_dado.disabled = false
 		Menu_Volver.disabled = false
 

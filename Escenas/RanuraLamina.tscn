@@ -1,0 +1,17 @@
+[gd_scene format=3 uid="uid://d3wbv0pugucoi"]
+
+[ext_resource type="Script" uid="uid://b36ipccuhuqk4" path="res://Scripts_gd/RanuraLamina.gd" id="1_o7mvt"]
+
+[node name="TextureRect" type="TextureRect" unique_id=697692061]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -60.0
+offset_top = -80.0
+offset_right = 60.0
+offset_bottom = 80.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_o7mvt")
