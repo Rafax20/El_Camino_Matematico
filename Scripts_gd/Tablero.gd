@@ -23,6 +23,8 @@ var casilla_destino = [
 ]
 
 func _ready():
+	$Path2D.visible = true
+	$Path2D/PathFollow2D/Sprite2D.visible = true
 	await get_tree().process_frame
 	servidor_listo = false
 	boton_dado.disabled = true # Bloqueado momentáneamente mientras bajan las preguntas
