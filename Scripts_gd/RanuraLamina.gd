@@ -8,11 +8,10 @@ extends TextureRect
 @export var textura_jugador: Texture2D
 
 func actualizar_estado():
-	# Si el array global en la RAM tiene este ID, el niño ya la ganó
-	if DatosUsuario.laminas_poseidas.has(id_lamina):
+	var id_a_buscar = int(id_lamina)
+	if DatosUsuario.laminas_poseidas.has(id_a_buscar):
 		texture = textura_jugador
-		modulate = Color(1, 1, 1, 1) # Se muestra a todo color
+		modulate = Color(1, 1, 1, 1) # Color original
 	else:
-		# Si no la tiene, le ponemos la misma foto pero oscura como una silueta
 		texture = textura_jugador
-		modulate = Color(0.1, 0.1, 0.1, 0.8) # Silueta oscura (estilo candado)
+		modulate = Color(0.1, 0.1, 0.1, 0.8) # Silueta oscura

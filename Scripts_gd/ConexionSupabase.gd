@@ -30,12 +30,14 @@ func pedir_progreso_usuario():
 	
 	var http_get = HTTPRequest.new()
 	add_child(http_get)
-	http_get.accept_gzip = false # ✅ Protegido para la Web
+	http_get.accept_gzip = false 
 	http_get.request_completed.connect(func(result, response_code, headers, body):
 		if response_code == 200:
 			var json = JSON.new()
 			if json.parse(body.get_string_from_utf8()) == OK:
 				progreso_recibido.emit(json.data)
+				# ⚽ ¡OJO AQUÍ!: Si el progreso se leyó bien, mandamos a cargar su álbum de inmediato
+				cargar_album_nube()
 		else:
 			progreso_recibido.emit([]) 
 		http_get.queue_free()
@@ -45,27 +47,6 @@ func pedir_progreso_usuario():
 	var headers = ["apikey: " + SUPABASE_ANON_KEY, "Authorization: Bearer " + SUPABASE_ANON_KEY]
 	http_get.request(url, headers, HTTPClient.METHOD_GET)
 
-func crear_fila_inicial_progreso():
-	var http_insert = HTTPRequest.new()
-	add_child(http_insert)
-	http_insert.accept_gzip = false # ✅ Protegido para la Web
-	http_insert.request_completed.connect(func(result, response_code, headers, body):
-		if response_code in [200, 201]:
-			progreso_creado_exito.emit()
-		http_insert.queue_free()
-	)
-	
-	var url = "https://zwgiwmspfuebqvbsttto.supabase.co/rest/v1/progreso"
-	var headers = ["apikey: " + SUPABASE_ANON_KEY, "Authorization: Bearer " + SUPABASE_ANON_KEY, "Content-Type: application/json"]
-	var nuevo_registro = {
-		"usuario_id": DatosUsuario.usuario_id_db,
-		"monedas": 0,
-		"casilla_actual": 0,
-		"tablero_actual": "Tablero_1",
-		"pregunta_pendiente": false,
-		"dificultad": 0
-	}
-	http_insert.request(url, headers, HTTPClient.METHOD_POST, JSON.stringify(nuevo_registro))
 
 func actualizar_progreso_en_nube(casilla: int, pendiente: bool):
 	if not DatosUsuario.esta_conectado_a_la_nube: return
@@ -122,49 +103,119 @@ func registrar_en_historial(categoria: String, es_correcta: bool, tiempo: float)
 	
 	http_historial.request(url_historial, headers, HTTPClient.METHOD_POST, JSON.stringify(nueva_jugada))
 
-# res://Scripts_gd/ConexionSupabase.gd
+# =====================================================================
+# ⚽ SISTEMA DE ÁLBUM DEL MUNDIAL (CORREGIDO)
+# =====================================================================
 
 # 1. 📂 CARGAR ÁLBUM: Descarga la lista de láminas del niño desde la nube
-# res://Scripts_gd/ConexionSupabase.gd
-
 # 1. 📂 CARGAR ÁLBUM: Descarga la lista de láminas del niño desde la nube
 func cargar_album_nube():
-	var user_id = DatosUsuario.usuario_id_db
+	if not DatosUsuario.esta_conectado_a_la_nube or DatosUsuario.usuario_uuid in ["", "0"]:
+		print("ℹ️ [Invitado] Cargando álbum local desde la RAM. Láminas actuales: ", DatosUsuario.laminas_poseidas)
+		return
+		
+	var http_get_album = HTTPRequest.new()
+	add_child(http_get_album)
+	http_get_album.accept_gzip = false
 	
-	# Hacemos la consulta a tu nueva tabla progreso_album
-	var query = SupabaseQuery.new().from("progreso_album").select(["laminas_poseidas"]).eq("user_id", user_id)
-	var task: DatabaseTask = await Supabase.database.query(query)
+	http_get_album.request_completed.connect(func(result, response_code, headers, body):
+		if response_code == 200:
+			var json = JSON.new()
+			if json.parse(body.get_string_from_utf8()) == OK:
+				var datos = json.data
+				if datos is Array and datos.size() > 0:
+					# Caso A: El usuario ya tiene su fila del álbum creada. Sincronizamos sus láminas.
+					var lista_remota = datos[0].get("laminas_poseidas", [])
+					
+					# 🧹 LIMPIEZA DE TIPOS: Forzamos a que los floats de la nube (1.0) pasen a ser enteros puros (1)
+					var laminas_enteras: Array = []
+					for x in lista_remota:
+						if x != null:
+							laminas_enteras.append(int(x))
+							
+					DatosUsuario.laminas_poseidas = laminas_enteras
+					print("⚽ [Supabase] Álbum cargado con éxito desde la nube. Láminas (Enteros): ", DatosUsuario.laminas_poseidas)
+				else:
+					# Caso B: El usuario existe en el juego pero NO tiene fila en 'progreso_album'. ¡Se la creamos!
+					print("⚠️ [Supabase] El usuario no tiene fila en progreso_album. Creando una ahora...")
+					crear_fila_album_inicial(DatosUsuario.usuario_uuid)
+		else:
+			print("❌ Error al verificar álbum en la nube: ", response_code)
+		http_get_album.queue_free()
+	)
 	
-	# ✅ REPARACIÓN: Accedemos a task.data que es donde está el Array de filas devueltas
-	if task.data and task.data.size() > 0:
-		# Si ya tiene registro, guardamos sus láminas en la RAM
-		DatosUsuario.laminas_poseidas = task.data[0].get("laminas_poseidas", [])
-		print("⚽ Álbum cargado con éxito. Láminas del niño: ", DatosUsuario.laminas_poseidas)
-	else:
-		# Si es un estudiante nuevo y no tiene fila, se la creamos vacía de una vez
-		DatosUsuario.laminas_poseidas = []
-		var datos_nuevos = {
-			"user_id": user_id,
-			"laminas_poseidas": [] # Array vacío en Supabase
-		}
-		var insert_query = SupabaseQuery.new().from("progreso_album").insert([datos_nuevos])
-		await Supabase.database.query(insert_query)
-		print("⚽ Registro de álbum creado para el nuevo usuario.")
+	var url = "https://zwgiwmspfuebqvbsttto.supabase.co/rest/v1/progreso_album?user_id=eq." + DatosUsuario.usuario_uuid
+	var headers = ["apikey: " + SUPABASE_ANON_KEY, "Authorization: Bearer " + SUPABASE_ANON_KEY]
+	http_get_album.request(url, headers, HTTPClient.METHOD_GET)
 
-# 2. 🎁 GANAR LÁMINA: Agrega una lámina al array sin duplicarla y actualiza la nube
+# 🆕 Función auxiliar para inyectar la fila faltante en caliente
+func crear_fila_album_inicial(uuid_usuario: String):
+	var http_crear = HTTPRequest.new()
+	add_child(http_crear)
+	http_crear.accept_gzip = false
+	
+	http_crear.request_completed.connect(func(r, rc, h, b):
+		if rc in [200, 201]:
+			print("✅ [Supabase] Fila de álbum creada exitosamente para el usuario existente.")
+		else:
+			print("❌ [Supabase] Falló la auto-creación del álbum: ", rc, " -> ", b.get_string_from_utf8())
+		http_crear.queue_free()
+	)
+	
+	var url_album = "https://zwgiwmspfuebqvbsttto.supabase.co/rest/v1/progreso_album"
+	var headers = [
+		"apikey: " + SUPABASE_ANON_KEY, 
+		"Authorization: Bearer " + SUPABASE_ANON_KEY, 
+		"Content-Type: application/json",
+		"Prefer: return=representation"
+	]
+	var datos = {
+		"user_id": uuid_usuario,
+		"laminas_poseidas": DatosUsuario.laminas_poseidas # Mandará el array como lo tenga en RAM
+	}
+	http_crear.request(url_album, headers, HTTPClient.METHOD_POST, JSON.stringify(datos))
+
 func registrar_lamina_ganada(id_lamina: int):
-	# Evitamos duplicados: si el niño ya la tiene, no hace falta añadirla otra vez
-	if not DatosUsuario.laminas_poseidas.has(id_lamina):
-		DatosUsuario.laminas_poseidas.append(id_lamina)
+	print("⚽ [Álbum] Intentando registrar lámina ganada ID: ", id_lamina)
+	
+	# Forzamos a que se guarde como entero puro en la RAM
+	var id_entero = int(id_lamina)
+	if not DatosUsuario.laminas_poseidas.has(id_entero):
+		DatosUsuario.laminas_poseidas.append(id_entero)
 		
-		var user_id = DatosUsuario.usuario_id_db
-		var datos_actualizados = {
-			"laminas_poseidas": DatosUsuario.laminas_poseidas
-		}
+	if not DatosUsuario.esta_conectado_a_la_nube or DatosUsuario.usuario_uuid in ["", "0"]:
+		print("🎉 [Invitado] Lámina ganada localmente. No se sube a la nube.")
+		return
 		
-		# Hacemos el UPDATE directo en la base de datos
-		var query = SupabaseQuery.new().from("progreso_album").update(datos_actualizados).eq("user_id", user_id)
-		await Supabase.database.query(query) # Aquí no necesitas guardar el resultado en una variable si no vas a chequear errores
-		print("🎉 ¡Nube sincronizada! El niño ganó la lámina ID: ", id_lamina)
-	else:
-		print("🃏 Lámina repetida (ID: ", id_lamina, "), no se añade al álbum.")
+	var http_update_album = HTTPRequest.new()
+	add_child(http_update_album)
+	http_update_album.accept_gzip = false
+	
+	http_update_album.request_completed.connect(func(result, response_code, headers, body):
+		print("📡 --- DIAGNÓSTICO ACTUALIZAR ÁLBUM ---")
+		print("Código de Respuesta HTTP Álbum: ", response_code)
+		if response_code in [200, 204]:
+			print("🎉 ¡Nube sincronizada! El niño guardó la lámina ID: ", id_entero)
+		else:
+			print("❌ Error de Supabase al actualizar lámina: ", body.get_string_from_utf8())
+		print("---------------------------------------")
+		http_update_album.queue_free()
+	)
+	
+	var url = "https://zwgiwmspfuebqvbsttto.supabase.co/rest/v1/progreso_album?user_id=eq." + DatosUsuario.usuario_uuid
+	var headers = [
+		"apikey: " + SUPABASE_ANON_KEY, 
+		"Authorization: Bearer " + SUPABASE_ANON_KEY, 
+		"Content-Type: application/json",
+		"Prefer: return=minimal"
+	]
+	
+	# 🧹 LIMPIEZA ABSOLUTA: Creamos un array nuevo asegurando que TODO sea int() estricto
+	var laminas_limpias: Array = []
+	for x in DatosUsuario.laminas_poseidas:
+		laminas_limpias.append(int(x))
+	
+	var datos_actualizados = { "laminas_poseidas": laminas_limpias }
+	
+	print("📡 Enviando PATCH al álbum con datos limpios: ", JSON.stringify(datos_actualizados))
+	http_update_album.request(url, headers, HTTPClient.METHOD_PATCH, JSON.stringify(datos_actualizados))

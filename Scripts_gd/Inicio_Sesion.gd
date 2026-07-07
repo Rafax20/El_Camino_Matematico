@@ -65,7 +65,12 @@ func _on_boton_registrar_pressed() -> void:
 	operacion_actual = "REGISTRO"
 	print("📝 Intentando registrar al Usuario: '" + usuario + "'")
 	
-	var datos = { "usuario": usuario, "clave": clave }
+	# 🛠️ CORRECCIÓN AQUÍ: Añadimos el rol limpio sin agregados de Postgres
+	var datos = { 
+		"usuario": usuario, 
+		"clave": clave,
+		"rol": "estudiante" # 👈 Mandamos la palabra limpia
+	}
 	enviar_peticion_supabase(SUPABASE_URL_USUARIOS, HTTPClient.METHOD_POST, JSON.stringify(datos))
 
 func enviar_peticion_supabase(url: String, metodo: int, cuerpo: String):
@@ -103,6 +108,14 @@ func _on_request_completed(result, response_code, headers, body):
 		if datos_recibidos is Array and datos_recibidos.size() > 0:
 			var user_data = datos_recibidos[0]
 			
+			print("🚨 [DIAGNÓSTICO LOGIN] Todo lo que llegó del usuario: ", user_data) # 👈 AÑADE ESTO
+			
+			DatosUsuario.esta_conectado_a_la_nube = true
+			DatosUsuario.usuario_id_db = int(user_data.get("id", 0))
+			DatosUsuario.usuario_uuid = str(user_data.get("user_id", ""))
+			
+			
+			
 			DatosUsuario.esta_conectado_a_la_nube = true
 			DatosUsuario.usuario_id_db = int(user_data.get("id", 0))
 			DatosUsuario.usuario_uuid = str(user_data.get("user_id", ""))
@@ -127,34 +140,24 @@ func _on_request_completed(result, response_code, headers, body):
 			animar_error_infantil("¡Usuario o Clave incorrectos!")
 
 	elif operacion_actual == "PROGRESO":
-		# 🆕 PROCESAMOS LOS DATOS DE LA TABLA PROGRESO
 		if datos_recibidos is Array and datos_recibidos.size() > 0:
 			var progreso_data = datos_recibidos[0]
 			
-			# Ahora sí extraemos las columnas de la tabla 'progreso'
 			DatosUsuario.pregunta_pendiente_db = bool(progreso_data.get("pregunta_pendiente", false))
 			DatosUsuario.casilla_actual_db = int(progreso_data.get("casilla_actual", 0))
 			DatosUsuario.dificultad_actual = int(progreso_data.get("dificultad", 0))
 			
 			print("🎉 ¡Sesión y progreso guardados con éxito en Globales!")
-			print("👤 Usuario activo: " + DatosUsuario.nombre_usuario)
-			print("🆔 ID de Base de Datos: " + str(DatosUsuario.usuario_id_db))
-			print("⏱️ Casilla Real Recuperada: " + str(DatosUsuario.casilla_actual_db))
-			print("Habia Pregunta Pendiente: " + str(DatosUsuario.pregunta_pendiente_db))
-			print("Dificultad Real Recuperada: " + str(DatosUsuario.dificultad_actual))
-			texto_titulo.text = "Bienvenido de Nuevo estudiante " + str(DatosUsuario.nombre_usuario)
-			texto_titulo.modulate = Color(0.375, 0.677, 0.218, 1.0)
-			await get_tree().create_timer(2.0).timeout
-			_on_boton_cerrar_pressed()
+			
+			# ⚽ ¡AQUÍ ESTÁ LA CLAVE!: Forzamos a cargar o auto-crear el álbum desde la red
+			ConexionSupabase.cargar_album_nube()
+			
+			_abrir_interfaz_bienvenida()
 		else:
-			# Si por alguna razón el usuario existe en 'usuarios' pero no tiene fila en 'progreso'
-			print("🆕 El usuario no tiene fila de progreso. Seteando valores en 0.")
-			DatosUsuario.pregunta_pendiente_db = false
-			DatosUsuario.casilla_actual_db = 0
-			texto_titulo.text = "Bienvenido de Nuevo estudiante " + str(DatosUsuario.nombre_usuario)
-			texto_titulo.modulate = Color(0.375, 0.677, 0.218, 1.0)
-			await get_tree().create_timer(2.0).timeout
-			_on_boton_cerrar_pressed()
+			print("🆕 El usuario no tiene fila de progreso en la nube. Inicializando tabla...")
+			var es_migracion = (DatosUsuario.casilla_actual_db > 0 or DatosUsuario.laminas_poseidas.size() > 0)
+			ConexionSupabase.inicializar_progreso_nuevo_usuario(es_migracion)
+			_abrir_interfaz_bienvenida()
 
 	elif operacion_actual == "REGISTRO":
 		print("🎉 ¡Registro exitoso en la nube!")
@@ -181,3 +184,9 @@ func animar_error_infantil(mensaje: String):
 	tween_scale.tween_property(contenedor, "scale", Vector2(0.9, 0.9), 0.1)
 	tween_scale.tween_property(contenedor, "scale", Vector2(1.05, 1.05), 0.1).set_trans(Tween.TRANS_BACK)
 	tween_scale.tween_property(contenedor, "scale", Vector2(1.0, 1.0), 0.1)
+
+func _abrir_interfaz_bienvenida():
+	texto_titulo.text = "Bienvenido de Nuevo estudiante " + str(DatosUsuario.nombre_usuario)
+	texto_titulo.modulate = Color(0.375, 0.677, 0.218, 1.0)
+	await get_tree().create_timer(2.0).timeout
+	_on_boton_cerrar_pressed()

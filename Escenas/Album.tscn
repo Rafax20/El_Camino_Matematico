@@ -1,21 +1,18 @@
 [gd_scene format=3 uid="uid://dqun3fgllqd1w"]
 
-[ext_resource type="Script" uid="uid://ctc8hvkp6mvvh" path="res://Escenas/Album.gd" id="1_6y1de"]
-[ext_resource type="Texture2D" uid="uid://c7ifq1nq5cfsy" path="res://assets/Interfaz_Menu/messi-1805.jpg" id="1_mqij0"]
+[ext_resource type="Script" uid="uid://ctc8hvkp6mvvh" path="res://Scripts_gd/Album.gd" id="1_6y1de"]
 [ext_resource type="Texture2D" uid="uid://cay7rraob4uqq" path="res://assets/Boton_Volver.png" id="2_vidjf"]
 [ext_resource type="Texture2D" uid="uid://bb1a12tdtvavi" path="res://assets/Boton_Volver_Presionado.png" id="3_6fgrd"]
 [ext_resource type="Script" uid="uid://bgomtc5pyiuqx" path="res://Scripts_gd/volver_menu.gd" id="4_6fgrd"]
-[ext_resource type="PackedScene" uid="uid://d3wbv0pugucoi" path="res://Escenas/RanuraLamina.tscn" id="7_rar1c"]
 
 [node name="Album" type="Control" unique_id=1846142326]
 layout_mode = 3
-anchors_preset = 0
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 script = ExtResource("1_6y1de")
-
-[node name="Messi1805" type="Sprite2D" parent="." unique_id=1005739969]
-scale = Vector2(0.9023438, 0.8958333)
-texture = ExtResource("1_mqij0")
-centered = false
 
 [node name="Volver_Menu" type="TextureButton" parent="." unique_id=192262953]
 layout_mode = 0
@@ -27,19 +24,59 @@ texture_pressed = ExtResource("3_6fgrd")
 script = ExtResource("4_6fgrd")
 
 [node name="GridLaminas" type="GridContainer" parent="." unique_id=510856114]
-layout_mode = 0
-offset_left = 413.0
-offset_top = 195.0
-offset_right = 453.0
-offset_bottom = 235.0
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -453.0
+offset_top = -242.0
+offset_right = 474.0
+offset_bottom = 271.0
+grow_horizontal = 2
+grow_vertical = 2
 columns = 4
 
-[node name="TextureRect" parent="GridLaminas" unique_id=697692061 instance=ExtResource("7_rar1c")]
-layout_mode = 2
-id_lamina = 1
+[node name="Titulo_pais" type="RichTextLabel" parent="." unique_id=1847518827]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -161.5
+offset_right = 161.5
+offset_bottom = 40.0
+grow_horizontal = 2
 
-[node name="TextureRect2" parent="GridLaminas" unique_id=1323923304 instance=ExtResource("7_rar1c")]
-layout_mode = 2
-id_lamina = 2
+[node name="BotonAnterior" type="TextureButton" parent="." unique_id=1444004038]
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 21.0
+offset_top = -37.0
+offset_right = 627.0
+offset_bottom = 569.0
+grow_vertical = 2
+scale = Vector2(0.15, 0.15)
+texture_normal = ExtResource("2_vidjf")
+
+[node name="BotonSiguiente" type="TextureButton" parent="." unique_id=1347966979]
+layout_mode = 1
+anchors_preset = 6
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -92.0
+offset_top = -37.0
+offset_right = 514.0
+offset_bottom = 569.0
+grow_horizontal = 0
+grow_vertical = 2
+scale = Vector2(0.15, 0.15)
+texture_normal = ExtResource("2_vidjf")
 
 [connection signal="pressed" from="Volver_Menu" to="Volver_Menu" method="_on_boton_volver_pressed"]
+[connection signal="pressed" from="BotonAnterior" to="." method="_on_boton_anterior_pressed"]
+[connection signal="pressed" from="BotonSiguiente" to="." method="_on_boton_siguiente_pressed"]

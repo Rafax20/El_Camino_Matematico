@@ -13,6 +13,16 @@ var rol: String = "estudiante" # Puede ser "estudiante" o "maestro"
 # ⚽ Guardará los IDs de las láminas que posee el niño (ej: [1, 5, 11])
 var laminas_poseidas: Array = []
 
+# En DatosUsuario.gd
+const CATALOGO_LAMINAS = {
+	1: "res://assets/Album/ven_escudo.png",
+	2: "res://assets/Album/ven_jugador1.png",
+	3: "res://assets/Album/ven_jugador2.png",
+	4: "res://assets/Album/ven_jugador3.png",
+	5: "res://assets/Album/arg_escudo.png",
+	6: "res://assets/Album/arg_jugador1.png"
+}
+
 # Método para resetear la sesión si el niño sale al menú principal
 func cerrar_sesion():
 	esta_conectado_a_la_nube = false
