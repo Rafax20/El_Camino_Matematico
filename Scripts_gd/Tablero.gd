@@ -155,13 +155,14 @@ func _on_interfaz_respuesta_completada(es_correcta: bool, tiempo_tardado: float)
 	ConexionSupabase.registrar_en_historial(categoria_actual, es_correcta, tiempo_tardado)
 	
 	# 3. 💾 MANEJO DE RESPUESTA, AUDIOS Y FLUJO VISUAL
+	# 3. 💾 MANEJO DE RESPUESTA, AUDIOS Y FLUJO VISUAL
 	if es_correcta:
 		print("🎯 ¡Correcta! El niño tardó: ", tiempo_tardado, " segundos.")
 		GestionAudio.decir_frase(["¡Excelente! ¡Lo hiciste genial!", "¡Muy bien! Sigue así.", "¡Fabuloso! Respuesta correcta."].pick_random())
 		
 		# --- SISTEMA DE PREMIACIÓN VISUAL ---
 		if randf() < 0.80:
-			var id_ganado = randi_range(1, 6) 
+			var id_ganado = randi_range(19, 36) 
 			ConexionSupabase.registrar_lamina_ganada(id_ganado)
 			print("LAMINA GANADA: " + str(id_ganado))
 			
@@ -169,8 +170,8 @@ func _on_interfaz_respuesta_completada(es_correcta: bool, tiempo_tardado: float)
 				# 1. Asignamos la textura
 				$CapaLogro/Control/TextureRect.texture = load(DatosUsuario.CATALOGO_LAMINAS[id_ganado])
 				
-				# 2. 🔥 AQUI MODIFICAS EL TEXTO
-				$CapaLogro/Control/Label.text = "¡Ganaste una nueva lámina!"
+				# 2. Modificamos el texto del Label
+				$CapaLogro/Control/TextureRect/Label.text = "¡Ganaste una nueva lámina!"
 				
 				# 3. Activamos la visibilidad y la animación de escala
 				$CapaLogro.visible = true
@@ -178,14 +179,41 @@ func _on_interfaz_respuesta_completada(es_correcta: bool, tiempo_tardado: float)
 				var tween = create_tween().set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 				tween.tween_property($CapaLogro/Control, "scale", Vector2.ONE, 0.4)
 				
-				# ⏳ IMPORTANTE: Esperamos un tiempo extra para que lea el mensaje 
-				# antes de cerrar la Interfaz y el CapaLogro
+				# ⏳ Esperamos 3 segundos para que el niño vea su lámina y lea el cartel
 				await get_tree().create_timer(3.0).timeout
 				$CapaLogro.visible = false
+		else:
+			# Si contestó bien pero no ganó lámina (20% de probabilidad), esperamos 2s para que procese el éxito
+			await get_tree().create_timer(2.0).timeout
 		
-		# (El resto del código de cierre ya se ejecuta después de este if)
+		# Cerramos la ventana de la pregunta y liberamos los controles del tablero
 		$Interfaz.visible = false
 		ConexionSupabase.actualizar_progreso_en_nube(casilla_actual, false)
+		boton_dado.disabled = false
+		Menu_Volver.disabled = false
+		
+	else:
+		# ❌ LOGICA DE RESPUESTA INCORRECTA (¡Recuperada!)
+		print("❌ ¡Incorrecta! Regresando a casilla anterior: ", casilla_anterior)
+		
+		# 🗣️ Mandamos a reproducir el ánimo pedagógico
+		var animos = ["¡Buen intento! Vamos a practicar otra.", "¡Casi lo tienes! Inténtalo de nuevo.", "No te preocupes, ¡tú puedes lograrlo!"]
+		GestionAudio.decir_frase(animos.pick_random())
+		
+		# ⏳ Esperamos 2 segundos para que escuche el mensaje de aliento antes de mover la ficha
+		await get_tree().create_timer(2.0).timeout
+		
+		# 📺 Cerramos la ventana de la pregunta
+		$Interfaz.visible = false
+		
+		# Ajustamos coordenadas de la memoria y hacemos el movimiento de retroceso visual
+		casilla_actual = casilla_anterior
+		DatosUsuario.casilla_actual_db = casilla_actual
+		
+		ConexionSupabase.actualizar_progreso_en_nube(casilla_actual, false)
+		await _mover_ficha_visualmente(casilla_actual, false)
+		
+		# Desbloqueamos el tablero para el siguiente turno
 		boton_dado.disabled = false
 		Menu_Volver.disabled = false
 

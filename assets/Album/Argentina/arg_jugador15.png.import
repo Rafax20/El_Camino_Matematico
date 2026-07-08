@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://7kw5lhy0175h"
-path="res://.godot/imported/ven_escudo.png-7924e20245a1cfd49c183f473d4d2ee7.ctex"
+uid="uid://dhdeqf717gqy7"
+path="res://.godot/imported/arg_jugador15.png-10a6801b02e0928329c57b4112978688.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/Album/ven_escudo.png"
-dest_files=["res://.godot/imported/ven_escudo.png-7924e20245a1cfd49c183f473d4d2ee7.ctex"]
+source_file="res://assets/Album/Argentina/arg_jugador15.png"
+dest_files=["res://.godot/imported/arg_jugador15.png-10a6801b02e0928329c57b4112978688.ctex"]
 
 [params]
 

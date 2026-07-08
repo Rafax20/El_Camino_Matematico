@@ -8,3 +8,6 @@ func _on_boton_iniciar_sesion_pressed():
 
 func _on_boton_logros_pressed():
 	get_tree().change_scene_to_file("res://Escenas/Album.tscn")
+
+func _on_boton_como_jugar_pressed():
+	get_tree().change_scene_to_file("res://Escenas/Chatbox.tscn")

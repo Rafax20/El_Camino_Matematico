@@ -79,7 +79,7 @@ text = "[b]¡EMPEZAR EL JUEGO![b]"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="TextureButton" type="TextureButton" parent="CanvasLayer/Menu" unique_id=550238856]
+[node name="Boton_Como_Jugar" type="TextureButton" parent="CanvasLayer/Menu" unique_id=550238856]
 offset_left = -248.82568
 offset_top = 10.699707
 offset_right = 1304.1743
@@ -87,7 +87,7 @@ offset_bottom = 394.6997
 scale = Vector2(0.25, 0.25)
 texture_normal = ExtResource("9_bcw8w")
 
-[node name="Texto_Instrucciones" type="RichTextLabel" parent="CanvasLayer/Menu/TextureButton" unique_id=1547262374]
+[node name="Texto_Instrucciones" type="RichTextLabel" parent="CanvasLayer/Menu/Boton_Como_Jugar" unique_id=1547262374]
 layout_mode = 0
 offset_left = 496.45795
 offset_top = 104.619156
@@ -137,6 +137,7 @@ horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="Ventana_Autenticacion" parent="CanvasLayer/Menu" unique_id=845431727 instance=ExtResource("3_j7eae")]
+visible = false
 anchors_preset = 13
 anchor_left = 0.5
 anchor_right = 0.5
@@ -149,4 +150,5 @@ offset_bottom = -449.3871
 
 [connection signal="pressed" from="CanvasLayer/Menu/Boton Iniciar_Sesion" to="." method="_on_boton_iniciar_sesion_pressed"]
 [connection signal="pressed" from="CanvasLayer/Menu/Boton_Jugar" to="." method="_on_boton_jugar_pressed"]
+[connection signal="pressed" from="CanvasLayer/Menu/Boton_Como_Jugar" to="." method="_on_boton_como_jugar_pressed"]
 [connection signal="pressed" from="CanvasLayer/Menu/Boton_Logros" to="." method="_on_boton_logros_pressed"]

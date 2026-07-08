@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://v1vsc1y5g08b"
-path="res://.godot/imported/Gemini_Generated_Image_aysp7caysp7caysp.png-4646d8ef4f58dd41fd0add24ab91df96.ctex"
+uid="uid://b1h052qx377k8"
+path="res://.godot/imported/arg_escudo.png-b4496e5c9f8cd01c5ac58f9146ab1ad4.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/Album/Gemini_Generated_Image_aysp7caysp7caysp.png"
-dest_files=["res://.godot/imported/Gemini_Generated_Image_aysp7caysp7caysp.png-4646d8ef4f58dd41fd0add24ab91df96.ctex"]
+source_file="res://assets/Album/Argentina/arg_escudo.png"
+dest_files=["res://.godot/imported/arg_escudo.png-b4496e5c9f8cd01c5ac58f9146ab1ad4.ctex"]
 
 [params]
 

@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://d1rjr1ed0uag6"
-path="res://.godot/imported/Gemini_Generated_Image_rjk1zsrjk1zsrjk1.png-0d56795fea3ea28859208f311b5951c1.ctex"
+uid="uid://d7bpmid8sq1a"
+path="res://.godot/imported/arg_jugador16.png-4c439e976bf41d0bf9d557657ad01522.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/Album/Gemini_Generated_Image_rjk1zsrjk1zsrjk1.png"
-dest_files=["res://.godot/imported/Gemini_Generated_Image_rjk1zsrjk1zsrjk1.png-0d56795fea3ea28859208f311b5951c1.ctex"]
+source_file="res://assets/Album/Argentina/arg_jugador16.png"
+dest_files=["res://.godot/imported/arg_jugador16.png-4c439e976bf41d0bf9d557657ad01522.ctex"]
 
 [params]
 
