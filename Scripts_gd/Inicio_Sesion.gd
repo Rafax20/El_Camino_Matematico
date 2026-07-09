@@ -47,8 +47,8 @@ func _on_boton_entrar_pressed() -> void:
 	operacion_actual = "LOGIN"
 	print("🔍 Intentando iniciar sesión con Usuario: '" + usuario + "'")
 	
-	# 🌐 Traemos la URL base desde el Autoload Global de forma limpia
-	var url_base_usuarios = ConexionSupabase.SUPABASE_URL + "/rest/v1/usuarios"
+	# 🌐 Como tu SUPABASE_URL en Render ya termina en /rest/v1/, solo le concatenamos la tabla directamente
+	var url_base_usuarios = ConexionSupabase.SUPABASE_URL + "usuarios"
 	var url_peticion = url_base_usuarios + "?usuario=eq." + usuario + "&clave=eq." + clave
 	
 	enviar_peticion_supabase(url_peticion, HTTPClient.METHOD_GET, "")
@@ -70,7 +70,8 @@ func _on_boton_registrar_pressed() -> void:
 		"rol": "estudiante"
 	}
 	
-	var url_base_usuarios = ConexionSupabase.SUPABASE_URL + "/rest/v1/usuarios"
+	# 🌐 Concatenamos la tabla directamente
+	var url_base_usuarios = ConexionSupabase.SUPABASE_URL + "usuarios"
 	enviar_peticion_supabase(url_base_usuarios, HTTPClient.METHOD_POST, JSON.stringify(datos))
 
 func enviar_peticion_supabase(url: String, metodo: int, cuerpo: String):
@@ -132,7 +133,7 @@ func _on_request_completed(result, response_code, headers, body):
 				operacion_actual = "PROGRESO"
 				
 				# 🌐 Construcción dinámica de la URL de progreso usando la raíz global
-				var url_progreso = ConexionSupabase.SUPABASE_URL + "/rest/v1/progreso?usuario_id=eq." + str(DatosUsuario.usuario_id_db)
+				var url_progreso = ConexionSupabase.SUPABASE_URL + "progreso?usuario_id=eq." + str(DatosUsuario.usuario_id_db)
 				enviar_peticion_supabase(url_progreso, HTTPClient.METHOD_GET, "")
 		else:
 			print("❌ Login fallido: Credenciales incorrectas.")
