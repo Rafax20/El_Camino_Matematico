@@ -47,40 +47,34 @@ func _inicializar_configuracion():
 		add_child(http_client)
 		
 		http_client.request_completed.connect(func(result, response_code, headers, body):
-			var texto_plano = body.get_string_from_utf8()
+			var texto_plano = body.get_string_from_utf8().strip_edges()
+			
+			# 🧹 LIMPIEZA TOTAL: Eliminamos las barras invertidas que PHP pone a las URLs
+			# Esto es lo que estaba causando que los datos se vean "raros"
+			texto_plano = texto_plano.replace("\\/", "/")
+			
+			print("📡 [DEBUG RENDER] Procesando JSON limpio...")
+			
 			var json = JSON.new()
 			var parse_result = json.parse(texto_plano)
 			
-			print("📡 [DEBUG RENDER] Código recibido: ", response_code)
-			print("📡 [DEBUG RENDER] Longitud del cuerpo: ", texto_plano.length())
-			print("📡 [DEBUG RENDER] Primeros 100 caracteres recibidos: ", texto_plano.substr(0, 100))
-	
-	# Comprobar si el inicio es correcto (debería empezar con '{')
-			if texto_plano.length() > 0 and texto_plano[0] != "{":
-				print("❌ ERROR: El servidor NO envió un JSON. Empezó con: ", texto_plano[0])
-				
-				if json.parse(texto_plano) == OK:
-					print("TODO PIOLA")
-				else:
-					print("❌ ERROR CRÍTICO DE PARSEO: El texto no es JSON válido.")
-			
 			if response_code == 200 and parse_result == OK:
 				var data = json.data
-				if data.has("supabase_url") and data["supabase_url"] != "":
-					SUPABASE_URL = data["supabase_url"]
-					SUPABASE_ANON_KEY = data["supabase_anon_key"]
-					print("✅ [Render] Credenciales cargadas con éxito.")
+				# Aseguramos que los datos existen antes de asignar
+				if data is Dictionary and data.has("supabase_url"):
+					SUPABASE_URL = str(data["supabase_url"])
+					SUPABASE_ANON_KEY = str(data["supabase_anon_key"])
+					print("✅ [Render] Credenciales cargadas exitosamente.")
 				else:
-					_activar_respaldo("JSON inválido o campos vacíos")
+					_activar_respaldo("Datos incompletos en el JSON")
 			else:
-				_activar_respaldo("Render devolvió código " + str(response_code))
+				# Si falla, imprimimos el error exacto para saber qué pasó
+				print("❌ Fallo en Render. Código: ", response_code, " Parse: ", parse_result)
+				_activar_respaldo("Error de servidor o parseo")
 			
 			_sincronizar_con_autoloads()
 			http_client.queue_free()
 		)
-		
-		# Solicitud con Timeout corto
-		http_client.request(RENDER_SERVER_URL + "index.php?action=get_config")
 
 # NUEVA FUNCIÓN DE RESPALDO (El Plan B)
 func _activar_respaldo(motivo):
