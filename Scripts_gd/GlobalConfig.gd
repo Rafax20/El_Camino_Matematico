@@ -42,56 +42,38 @@ func _inicializar_configuracion():
 
 	# 🌐 CASO 2: MODO PRODUCCIÓN (Web HTML5 - No existe .env)
 	else:
-		print("🚀 GlobalConfig: Modo producción (Web HTML5) activo. Solicitando credenciales a Render...")
-		
-		GEMINI_URL = RENDER_SERVER_URL + "index.php"
-		
+		print("🚀 GlobalConfig: Modo producción activo. Solicitando credenciales a Render...")
 		var http_client = HTTPRequest.new()
 		add_child(http_client)
-		http_client.accept_gzip = false
 		
 		http_client.request_completed.connect(func(result, response_code, headers, body):
-			print("🚨 [HTTP COMPLETADO] CÓDIGO DE RESPUESTA DE RENDER: ", response_code)
+			var texto_plano = body.get_string_from_utf8()
+			var json = JSON.new()
+			var parse_result = json.parse(texto_plano)
 			
-			if response_code == 200:
-				var texto_plano = body.get_string_from_utf8()
-				
-				# 🔍 IMPRESIÓN 1: ¿Qué texto crudo está mandando el servidor?
-				print("====== TEXTO CRUDO DESDE RENDER ======")
-				print(texto_plano)
-				print("=======================================")
-				
-				var json = JSON.new()
-				if json.parse(texto_plano) == OK:
-					var config_data = json.data
-					
-					# Asignamos las variables
-					SUPABASE_URL = str(config_data.get("supabase_url", ""))
-					SUPABASE_ANON_KEY = str(config_data.get("supabase_anon_key", ""))
-					
-					# 🔍 IMPRESIÓN 2: Ver el contenido exacto de las variables parseadas
-					print("🔍 VERIFICACIÓN DE VARIABLES EXTRAÍDAS:")
-					print("   👉 SUPABASE_URL ACTUAL: ", SUPABASE_URL.to_upper())
-					print("   👉 SUPABASE_ANON_KEY LARGO: ", SUPABASE_ANON_KEY.length(), " CARACTERES")
-					
-					if SUPABASE_URL == "" or SUPABASE_URL == "null":
-						print("❌ ERROR: LAS LLAVES LLEGARON VACÍAS DESDE EL PHP DE RENDER")
-					else:
-						print("✅ CREDENCIALES ASIGNADAS CORRECTAMENTE EN MEMORIA")
-						
-					_sincronizar_con_autoloads()
+			if response_code == 200 and parse_result == OK:
+				var data = json.data
+				if data.has("supabase_url") and data["supabase_url"] != "":
+					SUPABASE_URL = data["supabase_url"]
+					SUPABASE_ANON_KEY = data["supabase_anon_key"]
+					print("✅ [Render] Credenciales cargadas con éxito.")
 				else:
-					print("❌ ERROR CRÍTICO: NO SE PUDO PARSEAR EL JSON. EL TEXTO NO TIENE FORMATO VÁLIDO.")
+					_activar_respaldo("JSON inválido o campos vacíos")
 			else:
-				print("❌ FALLÓ LA CONEXIÓN CON LA PASARELA DE RENDER. CÓDIGO: ", response_code)
+				_activar_respaldo("Render devolvió código " + str(response_code))
 			
+			_sincronizar_con_autoloads()
 			http_client.queue_free()
 		)
 		
-		# Le pedimos la configuración usando una ruta limpia que el strpos() de PHP pescará sí o sí
-		var url_peticion = RENDER_SERVER_URL + "index.php?action=get_config"
-		print("📡 [Render] Solicitando credenciales de entorno en: ", url_peticion)
-		http_client.request(url_peticion, [], HTTPClient.METHOD_GET)
+		# Solicitud con Timeout corto
+		http_client.request(RENDER_SERVER_URL + "index.php?action=get_config")
+
+# NUEVA FUNCIÓN DE RESPALDO (El Plan B)
+func _activar_respaldo(motivo):
+	print("⚠️ [ADVERTENCIA] Fallo en Render: ", motivo, ". Cargando credenciales fijas.")
+	SUPABASE_URL = "https://zwgiwmspfuebqvbsttto.supabase.co/rest/v1/"
+	SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp3Z2l3bXNwZnVlYnF2YnN0dHRvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg1ODg2MjMsImV4cCI6MjA5NDE2NDYyM30.tkM_AYmXhLEqfCLgvpTczRMigV-hL44bpHCs5Z-sHuc" # PEGA AQUÍ TU LLAVE REAL
 
 # 🔄 Función auxiliar para mantener actualizados tus otros scripts automáticos
 func _sincronizar_con_autoloads():
