@@ -44,35 +44,50 @@ func _inicializar_configuracion():
 	else:
 		print("🚀 GlobalConfig: Modo producción (Web HTML5) activo. Solicitando credenciales a Render...")
 		
-		# Configuramos la URL de Gemini para que use tu pasarela PHP en Render
 		GEMINI_URL = RENDER_SERVER_URL + "index.php"
 		
-		# Levantamos una petición HTTP inmediata para traer las llaves de Supabase
 		var http_client = HTTPRequest.new()
 		add_child(http_client)
 		http_client.accept_gzip = false
 		
 		http_client.request_completed.connect(func(result, response_code, headers, body):
+			print("🚨 [HTTP COMPLETADO] CÓDIGO DE RESPUESTA DE RENDER: ", response_code)
+			
 			if response_code == 200:
+				var texto_plano = body.get_string_from_utf8()
+				
+				# 🔍 IMPRESIÓN 1: ¿Qué texto crudo está mandando el servidor?
+				print("====== TEXTO CRUDO DESDE RENDER ======")
+				print(texto_plano)
+				print("=======================================")
+				
 				var json = JSON.new()
-				if json.parse(body.get_string_from_utf8()) == OK:
+				if json.parse(texto_plano) == OK:
 					var config_data = json.data
 					
-					# Extraemos lo que Render guardó de forma segura en sus variables de entorno
+					# Asignamos las variables
 					SUPABASE_URL = str(config_data.get("supabase_url", ""))
 					SUPABASE_ANON_KEY = str(config_data.get("supabase_anon_key", ""))
 					
-					print("✅ [Render] Credenciales de Supabase obtenidas con éxito en producción.")
+					# 🔍 IMPRESIÓN 2: Ver el contenido exacto de las variables parseadas
+					print("🔍 VERIFICACIÓN DE VARIABLES EXTRAÍDAS:")
+					print("   👉 SUPABASE_URL ACTUAL: ", SUPABASE_URL.to_upper())
+					print("   👉 SUPABASE_ANON_KEY LARGO: ", SUPABASE_ANON_KEY.length(), " CARACTERES")
+					
+					if SUPABASE_URL == "" or SUPABASE_URL == "null":
+						print("❌ ERROR: LAS LLAVES LLEGARON VACÍAS DESDE EL PHP DE RENDER")
+					else:
+						print("✅ CREDENCIALES ASIGNADAS CORRECTAMENTE EN MEMORIA")
+						
 					_sincronizar_con_autoloads()
 				else:
-					print("❌ Error al parsear el JSON recibido de Render.")
+					print("❌ ERROR CRÍTICO: NO SE PUDO PARSEAR EL JSON. EL TEXTO NO TIENE FORMATO VÁLIDO.")
 			else:
-				print("❌ Falló la conexión con la pasarela de Render. Código: ", response_code)
+				print("❌ FALLÓ LA CONEXIÓN CON LA PASARELA DE RENDER. CÓDIGO: ", response_code)
 			
 			http_client.queue_free()
 		)
 		
-		# Le pedimos la configuración a tu backend usando la acción correspondiente
 		var url_peticion = RENDER_SERVER_URL + "?action=get_config"
 		http_client.request(url_peticion, [], HTTPClient.METHOD_GET)
 
