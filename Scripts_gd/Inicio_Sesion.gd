@@ -17,13 +17,16 @@ func _ready():
 	contenedor.pivot_offset = contenedor.size / 2 
 	self.visible = false
 	
-	# 🛠️ SEGURO ADICIONAL: Esperamos un cuadro para garantizar que los Autoloads globales 
-	# hayan cargado las URLs desde Render antes de que los botones ejecuten peticiones.
-	await get_tree().process_frame
-	
 	if not http_request.request_completed.is_connected(_on_request_completed):
 		http_request.request_completed.connect(_on_request_completed)
 	http_request.accept_gzip = false
+	
+	# ⏳ NUEVO SEGURO: Si estamos en la Web, esperamos a que GlobalConfig reciba las credenciales de Render
+	if not FileAccess.file_exists("res://.env"):
+		print("⏳ InterfazLogin: Esperando a que se sincronicen las credenciales de Render...")
+		while GlobalConfig.SUPABASE_URL == "":
+			await get_tree().create_timer(0.1).timeout # Espera ráfagas de 100ms
+		print("✨ InterfazLogin: Credenciales recibidas. Interfaz lista para operar.")
 
 func aparecer():
 	self.visible = true
@@ -40,8 +43,10 @@ func _on_boton_cerrar_pressed() -> void:
 
 # 🛠️ FUNCIÓN AUXILIAR PARA ASEGURAR UNA RUTA LIMPIA
 func _obtener_url_tabla(tabla: String) -> String:
-	var url_base = ConexionSupabase.SUPABASE_URL
-	# Si por alguna razón la URL de Render no termina en "/", se la agregamos de forma dinámica
+	# Apuntamos directamente al almacén central que se llena desde Render
+	var url_base = GlobalConfig.SUPABASE_URL
+	
+	# Si por alguna razón la URL no termina en "/", se la agregamos de forma dinámica
 	if not url_base.ends_with("/"):
 		url_base += "/"
 	return url_base + tabla
@@ -89,9 +94,11 @@ func _on_boton_registrar_pressed() -> void:
 	enviar_peticion_supabase(url_base_usuarios, HTTPClient.METHOD_POST, JSON.stringify(datos))
 
 func enviar_peticion_supabase(url: String, metodo: int, cuerpo: String):
-	print("📡 [HTTP ENVIANDO] URL Final: ", url) # 👈 Esto nos dirá en la consola del navegador si la URL se armó bien
+	print("📡 [HTTP ENVIANDO] URL Final: ", url) 
 	
-	var anon_key_global = ConexionSupabase.SUPABASE_ANON_KEY
+	# Extraemos la llave oficial inyectada desde Render
+	var anon_key_global = GlobalConfig.SUPABASE_ANON_KEY
+	
 	var headers = [
 		"apikey: " + anon_key_global,
 		"Authorization: Bearer " + anon_key_global,
