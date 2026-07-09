@@ -88,7 +88,9 @@ func _inicializar_configuracion():
 			http_client.queue_free()
 		)
 		
-		var url_peticion = RENDER_SERVER_URL + "?action=get_config"
+		# Le pedimos la configuración usando una ruta limpia que el strpos() de PHP pescará sí o sí
+		var url_peticion = RENDER_SERVER_URL + "index.php?action=get_config"
+		print("📡 [Render] Solicitando credenciales de entorno en: ", url_peticion)
 		http_client.request(url_peticion, [], HTTPClient.METHOD_GET)
 
 # 🔄 Función auxiliar para mantener actualizados tus otros scripts automáticos
