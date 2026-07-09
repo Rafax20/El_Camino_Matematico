@@ -4,21 +4,21 @@ signal preguntas_descargadas(lista)
 signal progreso_recibido(datos)
 signal progreso_creado_exito()
 
-# Estas constantes desaparecen y se vuelven variables dinámicas
-var base_url = ""
-var anon_key = ""
+# 🛠️ CAMBIO AQUÍ: Usamos los nombres estandarizados que busca la interfaz de login
+var SUPABASE_URL = ""
+var SUPABASE_ANON_KEY = ""
 
 func _ready():
 	# Esperamos un frame para asegurarnos de que GlobalConfig haya leído el .env
 	await get_tree().process_frame
-	base_url = GlobalConfig.SUPABASE_URL
-	anon_key = GlobalConfig.SUPABASE_ANON_KEY
+	SUPABASE_URL = GlobalConfig.SUPABASE_URL
+	SUPABASE_ANON_KEY = GlobalConfig.SUPABASE_ANON_KEY
 
 # Función auxiliar para no repetir las cabeceras en cada método
 func _obtener_cabeceras(incluir_json: bool = false) -> Array:
 	var headers = [
-		"apikey: " + anon_key,
-		"Authorization: Bearer " + anon_key
+		"apikey: " + SUPABASE_ANON_KEY,
+		"Authorization: Bearer " + SUPABASE_ANON_KEY
 	]
 	if incluir_json:
 		headers.append("Content-Type: application/json")
@@ -40,7 +40,7 @@ func descargar_preguntas():
 	)
 	
 	# CONCATENACIÓN DINÁMICA: URL Base + endpoint de la tabla
-	var url_final = base_url + "preguntas?select=*"
+	var url_final = SUPABASE_URL + "preguntas?select=*"
 	cliente_http.request(url_final, _obtener_cabeceras(), HTTPClient.METHOD_GET)
 
 func pedir_progreso_usuario():
@@ -61,7 +61,7 @@ func pedir_progreso_usuario():
 	)
 	
 	# CONCATENACIÓN DINÁMICA: URL Base + endpoint + parámetros de consulta
-	var url_final = base_url + "progreso?usuario_id=eq." + str(DatosUsuario.usuario_id_db)
+	var url_final = SUPABASE_URL + "progreso?usuario_id=eq." + str(DatosUsuario.usuario_id_db)
 	http_get.request(url_final, _obtener_cabeceras(), HTTPClient.METHOD_GET)
 
 func actualizar_progreso_en_nube(casilla: int, pendiente: bool):
@@ -79,7 +79,7 @@ func actualizar_progreso_en_nube(casilla: int, pendiente: bool):
 	}
 	
 	# CONCATENACIÓN DINÁMICA
-	var url_final = base_url + "progreso?usuario_id=eq." + str(DatosUsuario.usuario_id_db)
+	var url_final = SUPABASE_URL + "progreso?usuario_id=eq." + str(DatosUsuario.usuario_id_db)
 	var headers = _obtener_cabeceras(true)
 	headers.append("Prefer: return=minimal")
 	
@@ -109,7 +109,7 @@ func registrar_en_historial(categoria: String, es_correcta: bool, tiempo: float)
 	}
 	
 	# CONCATENACIÓN DINÁMICA
-	var url_final = base_url + "historial_respuestas"
+	var url_final = SUPABASE_URL + "historial_respuestas"
 	var headers = _obtener_cabeceras(true)
 	headers.append("Prefer: return=minimal")
 	
@@ -148,7 +148,7 @@ func cargar_album_nube():
 	)
 	
 	# CONCATENACIÓN DINÁMICA
-	var url_final = base_url + "progreso_album?user_id=eq." + DatosUsuario.usuario_uuid
+	var url_final = SUPABASE_URL + "progreso_album?user_id=eq." + DatosUsuario.usuario_uuid
 	http_get_album.request(url_final, _obtener_cabeceras(), HTTPClient.METHOD_GET)
 
 func crear_fila_album_inicial(uuid_usuario: String):
@@ -165,7 +165,7 @@ func crear_fila_album_inicial(uuid_usuario: String):
 	)
 	
 	# CONCATENACIÓN DINÁMICA
-	var url_final = base_url + "progreso_album"
+	var url_final = SUPABASE_URL + "progreso_album"
 	var headers = _obtener_cabeceras(true)
 	headers.append("Prefer: return=representation")
 	
@@ -196,7 +196,7 @@ func registrar_lamina_ganada(id_lamina: int):
 	)
 	
 	# CONCATENACIÓN DINÁMICA
-	var url_final = base_url + "progreso_album?user_id=eq." + DatosUsuario.usuario_uuid
+	var url_final = SUPABASE_URL + "progreso_album?user_id=eq." + DatosUsuario.usuario_uuid
 	var headers = _obtener_cabeceras(true)
 	headers.append("Prefer: return=minimal")
 	

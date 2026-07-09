@@ -17,6 +17,10 @@ func _ready():
 	contenedor.pivot_offset = contenedor.size / 2 
 	self.visible = false
 	
+	# 🛠️ SEGURO ADICIONAL: Esperamos un cuadro para garantizar que los Autoloads globales 
+	# hayan cargado las URLs desde Render antes de que los botones ejecuten peticiones.
+	await get_tree().process_frame
+	
 	if not http_request.request_completed.is_connected(_on_request_completed):
 		http_request.request_completed.connect(_on_request_completed)
 	http_request.accept_gzip = false
@@ -34,7 +38,17 @@ func _on_boton_cerrar_pressed() -> void:
 	await tween.finished
 	self.visible = false
 
+# 🛠️ FUNCIÓN AUXILIAR PARA ASEGURAR UNA RUTA LIMPIA
+func _obtener_url_tabla(tabla: String) -> String:
+	var url_base = ConexionSupabase.SUPABASE_URL
+	# Si por alguna razón la URL de Render no termina en "/", se la agregamos de forma dinámica
+	if not url_base.ends_with("/"):
+		url_base += "/"
+	return url_base + tabla
+
 func _on_boton_entrar_pressed() -> void:
+	if operacion_actual == "LOGIN": return # Evita spam de clicks si ya está conectando
+	
 	var usuario = input_usuario.text.to_lower().strip_edges()
 	var clave = input_clave.text.strip_edges()
 	
@@ -47,13 +61,14 @@ func _on_boton_entrar_pressed() -> void:
 	operacion_actual = "LOGIN"
 	print("🔍 Intentando iniciar sesión con Usuario: '" + usuario + "'")
 	
-	# 🌐 Como tu SUPABASE_URL en Render ya termina en /rest/v1/, solo le concatenamos la tabla directamente
-	var url_base_usuarios = ConexionSupabase.SUPABASE_URL + "usuarios"
+	var url_base_usuarios = _obtener_url_tabla("usuarios")
 	var url_peticion = url_base_usuarios + "?usuario=eq." + usuario + "&clave=eq." + clave
 	
 	enviar_peticion_supabase(url_peticion, HTTPClient.METHOD_GET, "")
 
 func _on_boton_registrar_pressed() -> void:
+	if operacion_actual == "REGISTRO": return # Evita duplicar registros por clicks rápidos
+	
 	var usuario = input_usuario.text.to_lower().strip_edges()
 	var clave = input_clave.text.strip_edges()
 	
@@ -70,23 +85,24 @@ func _on_boton_registrar_pressed() -> void:
 		"rol": "estudiante"
 	}
 	
-	# 🌐 Concatenamos la tabla directamente
-	var url_base_usuarios = ConexionSupabase.SUPABASE_URL + "usuarios"
+	var url_base_usuarios = _obtener_url_tabla("usuarios")
 	enviar_peticion_supabase(url_base_usuarios, HTTPClient.METHOD_POST, JSON.stringify(datos))
 
 func enviar_peticion_supabase(url: String, metodo: int, cuerpo: String):
-	# 🔑 Las cabeceras de seguridad ahora se alimentan de la clave única global
-	var anon_key_global = ConexionSupabase.SUPABASE_ANON_KEY
+	print("📡 [HTTP ENVIANDO] URL Final: ", url) # 👈 Esto nos dirá en la consola del navegador si la URL se armó bien
 	
+	var anon_key_global = ConexionSupabase.SUPABASE_ANON_KEY
 	var headers = [
 		"apikey: " + anon_key_global,
 		"Authorization: Bearer " + anon_key_global,
 		"Content-Type: application/json",
 		"Prefer: return=representation"
 	]
+	
 	var error = http_request.request(url, headers, metodo, cuerpo)
 	if error != OK:
-		print("❌ Error al levantar la conexión HTTPRequest")
+		print("❌ Error inmediato al levantar HTTPRequest")
+		operacion_actual = ""
 		animar_error_infantil("¡Error de red interno!")
 
 # ==========================================
@@ -96,13 +112,23 @@ func _on_request_completed(result, response_code, headers, body):
 	var respuesta = body.get_string_from_utf8()
 	print("📡 Servidor respondió con código: " + str(response_code))
 	
+	# 🛠️ Manejo de fallos silenciosos en HTML5 (CORS o desconexión)
+	if response_code == 0:
+		print("❌ ERROR CRÍTICO: Código 0 recibido. Esto suele ser un bloqueo de CORS en el navegador o URL caída.")
+		operacion_actual = ""
+		animar_error_infantil("¡Bloqueo de conexión Web!")
+		return
+
 	var json = JSON.new()
 	if json.parse(respuesta) != OK:
-		print("❌ Error al parsear JSON")
+		print("❌ Error al parsear JSON. Respuesta cruda: " + respuesta)
+		operacion_actual = ""
+		animar_error_infantil("¡Error de datos!")
 		return
 		
 	if response_code != 200 and response_code != 201:
 		print("❌ Error de comunicación con la API. Respuesta: " + respuesta)
+		operacion_actual = ""
 		animar_error_infantil("¡Error de conexión!")
 		return
 
@@ -112,8 +138,6 @@ func _on_request_completed(result, response_code, headers, body):
 		if datos_recibidos is Array and datos_recibidos.size() > 0:
 			var user_data = datos_recibidos[0]
 			
-			print("🚨 [DIAGNÓSTICO LOGIN] Todo lo que llegó del usuario: ", user_data)
-			
 			DatosUsuario.esta_conectado_a_la_nube = true
 			DatosUsuario.usuario_id_db = int(user_data.get("id", 0))
 			DatosUsuario.usuario_uuid = str(user_data.get("user_id", ""))
@@ -121,44 +145,38 @@ func _on_request_completed(result, response_code, headers, body):
 			DatosUsuario.dificultad_actual = int(user_data.get("dificultad", 0))
 			DatosUsuario.rol = str(user_data.get("rol", "estudiante"))
 			
-			print("👤 Usuario validado. Buscando su progreso en la base de datos...")
 			print("👤 Usuario validado con rol: " + DatosUsuario.rol)
 			
 			if DatosUsuario.rol == "maestro":
-				print("👨‍🏫 Bienvenido Maestro. Abriendo Panel de Analítica...")
 				_on_boton_cerrar_pressed()
 				get_tree().change_scene_to_file("res://Escenas/PanelMaestro.tscn")
 			else:
-				print("🎒 Bienvenido Estudiante. Buscando progreso...")
 				operacion_actual = "PROGRESO"
-				
-				# 🌐 Construcción dinámica de la URL de progreso usando la raíz global
-				var url_progreso = ConexionSupabase.SUPABASE_URL + "progreso?usuario_id=eq." + str(DatosUsuario.usuario_id_db)
+				var url_progreso = _obtener_url_tabla("progreso") + "?usuario_id=eq." + str(DatosUsuario.usuario_id_db)
 				enviar_peticion_supabase(url_progreso, HTTPClient.METHOD_GET, "")
 		else:
 			print("❌ Login fallido: Credenciales incorrectas.")
+			operacion_actual = ""
 			animar_error_infantil("¡Usuario o Clave incorrectos!")
 
 	elif operacion_actual == "PROGRESO":
 		if datos_recibidos is Array and datos_recibidos.size() > 0:
 			var progreso_data = datos_recibidos[0]
-			
 			DatosUsuario.pregunta_pendiente_db = bool(progreso_data.get("pregunta_pendiente", false))
 			DatosUsuario.casilla_actual_db = int(progreso_data.get("casilla_actual", 0))
 			DatosUsuario.dificultad_actual = int(progreso_data.get("dificultad", 0))
 			
-			print("🎉 ¡Sesión y progreso guardados con éxito en Globales!")
-			
 			ConexionSupabase.cargar_album_nube()
 			_abrir_interfaz_bienvenida()
 		else:
-			print("🆕 El usuario no tiene fila de progreso en la nube. Inicializando tabla...")
+			print("🆕 Inicializando tabla de progreso...")
 			var es_migracion = (DatosUsuario.casilla_actual_db > 0 or DatosUsuario.laminas_poseidas.size() > 0)
 			ConexionSupabase.inicializar_progreso_nuevo_usuario(es_migracion)
 			_abrir_interfaz_bienvenida()
 
 	elif operacion_actual == "REGISTRO":
 		print("🎉 ¡Registro exitoso en la nube!")
+		operacion_actual = "" # Limpiamos para permitir la llamada inmediata del login
 		_on_boton_entrar_pressed()
 
 # ==========================================
@@ -184,7 +202,7 @@ func animar_error_infantil(mensaje: String):
 	tween_scale.tween_property(contenedor, "scale", Vector2(1.0, 1.0), 0.1)
 
 func _abrir_interfaz_bienvenida():
-	texto_titulo.text = "Bienvenido de Nuevo estudiante " + str(DatosUsuario.nombre_usuario)
+	texto_titulo.text = "Bienvenido de Nuevo " + str(DatosUsuario.nombre_usuario)
 	texto_titulo.modulate = Color(0.375, 0.677, 0.218, 1.0)
 	await get_tree().create_timer(2.0).timeout
 	_on_boton_cerrar_pressed()
