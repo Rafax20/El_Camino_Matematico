@@ -7,7 +7,7 @@ var SUPABASE_URL: String = ""
 var SUPABASE_ANON_KEY: String = ""
 
 # 🌍 TU ÚNICA URL BASE DE RENDER (Asegúrate de que coincida con tu servicio Live)
-const RENDER_SERVER_URL = "https://july-videojuego-render.onrender.com"
+const RENDER_SERVER_URL = "https://july-videojuego-render.onrender.com/"
 
 func _ready():
 	_inicializar_configuracion()
