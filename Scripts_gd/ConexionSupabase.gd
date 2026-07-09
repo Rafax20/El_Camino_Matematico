@@ -16,7 +16,7 @@ func _ready():
 	if GlobalConfig.SUPABASE_URL == "":
 		print("⚠️ [ADVERTENCIA] GlobalConfig vacío, usando URL de respaldo.")
 		SUPABASE_URL = "https://zwgiwmspfuebqvbsttto.supabase.co/rest/v1/"
-		SUPABASE_ANON_KEY = "TU_CLAVE_ANON_AQUÍ" # <--- ¡PON TU KEY REAL AQUÍ!
+		SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp3Z2l3bXNwZnVlYnF2YnN0dHRvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg1ODg2MjMsImV4cCI6MjA5NDE2NDYyM30.tkM_AYmXhLEqfCLgvpTczRMigV-hL44bpHCs5Z-sHuc"
 	else:
 		SUPABASE_URL = GlobalConfig.SUPABASE_URL
 		SUPABASE_ANON_KEY = GlobalConfig.SUPABASE_ANON_KEY

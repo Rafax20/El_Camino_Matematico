@@ -80,8 +80,7 @@ func _inicializar_configuracion():
 func _activar_respaldo(motivo):
 	print("⚠️ [ADVERTENCIA] Fallo en Render: ", motivo, ". Cargando credenciales fijas.")
 	SUPABASE_URL = "https://zwgiwmspfuebqvbsttto.supabase.co/rest/v1/"
-	SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp3Z2l3bXNwZnVlYnF2YnN0dHRvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg1ODg2MjMsImV4cCI6MjA5NDE2NDYyM30.tkM_AYmXhLEqfCLgvpTczRMigV-hL44bpHCs5Z-sHuc" # PEGA AQUÍ TU LLAVE REAL
-
+	SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp3Z2l3bXNwZnVlYnF2YnN0dHRvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg1ODg2MjMsImV4cCI6MjA5NDE2NDYyM30.tkM_AYmXhLEqfCLgvpTczRMigV-hL44bpHCs5Z-sHuc"
 # 🔄 Función auxiliar para mantener actualizados tus otros scripts automáticos
 func _sincronizar_con_autoloads():
 	if ResourceLoader.exists("res://ConexionSupabase.gd") or ConexionSupabase:
