@@ -9,10 +9,6 @@ extends Control
 # --- REFERENCIA AL SCRIPT DE SUPABASE (CONEXIÓN NATIVA) ---
 @onready var http_request = $HTTPRequest 
 
-const SUPABASE_URL_USUARIOS = "https://zwgiwmspfuebqvbsttto.supabase.co/rest/v1/usuarios"
-const SUPABASE_URL_PROGRESO = "https://zwgiwmspfuebqvbsttto.supabase.co/rest/v1/progreso"
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp3Z2l3bXNwZnVlYnF2YnN0dHRvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg1ODg2MjMsImV4cCI6MjA5NDE2NDYyM30.tkM_AYmXhLEqfCLgvpTczRMigV-hL44bpHCs5Z-sHuc"
-
 var operacion_actual: String = ""
 
 func _ready():
@@ -51,8 +47,11 @@ func _on_boton_entrar_pressed() -> void:
 	operacion_actual = "LOGIN"
 	print("🔍 Intentando iniciar sesión con Usuario: '" + usuario + "'")
 	
-	var url = SUPABASE_URL_USUARIOS + "?usuario=eq." + usuario + "&clave=eq." + clave
-	enviar_peticion_supabase(url, HTTPClient.METHOD_GET, "")
+	# 🌐 Traemos la URL base desde el Autoload Global de forma limpia
+	var url_base_usuarios = ConexionSupabase.SUPABASE_URL + "/rest/v1/usuarios"
+	var url_peticion = url_base_usuarios + "?usuario=eq." + usuario + "&clave=eq." + clave
+	
+	enviar_peticion_supabase(url_peticion, HTTPClient.METHOD_GET, "")
 
 func _on_boton_registrar_pressed() -> void:
 	var usuario = input_usuario.text.to_lower().strip_edges()
@@ -65,18 +64,22 @@ func _on_boton_registrar_pressed() -> void:
 	operacion_actual = "REGISTRO"
 	print("📝 Intentando registrar al Usuario: '" + usuario + "'")
 	
-	# 🛠️ CORRECCIÓN AQUÍ: Añadimos el rol limpio sin agregados de Postgres
 	var datos = { 
 		"usuario": usuario, 
 		"clave": clave,
-		"rol": "estudiante" # 👈 Mandamos la palabra limpia
+		"rol": "estudiante"
 	}
-	enviar_peticion_supabase(SUPABASE_URL_USUARIOS, HTTPClient.METHOD_POST, JSON.stringify(datos))
+	
+	var url_base_usuarios = ConexionSupabase.SUPABASE_URL + "/rest/v1/usuarios"
+	enviar_peticion_supabase(url_base_usuarios, HTTPClient.METHOD_POST, JSON.stringify(datos))
 
 func enviar_peticion_supabase(url: String, metodo: int, cuerpo: String):
+	# 🔑 Las cabeceras de seguridad ahora se alimentan de la clave única global
+	var anon_key_global = ConexionSupabase.SUPABASE_ANON_KEY
+	
 	var headers = [
-		"apikey: " + SUPABASE_ANON_KEY,
-		"Authorization: Bearer " + SUPABASE_ANON_KEY,
+		"apikey: " + anon_key_global,
+		"Authorization: Bearer " + anon_key_global,
 		"Content-Type: application/json",
 		"Prefer: return=representation"
 	]
@@ -108,13 +111,7 @@ func _on_request_completed(result, response_code, headers, body):
 		if datos_recibidos is Array and datos_recibidos.size() > 0:
 			var user_data = datos_recibidos[0]
 			
-			print("🚨 [DIAGNÓSTICO LOGIN] Todo lo que llegó del usuario: ", user_data) # 👈 AÑADE ESTO
-			
-			DatosUsuario.esta_conectado_a_la_nube = true
-			DatosUsuario.usuario_id_db = int(user_data.get("id", 0))
-			DatosUsuario.usuario_uuid = str(user_data.get("user_id", ""))
-			
-			
+			print("🚨 [DIAGNÓSTICO LOGIN] Todo lo que llegó del usuario: ", user_data)
 			
 			DatosUsuario.esta_conectado_a_la_nube = true
 			DatosUsuario.usuario_id_db = int(user_data.get("id", 0))
@@ -129,11 +126,13 @@ func _on_request_completed(result, response_code, headers, body):
 			if DatosUsuario.rol == "maestro":
 				print("👨‍🏫 Bienvenido Maestro. Abriendo Panel de Analítica...")
 				_on_boton_cerrar_pressed()
-				get_tree().change_scene_to_file("res://Escenas/PanelMaestro.tscn") # 👈 Tu futura escena de maestro
+				get_tree().change_scene_to_file("res://Escenas/PanelMaestro.tscn")
 			else:
 				print("🎒 Bienvenido Estudiante. Buscando progreso...")
 				operacion_actual = "PROGRESO"
-				var url_progreso = SUPABASE_URL_PROGRESO + "?usuario_id=eq." + str(DatosUsuario.usuario_id_db)
+				
+				# 🌐 Construcción dinámica de la URL de progreso usando la raíz global
+				var url_progreso = ConexionSupabase.SUPABASE_URL + "/rest/v1/progreso?usuario_id=eq." + str(DatosUsuario.usuario_id_db)
 				enviar_peticion_supabase(url_progreso, HTTPClient.METHOD_GET, "")
 		else:
 			print("❌ Login fallido: Credenciales incorrectas.")
@@ -149,9 +148,7 @@ func _on_request_completed(result, response_code, headers, body):
 			
 			print("🎉 ¡Sesión y progreso guardados con éxito en Globales!")
 			
-			# ⚽ ¡AQUÍ ESTÁ LA CLAVE!: Forzamos a cargar o auto-crear el álbum desde la red
 			ConexionSupabase.cargar_album_nube()
-			
 			_abrir_interfaz_bienvenida()
 		else:
 			print("🆕 El usuario no tiene fila de progreso en la nube. Inicializando tabla...")
@@ -164,7 +161,7 @@ func _on_request_completed(result, response_code, headers, body):
 		_on_boton_entrar_pressed()
 
 # ==========================================
-# 💥 ANIMACIÓN INFANTIL DE ERROR_
+# 💥 ANIMACIÓN INFANTIL DE ERROR
 # ==========================================
 func animar_error_infantil(mensaje: String):
 	texto_titulo.text = mensaje
