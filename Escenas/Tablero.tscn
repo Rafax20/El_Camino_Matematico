@@ -58,6 +58,7 @@ scale = Vector2(0.43, 0.362)
 texture = ExtResource("6_4uepw")
 
 [node name="Interfaz" parent="." unique_id=562769401 instance=ExtResource("4_alv5u")]
+visible = false
 
 [node name="HTTPRequest" type="HTTPRequest" parent="." unique_id=2062687948]
 

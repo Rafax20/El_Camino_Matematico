@@ -1,6 +1,26 @@
 [gd_scene format=3 uid="uid://c6dick576btfn"]
 
-[ext_resource type="Script" uid="uid://b5skvonxa2hmu" path="res://ChatbotIA.gd" id="1_yyvya"]
+[ext_resource type="Script" uid="uid://b5skvonxa2hmu" path="res://Scripts_gd/ChatbotIA.gd" id="1_yyvya"]
+[ext_resource type="FontFile" uid="uid://cvwfc51hrkou3" path="res://Fuentes/Fredoka/static/Fredoka-Bold.ttf" id="2_6hlwc"]
+[ext_resource type="Texture2D" uid="uid://do4xc2ec2is71" path="res://assets/Interfaz_Login/Boton_X.png" id="2_bo32l"]
+[ext_resource type="Texture2D" uid="uid://3p2biq4ud0vf" path="res://assets/Interfaz_Login/Boton_X_Presionado.png" id="3_ft1x8"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_6hlwc"]
+bg_color = Color(0.98039216, 0.972549, 0.9607843, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_7dhpr"]
+bg_color = Color(1, 1, 1, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bo32l"]
+bg_color = Color(0.6, 0.9490196, 0.6, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
 
 [node name="ChatBox" type="Control" unique_id=2051577020]
 layout_mode = 3
@@ -18,6 +38,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_6hlwc")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=255828309]
 layout_mode = 1
@@ -35,9 +56,19 @@ size_flags_vertical = 3
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
+theme_override_constants/separation = 10
 
-[node name="Label" type="Label" parent="VBoxContainer/ScrollContainer/VBoxContainer" unique_id=1305382831]
+[node name="TextureButton" type="TextureButton" parent="VBoxContainer/ScrollContainer/VBoxContainer" unique_id=925840870]
 layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 4
+texture_normal = ExtResource("2_bo32l")
+texture_pressed = ExtResource("3_ft1x8")
+
+[node name="RichTextLabel" type="RichTextLabel" parent="VBoxContainer/ScrollContainer/VBoxContainer" unique_id=716650935]
+layout_mode = 2
+theme_override_fonts/normal_font = ExtResource("2_6hlwc")
+bbcode_enabled = true
 
 [node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer" unique_id=1485597586]
 custom_minimum_size = Vector2(0, 40)
@@ -46,9 +77,14 @@ layout_mode = 2
 [node name="LineEdit" type="LineEdit" parent="VBoxContainer/HBoxContainer" unique_id=2125412897]
 layout_mode = 2
 size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_styles/normal = SubResource("StyleBoxFlat_7dhpr")
 
 [node name="Button" type="Button" parent="VBoxContainer/HBoxContainer" unique_id=1251802115]
 custom_minimum_size = Vector2(80, 0)
 layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_bo32l")
 
 [node name="HTTPRequest" type="HTTPRequest" parent="." unique_id=1137219732]
+
+[connection signal="pressed" from="VBoxContainer/ScrollContainer/VBoxContainer/TextureButton" to="." method="_on_texture_button_pressed"]

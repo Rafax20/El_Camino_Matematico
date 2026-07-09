@@ -1,0 +1,151 @@
+extends Control
+
+# URL de producción por defecto (Pasarela segura en Render)
+var URL = "https://july-videojuego-render.onrender.com/index.php"
+
+# Variables para el modo de prueba local directo a Google
+var modo_local: bool = false
+var API_KEY_LOCAL: String = ""
+
+# Rutas de tu jerarquía de nodos
+@onready var http_request = $HTTPRequest 
+@onready var line_edit = $VBoxContainer/HBoxContainer/LineEdit
+@onready var vbox_mensajes = $VBoxContainer/ScrollContainer/VBoxContainer 
+
+func _ready():
+	# 1. Verificar si podemos usar el entorno local directo
+	_configurar_entorno()
+	
+	# 2. Conexión de componentes de la interfaz
+	$VBoxContainer/HBoxContainer/Button.pressed.connect(_enviar_mensaje)
+	http_request.request_completed.connect(_on_request_completed)
+
+func _configurar_entorno():
+	if FileAccess.file_exists("res://.env"):
+		var archivo = FileAccess.open("res://.env", FileAccess.READ)
+		
+		while not archivo.eof_reached():
+			var linea = archivo.get_line().strip_edges()
+			if linea.begins_with("GEMINI_API_KEY="):
+				var partes = linea.split("=")
+				if partes.size() > 1:
+					API_KEY_LOCAL = partes[1].strip_edges()
+					# Cambiamos la URL a la directa de Google para tus pruebas locales
+					URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=" + API_KEY_LOCAL
+					modo_local = true
+					print("🛠️ Modo local activo: Utilizando API Key del .env directamente con Google.")
+					return
+		print("⚠️ Se encontró el .env pero no la variable GEMINI_API_KEY. Usando Render por defecto.")
+	else:
+		print("🌐 Modo producción activo: No se encontró .env. Usando pasarela de Render.")
+
+func _enviar_mensaje():
+	if URL == "":
+		print("❌ Error: La URL no está configurada.")
+		return
+		
+	var texto = line_edit.text.strip_edges()
+	if texto == "": return
+	
+	agregar_mensaje_a_pantalla("Niño: " + texto)
+	line_edit.text = ""
+	
+	var headers = ["Content-Type: application/json"]
+	var payload_string = ""
+	
+	# 🔀 Estructura condicional según el entorno donde corra el juego
+	if modo_local:
+		# Si es local, enviamos el JSON complejo estructurado que Google exige directamente
+		var prompt_sistema = "Eres July, una tutora pedagógica amigable. Responde solo dudas sobre matemáticas de primaria."
+		var payload_google = {
+			"contents": [{"parts": [{"text": prompt_sistema + "\nNiño: " + texto}]}]
+		}
+		payload_string = JSON.stringify(payload_google)
+	else:
+		# Si es producción en Render, enviamos el JSON simple que espera tu index.php
+		var payload_render = {
+			"prompt": texto
+		}
+		payload_string = JSON.stringify(payload_render)
+	
+	http_request.request(URL, headers, HTTPClient.METHOD_POST, payload_string)
+
+func _on_request_completed(_result, response_code, _headers, body):
+	if response_code == 200:
+		var json = JSON.parse_string(body.get_string_from_utf8())
+		
+		if modo_local:
+			# Procesar formato nativo de Google Gemini
+			if json and json.has("candidates"):
+				var respuesta = json["candidates"][0]["content"]["parts"][0]["text"]
+				agregar_mensaje_a_pantalla("July: " + respuesta)
+			else:
+				print("❌ Error en formato nativo de Google: ", body.get_string_from_utf8())
+		else:
+			# Procesar formato simplificado de tu escudo en Render
+			if json is Dictionary and json.has("response"):
+				var respuesta_july = json["response"]
+				agregar_mensaje_a_pantalla("July: " + respuesta_july)
+			else:
+				print("❌ Error en formato de respuesta desde Render.")
+	else:
+		print("❌ Error de comunicación. Código HTTP: ", response_code)
+		agregar_mensaje_a_pantalla("July: Tuve un pequeño problema al procesar la idea. ¿Me repites la pregunta?")
+
+func agregar_mensaje_a_pantalla(texto: String):
+	# 1. Creamos la burbuja contenedora
+	var burbuja = PanelContainer.new()
+	
+	# Creamos un estilo único y redondeado para la burbuja
+	var estilo_burbuja = StyleBoxFlat.new()
+	estilo_burbuja.corner_radius_top_left = 15
+	estilo_burbuja.corner_radius_top_right = 15
+	estilo_burbuja.corner_radius_bottom_left = 15
+	estilo_burbuja.corner_radius_bottom_right = 15
+	estilo_burbuja.content_margin_left = 12
+	estilo_burbuja.content_margin_right = 12
+	estilo_burbuja.content_margin_top = 8
+	estilo_burbuja.content_margin_bottom = 8
+	
+	# Separamos visualmente si habla el Niño o July
+	if texto.begins_with("Niño:"):
+		estilo_burbuja.bg_color = Color("b3e5fc") # Azul pastel para el niño
+		burbuja.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN # Alineado a la izquierda
+	else:
+		estilo_burbuja.bg_color = Color("fff9c4") # Amarillo/Crema pedagógico para July
+		burbuja.size_flags_horizontal = Control.SIZE_SHRINK_END # Alineado a la derecha (opcional)
+
+	burbuja.add_theme_stylebox_override("panel", estilo_burbuja)
+
+	# 2. Creamos el texto enriquecido (RichTextLabel)
+	var label = RichTextLabel.new()
+	label.bbcode_enabled = true
+	label.autowrap_mode = TextServer.AUTOWRAP_WORD
+	label.fit_content = true
+	label.custom_minimum_size.x = 600 # Ancho máximo de la burbuja antes de saltar de línea
+	
+	# Añadimos un color de texto oscuro (por ejemplo, gris oscuro/azul marino) para que contraste hermoso
+	label.add_theme_color_override("default_color", Color("263238"))
+	
+	# Formateamos las negritas de Markdown a BBCode
+	var texto_formateado = texto
+	while "**" in texto_formateado:
+		texto_formateado = texto_formateado.replace("**", "[b]")
+		if "**" in texto_formateado:
+			texto_formateado = texto_formateado.replace("**", "[/b]")
+
+	label.text = texto_formateado
+	
+	# 3. Ensamblamos la estructura: RichTextLabel dentro de la Burbuja
+	burbuja.add_child(label)
+	
+	# Añadimos la burbuja completa al contenedor vertical principal del chat
+	vbox_mensajes.add_child(burbuja)
+	
+	# Auto-scroll hacia abajo
+	await get_tree().process_frame 
+	$VBoxContainer/ScrollContainer.scroll_vertical = $VBoxContainer/ScrollContainer.get_v_scroll_bar().max_value
+
+
+func _on_texture_button_pressed() -> void:
+	get_tree().change_scene_to_file("res://Escenas/Menu.tscn") # Replace with function body.

@@ -22,6 +22,7 @@ DatosUsuario="*uid://cjhw7knj003td"
 ConexionSupabase="*uid://snojl0p28q50"
 SistemaExperto="*uid://di61audjjgegl"
 GestionAudio="*uid://bl6m8dmurusym"
+GlobalConfig="*uid://dcnddag0miv0e"
 
 [display]
 
