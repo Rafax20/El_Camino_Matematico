@@ -75,6 +75,12 @@ func descargar_preguntas():
 func pedir_progreso_usuario():
 	if not DatosUsuario.esta_conectado_a_la_nube: return
 	
+	# ¡AQUÍ ESTÁ EL CAMBIO!
+	# Validamos que tengamos base antes de lanzar el request
+	if SUPABASE_URL == "" or SUPABASE_URL == "/":
+		print("⚠️ [BLOQUEO] URL no lista, esperando...")
+		await get_tree().create_timer(0.5).timeout
+	
 	var http_get = HTTPRequest.new()
 	add_child(http_get)
 	http_get.accept_gzip = false 
@@ -90,7 +96,7 @@ func pedir_progreso_usuario():
 	)
 	
 	# CONCATENACIÓN DINÁMICA: URL Base + endpoint + parámetros de consulta
-	var url_final = SUPABASE_URL + "progreso?usuario_id=eq." + str(DatosUsuario.usuario_id_db)
+	var url_final = _build_url("progreso?usuario_id=eq." + str(DatosUsuario.usuario_id_db))
 	http_get.request(url_final, _obtener_cabeceras(), HTTPClient.METHOD_GET)
 
 func actualizar_progreso_en_nube(casilla: int, pendiente: bool):
@@ -117,6 +123,12 @@ func actualizar_progreso_en_nube(casilla: int, pendiente: bool):
 func registrar_en_historial(categoria: String, es_correcta: bool, tiempo: float):
 	if not DatosUsuario.esta_conectado_a_la_nube: return
 	
+	# ¡AQUÍ ESTÁ EL CAMBIO!
+	# Validamos que tengamos base antes de lanzar el request
+	if SUPABASE_URL == "" or SUPABASE_URL == "/":
+		print("⚠️ [BLOQUEO] URL no lista, esperando...")
+		await get_tree().create_timer(0.5).timeout
+	
 	var http_historial = HTTPRequest.new()
 	add_child(http_historial)
 	http_historial.accept_gzip = false
@@ -138,7 +150,7 @@ func registrar_en_historial(categoria: String, es_correcta: bool, tiempo: float)
 	}
 	
 	# CONCATENACIÓN DINÁMICA
-	var url_final = SUPABASE_URL + "historial_respuestas"
+	var url_final = _build_url("progreso?usuario_id=eq." + str(DatosUsuario.usuario_id_db))
 	var headers = _obtener_cabeceras(true)
 	headers.append("Prefer: return=minimal")
 	
