@@ -51,6 +51,19 @@ func _inicializar_configuracion():
 			var json = JSON.new()
 			var parse_result = json.parse(texto_plano)
 			
+			print("📡 [DEBUG RENDER] Código recibido: ", response_code)
+			print("📡 [DEBUG RENDER] Longitud del cuerpo: ", texto_plano.length())
+			print("📡 [DEBUG RENDER] Primeros 100 caracteres recibidos: ", texto_plano.substr(0, 100))
+	
+	# Comprobar si el inicio es correcto (debería empezar con '{')
+			if texto_plano.length() > 0 and texto_plano[0] != "{":
+				print("❌ ERROR: El servidor NO envió un JSON. Empezó con: ", texto_plano[0])
+				
+				if json.parse(texto_plano) == OK:
+					print("TODO PIOLA")
+				else:
+					print("❌ ERROR CRÍTICO DE PARSEO: El texto no es JSON válido.")
+			
 			if response_code == 200 and parse_result == OK:
 				var data = json.data
 				if data.has("supabase_url") and data["supabase_url"] != "":
