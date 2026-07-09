@@ -35,10 +35,10 @@ func actualizar_datos_pantalla(datos_pregunta: Dictionary):
 	]
 	opciones.shuffle()
 	
-	label1.text = int(opciones[0])
-	label2.text = int(opciones[1])
-	label3.text = int(opciones[2])
-	label4.text = int(opciones[3])
+	label1.text = str(int(opciones[0]))
+	label2.text = str(int(opciones[1]))
+	label3.text = str(int(opciones[2]))
+	label4.text = str(int(opciones[3]))
 	
 	tiempo_inicio = Time.get_ticks_msec() # Guarda el milisegundo exacto de inicio
 	print("Tiempo transcurrido para tiempo_inicio: ", tiempo_inicio)
