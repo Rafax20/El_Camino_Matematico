@@ -41,8 +41,15 @@ func _inicializar_configuracion():
 		_sincronizar_con_autoloads()
 
 	# 🌐 CASO 2: MODO PRODUCCIÓN (Web HTML5 - No existe .env)
+	# 🌐 CASO 2: MODO PRODUCCIÓN (Web HTML5 - No existe .env)
 	else:
 		print("🚀 GlobalConfig: Modo producción activo. Solicitando credenciales a Render...")
+		
+		# 🛡️ PROTECCIÓN INMEDIATA: Como estamos en producción, forzamos la primera sincronización
+		# con las credenciales fijas de respaldo para que la interfaz no empiece en blanco.
+		print("📦 Cargando credenciales fijas como buffer inicial mientras Render responde.")
+		_sincronizar_con_autoloads()
+		
 		var http_client = HTTPRequest.new()
 		add_child(http_client)
 		
@@ -50,7 +57,6 @@ func _inicializar_configuracion():
 			var texto_plano = body.get_string_from_utf8().strip_edges()
 			
 			# 🧹 LIMPIEZA TOTAL: Eliminamos las barras invertidas que PHP pone a las URLs
-			# Esto es lo que estaba causando que los datos se vean "raros"
 			texto_plano = texto_plano.replace("\\/", "/")
 			
 			print("📡 [DEBUG RENDER] Procesando JSON limpio...")
@@ -60,21 +66,25 @@ func _inicializar_configuracion():
 			
 			if response_code == 200 and parse_result == OK:
 				var data = json.data
-				# Aseguramos que los datos existen antes de asignar
-				if data is Dictionary and data.has("supabase_url"):
+				if data is Dictionary and data.has("supabase_url") and data["supabase_url"] != "":
 					SUPABASE_URL = str(data["supabase_url"])
 					SUPABASE_ANON_KEY = str(data["supabase_anon_key"])
-					print("✅ [Render] Credenciales cargadas exitosamente.")
+					print("✅ [Render] Credenciales actualizadas dinámicamente desde el servidor.")
+					_sincronizar_con_autoloads() # Solo sincroniza si trajo datos reales
 				else:
-					_activar_respaldo("Datos incompletos en el JSON")
+					print("⚠️ JSON incompleto o vacío desde Render. Manteniendo credenciales fijas.")
 			else:
-				# Si falla, imprimimos el error exacto para saber qué pasó
-				print("❌ Fallo en Render. Código: ", response_code, " Parse: ", parse_result)
-				_activar_respaldo("Error de servidor o parseo")
+				# Si falla Render o da error de parseo, NO limpiamos nada, 
+				# dejamos que sigan viviendo las credenciales fijas predeterminadas
+				print("❌ Fallo en Render o carga lenta. Código: ", response_code, ". Manteniendo buffer fijo.")
 			
-			_sincronizar_con_autoloads()
 			http_client.queue_free()
 		)
+		
+		# Solicitud HTTP sin bloquear la ejecución
+		var error_peticion = http_client.request(RENDER_SERVER_URL + "index.php?action=get_config")
+		if error_peticion != OK:
+			print("❌ Error inmediato al levantar HTTPRequest de Render. Usando respaldo por defecto.")
 
 # NUEVA FUNCIÓN DE RESPALDO (El Plan B)
 func _activar_respaldo(motivo):
@@ -83,7 +93,7 @@ func _activar_respaldo(motivo):
 	SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp3Z2l3bXNwZnVlYnF2YnN0dHRvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg1ODg2MjMsImV4cCI6MjA5NDE2NDYyM30.tkM_AYmXhLEqfCLgvpTczRMigV-hL44bpHCs5Z-sHuc"
 # 🔄 Función auxiliar para mantener actualizados tus otros scripts automáticos
 func _sincronizar_con_autoloads():
-	if ResourceLoader.exists("res://ConexionSupabase.gd") or ConexionSupabase:
+	if ResourceLoader.exists("res://Scripts_gd/ConexionSupabase.gd") or ConexionSupabase:
 		ConexionSupabase.SUPABASE_URL = SUPABASE_URL
 		ConexionSupabase.SUPABASE_ANON_KEY = SUPABASE_ANON_KEY
 		print("🔄 Autoload 'ConexionSupabase' sincronizado correctamente.")

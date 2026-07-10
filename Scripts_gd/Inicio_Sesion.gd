@@ -67,6 +67,7 @@ func _on_boton_entrar_pressed() -> void:
 	print("🔍 Intentando iniciar sesión con Usuario: '" + usuario + "'")
 	
 	var url_base_usuarios = _obtener_url_tabla("usuarios")
+	print("URL-BASE-USUARIOS: " + url_base_usuarios)
 	var url_peticion = url_base_usuarios + "?usuario=eq." + usuario + "&clave=eq." + clave
 	
 	enviar_peticion_supabase(url_peticion, HTTPClient.METHOD_GET, "")
@@ -91,7 +92,7 @@ func _on_boton_registrar_pressed() -> void:
 	}
 	
 	var url_base_usuarios = _obtener_url_tabla("usuarios")
-	print("URL_BASE_USUARIOS: " + url_base_usuarios)
+	print("URL-BASE-USUARIOS: " + url_base_usuarios)
 	enviar_peticion_supabase(url_base_usuarios, HTTPClient.METHOD_POST, JSON.stringify(datos))
 
 func enviar_peticion_supabase(url: String, metodo: int, cuerpo: String):
