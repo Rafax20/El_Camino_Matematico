@@ -72,7 +72,20 @@ func _enviar_mensaje():
 
 func _on_request_completed(_result, response_code, _headers, body):
 	if response_code == 200:
-		var json = JSON.parse_string(body.get_string_from_utf8())
+		var texto_crudo = body.get_string_from_utf8().strip_edges()
+		
+		# 🩺 SPY PRINT 1: Ver exactamente qué texto plano responde Render
+		print("🧠 [GEMINI CRUDO] Texto recibido desde Render:\n", texto_crudo)
+		
+		# 🧹 LIMPIEZA: Aplicamos el mismo parche de barras que en GlobalConfig por si acaso
+		texto_crudo = texto_crudo.replace("\\/", "/")
+		
+		var json = JSON.parse_string(texto_crudo)
+		
+		# 🩺 SPY PRINT 2: Ver cómo Godot interpretó el objeto parseado
+		print("🧠 [GEMINI PARSEADO] ¿Es diccionario?: ", json is Dictionary)
+		if json is Dictionary:
+			print("🧠 [GEMINI LLAVES] Llaves encontradas en el JSON: ", json.keys())
 		
 		if modo_local:
 			# Procesar formato nativo de Google Gemini
@@ -80,16 +93,18 @@ func _on_request_completed(_result, response_code, _headers, body):
 				var respuesta = json["candidates"][0]["content"]["parts"][0]["text"]
 				agregar_mensaje_a_pantalla("July: " + respuesta)
 			else:
-				print("❌ Error en formato nativo de Google: ", body.get_string_from_utf8())
+				print("❌ Error en formato nativo de Google: ", texto_crudo)
 		else:
 			# Procesar formato simplificado de tu escudo en Render
+			# 🔍 AQUÍ ES DONDE DABA EL ERROR ANTES
 			if json is Dictionary and json.has("response"):
 				var respuesta_july = json["response"]
 				agregar_mensaje_a_pantalla("July: " + respuesta_july)
 			else:
-				print("❌ Error en formato de respuesta desde Render.")
+				print("❌ Error en formato de respuesta desde Render. Revisa el SPY PRINT 1 y 2 arriba.")
 	else:
 		print("❌ Error de comunicación. Código HTTP: ", response_code)
+		print("Detalles del fallo: ", body.get_string_from_utf8())
 		agregar_mensaje_a_pantalla("July: Tuve un pequeño problema al procesar la idea. ¿Me repites la pregunta?")
 
 func agregar_mensaje_a_pantalla(texto: String):

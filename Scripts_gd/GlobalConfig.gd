@@ -41,7 +41,6 @@ func _inicializar_configuracion():
 		_sincronizar_con_autoloads()
 
 	# 🌐 CASO 2: MODO PRODUCCIÓN (Web HTML5 - No existe .env)
-	# 🌐 CASO 2: MODO PRODUCCIÓN (Web HTML5 - No existe .env)
 	else:
 		print("🚀 GlobalConfig: Modo producción activo. Solicitando credenciales a Render...")
 		
@@ -86,14 +85,9 @@ func _inicializar_configuracion():
 		if error_peticion != OK:
 			print("❌ Error inmediato al levantar HTTPRequest de Render. Usando respaldo por defecto.")
 
-# NUEVA FUNCIÓN DE RESPALDO (El Plan B)
-func _activar_respaldo(motivo):
-	print("⚠️ [ADVERTENCIA] Fallo en Render: ", motivo, ". Cargando credenciales fijas.")
-	SUPABASE_URL = "https://zwgiwmspfuebqvbsttto.supabase.co/rest/v1/"
-	SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp3Z2l3bXNwZnVlYnF2YnN0dHRvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg1ODg2MjMsImV4cCI6MjA5NDE2NDYyM30.tkM_AYmXhLEqfCLgvpTczRMigV-hL44bpHCs5Z-sHuc"
 # 🔄 Función auxiliar para mantener actualizados tus otros scripts automáticos
 func _sincronizar_con_autoloads():
 	if ResourceLoader.exists("res://Scripts_gd/ConexionSupabase.gd") or ConexionSupabase:
-		ConexionSupabase.SUPABASE_URL = SUPABASE_URL
-		ConexionSupabase.SUPABASE_ANON_KEY = SUPABASE_ANON_KEY
+		SUPABASE_URL = ConexionSupabase.SUPABASE_URL
+		SUPABASE_ANON_KEY = ConexionSupabase.SUPABASE_ANON_KEY 
 		print("🔄 Autoload 'ConexionSupabase' sincronizado correctamente.")
