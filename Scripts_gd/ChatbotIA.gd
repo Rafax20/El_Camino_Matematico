@@ -96,12 +96,18 @@ func _on_request_completed(_result, response_code, _headers, body):
 				print("❌ Error en formato nativo de Google: ", texto_crudo)
 		else:
 			# Procesar formato simplificado de tu escudo en Render
-			# 🔍 AQUÍ ES DONDE DABA EL ERROR ANTES
-			if json is Dictionary and json.has("response"):
-				var respuesta_july = json["response"]
-				agregar_mensaje_a_pantalla("July: " + respuesta_july)
+			if json is Dictionary:
+				if json.has("response"):
+					var respuesta_july = json["response"]
+					agregar_mensaje_a_pantalla("July: " + respuesta_july)
+				elif json.has("error"):
+					# 🚨 DETECTADO: Si el servidor manda un error controlado por ti, lo mostramos amigablemente
+					print("⚠️ El servidor de Render reportó un problema interno: ", json["error"])
+					agregar_mensaje_a_pantalla("July: Respondió el servidor, pero hubo un error interno con la IA. ¡Revisa los logs de Render!")
+				else:
+					print("❌ Formato de diccionario desconocido. Llaves: ", json.keys())
 			else:
-				print("❌ Error en formato de respuesta desde Render. Revisa el SPY PRINT 1 y 2 arriba.")
+				print("❌ Error en formato de respuesta desde Render. El JSON no es un diccionario válido.")
 	else:
 		print("❌ Error de comunicación. Código HTTP: ", response_code)
 		print("Detalles del fallo: ", body.get_string_from_utf8())
