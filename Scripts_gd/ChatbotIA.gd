@@ -19,6 +19,7 @@ func _ready():
 	# 2. Conexión de componentes de la interfaz
 	$VBoxContainer/HBoxContainer/Button.pressed.connect(_enviar_mensaje)
 	http_request.request_completed.connect(_on_request_completed)
+	
 
 func _configurar_entorno():
 	if FileAccess.file_exists("res://.env"):
@@ -139,16 +140,26 @@ func agregar_mensaje_a_pantalla(texto: String):
 	burbuja.add_theme_stylebox_override("panel", estilo_burbuja)
 
 	# 2. Creamos el texto enriquecido (RichTextLabel)
-	var label = RichTextLabel.new()
+	var label = RichTextLabel.new() # <-- Aquí nace 'label'
 	label.bbcode_enabled = true
 	label.autowrap_mode = TextServer.AUTOWRAP_WORD
 	label.fit_content = true
-	label.custom_minimum_size.x = 600 # Ancho máximo de la burbuja antes de saltar de línea
+	label.custom_minimum_size.x = 600
 	
-	# Añadimos un color de texto oscuro (por ejemplo, gris oscuro/azul marino) para que contraste hermoso
+	# 🛠️ INYECCIÓN DE EMOJIS: Creamos el soporte antes de pintar el texto
+	var fuente_sistema_emojis = SystemFont.new()
+	fuente_sistema_emojis.font_names = PackedStringArray(["Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji"])
+	
+	# Le decimos a este label específico que si no conoce un caracter, use los emojis del sistema
+	label.add_theme_font_override("normal_font", load("res://Fuentes/Fredoka-Bold.ttf")) # Revisa que tu ruta de Fredoka sea exacta
+	var fuente_principal = label.get_theme_font("normal_font")
+	if fuente_principal:
+		fuente_principal.fallbacks.append(fuente_sistema_emojis)
+	
+	# Añadimos el color de texto oscuro
 	label.add_theme_color_override("default_color", Color("263238"))
 	
-	# Formateamos las negritas de Markdown a BBCode
+	# Formateamos las negritas de Markdown a BBCode (Tu bucle while se queda igual)
 	var texto_formateado = texto
 	while "**" in texto_formateado:
 		texto_formateado = texto_formateado.replace("**", "[b]")
@@ -157,10 +168,8 @@ func agregar_mensaje_a_pantalla(texto: String):
 
 	label.text = texto_formateado
 	
-	# 3. Ensamblamos la estructura: RichTextLabel dentro de la Burbuja
+	# 3. Ensamblamos la estructura
 	burbuja.add_child(label)
-	
-	# Añadimos la burbuja completa al contenedor vertical principal del chat
 	vbox_mensajes.add_child(burbuja)
 	
 	# Auto-scroll hacia abajo
