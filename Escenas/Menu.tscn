@@ -10,6 +10,7 @@
 [ext_resource type="Texture2D" uid="uid://dyom2ylwape35" path="res://assets/Interfaz_Menu/Menu.png" id="7_m10g6"]
 [ext_resource type="FontFile" uid="uid://cvwfc51hrkou3" path="res://Fuentes/Fredoka/static/Fredoka-Bold.ttf" id="8_bcw8w"]
 [ext_resource type="Texture2D" uid="uid://tngpiue2scxd" path="res://assets/Interfaz_Menu/Logros.png" id="8_y57nq"]
+[ext_resource type="Texture2D" uid="uid://bgieuvs7x1834" path="res://assets/Interfaz_Menu/Boton_Jugar_Presionado.png" id="9_27k2t"]
 [ext_resource type="Texture2D" uid="uid://bgldlwytwfean" path="res://assets/Interfaz_Menu/Boton_Instrucciones.png" id="9_bcw8w"]
 [ext_resource type="Texture2D" uid="uid://db6fk04h4y028" path="res://assets/Interfaz_Menu/Logros_Hover.png" id="9_ik8kc"]
 
@@ -59,6 +60,7 @@ offset_right = 1310.1414
 offset_bottom = 260.35913
 scale = Vector2(0.29, 0.29)
 texture_normal = ExtResource("3_m10g6")
+texture_pressed = ExtResource("9_27k2t")
 
 [node name="Texto_Juego" type="RichTextLabel" parent="CanvasLayer/Menu/Boton_Jugar" unique_id=2005389419]
 layout_mode = 0

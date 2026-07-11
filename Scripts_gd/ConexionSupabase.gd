@@ -150,7 +150,7 @@ func registrar_en_historial(categoria: String, es_correcta: bool, tiempo: float)
 	}
 	
 	# CONCATENACIÓN DINÁMICA
-	var url_final = _build_url("progreso?usuario_id=eq." + str(DatosUsuario.usuario_id_db))
+	var url_final = _build_url("historial_respuestas?usuario_id=eq." + str(DatosUsuario.usuario_id_db))
 	var headers = _obtener_cabeceras(true)
 	headers.append("Prefer: return=minimal")
 	
@@ -218,8 +218,14 @@ func crear_fila_album_inicial(uuid_usuario: String):
 
 func registrar_lamina_ganada(id_lamina: int):
 	var id_entero = int(id_lamina)
+	
+	# 1. Agregamos al inventario si no existe (Control local de seguridad)
 	if not DatosUsuario.laminas_poseidas.has(id_entero):
 		DatosUsuario.laminas_poseidas.append(id_entero)
+		
+	# ⚡ MULTIPLICADOR DE INGENIERÍA: Ordenamiento automático de menor a mayor
+	# Esto acomoda instantáneamente [1, 3, 23, 35, 27...] a [1, 3, 20, 21, 23, 27...]
+	DatosUsuario.laminas_poseidas.sort()
 		
 	if not DatosUsuario.esta_conectado_a_la_nube or DatosUsuario.usuario_uuid in ["", "0"]:
 		return
@@ -230,7 +236,7 @@ func registrar_lamina_ganada(id_lamina: int):
 	
 	http_update_album.request_completed.connect(func(result, response_code, headers, body):
 		if response_code in [200, 204]:
-			print("🎉 ¡Nube sincronizada! Lámina guardada: ", id_entero)
+			print("🎉 ¡Nube sincronizada! Láminas ordenadas y guardadas. Última añadida: ", id_entero)
 		else:
 			print("❌ Error al actualizar lámina: ", body.get_string_from_utf8())
 		http_update_album.queue_free()
@@ -241,6 +247,7 @@ func registrar_lamina_ganada(id_lamina: int):
 	var headers = _obtener_cabeceras(true)
 	headers.append("Prefer: return=minimal")
 	
+	# Creamos el arreglo de enteros asegurándonos de que mantenga el orden del .sort()
 	var laminas_limpias: Array = []
 	for x in DatosUsuario.laminas_poseidas:
 		laminas_limpias.append(int(x))

@@ -38,7 +38,8 @@ func _inicializar_configuracion():
 						SUPABASE_ANON_KEY = valor
 						
 		print("✅ GlobalConfig: Variables locales cargadas con éxito.")
-		_sincronizar_con_autoloads()
+		ConexionSupabase.SUPABASE_URL = SUPABASE_URL 
+		ConexionSupabase.SUPABASE_ANON_KEY = SUPABASE_ANON_KEY
 
 	# 🌐 CASO 2: MODO PRODUCCIÓN (Web HTML5 - No existe .env)
 	else:

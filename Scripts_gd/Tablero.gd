@@ -158,20 +158,32 @@ func _on_interfaz_respuesta_completada(es_correcta: bool, tiempo_tardado: float)
 	# 3. 💾 MANEJO DE RESPUESTA, AUDIOS Y FLUJO VISUAL
 	if es_correcta:
 		print("🎯 ¡Correcta! El niño tardó: ", tiempo_tardado, " segundos.")
-		GestionAudio.decir_frase(["¡Excelente! ¡Lo hiciste genial!", "¡Muy bien! Sigue así.", "¡Fabuloso! Respuesta correcta."].pick_random())
+		GestionAudio.reproducir_audio_local("Elogios/" + ["elogio1", "elogio2", "elogio3"].pick_random())
 		
+		# --- SISTEMA DE PREMIACIÓN VISUAL ---
 		# --- SISTEMA DE PREMIACIÓN VISUAL ---
 		if randf() < 0.80:
 			var id_ganado = randi_range(19, 36) 
-			ConexionSupabase.registrar_lamina_ganada(id_ganado)
-			print("LAMINA GANADA: " + str(id_ganado))
+			
+			# 🔍 REVISIÓN: ¿Ya la tiene en su lista global?
+			var es_repetida: bool = DatosUsuario.laminas_poseidas.has(id_ganado)
 			
 			if DatosUsuario.CATALOGO_LAMINAS.has(id_ganado):
-				# 1. Asignamos la textura
-				$CapaLogro/Control/TextureRect.texture = load(DatosUsuario.CATALOGO_LAMINAS[id_ganado])
+				# 1. Asignamos la textura correspondiente de la lámina
 				
-				# 2. Modificamos el texto del Label
-				$CapaLogro/Control/TextureRect/Label.text = "¡Ganaste una nueva lámina!"
+				
+				# 2. 🔀 Modificamos el texto del Label y filtramos el registro en Supabase
+				if es_repetida:
+					print("LAMINA REPETIDA: " + str(id_ganado) + " | No se registra en la base de datos.")
+				else:
+					$CapaLogro/Control/TextureRect.texture = load(DatosUsuario.CATALOGO_LAMINAS[id_ganado])
+					$CapaLogro/Control/TextureRect/Label.text = "¡Ganaste una nueva lámina!"
+					print("¡NUEVA LAMINA!: " + str(id_ganado) + " | Registrando en Supabase...")
+					
+					# ☁️ SOLO REGISTRAMOS EN LA NUBE SI ES NUEVA
+					ConexionSupabase.registrar_lamina_ganada(id_ganado)
+					# La agregamos al inventario local de inmediato
+					DatosUsuario.laminas_poseidas.append(id_ganado)
 				
 				# 3. Activamos la visibilidad y la animación de escala
 				$CapaLogro.visible = true
@@ -197,8 +209,8 @@ func _on_interfaz_respuesta_completada(es_correcta: bool, tiempo_tardado: float)
 		print("❌ ¡Incorrecta! Regresando a casilla anterior: ", casilla_anterior)
 		
 		# 🗣️ Mandamos a reproducir el ánimo pedagógico
-		var animos = ["¡Buen intento! Vamos a practicar otra.", "¡Casi lo tienes! Inténtalo de nuevo.", "No te preocupes, ¡tú puedes lograrlo!"]
-		GestionAudio.decir_frase(animos.pick_random())
+		var animos = ["animo1", "animo2", "animo3"]
+		GestionAudio.reproducir_audio_local("Animos/" + animos.pick_random())
 		
 		# ⏳ Esperamos 2 segundos para que escuche el mensaje de aliento antes de mover la ficha
 		await get_tree().create_timer(2.0).timeout
