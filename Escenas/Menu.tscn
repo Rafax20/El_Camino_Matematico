@@ -5,7 +5,6 @@
 [ext_resource type="Texture2D" uid="uid://koi0nw6y63j6" path="res://assets/Interfaz_Menu/Boton_Jugar.png" id="3_m10g6"]
 [ext_resource type="Texture2D" uid="uid://crdvwp45mjaud" path="res://assets/Interfaz_Menu/Libro.png" id="4_2ahv8"]
 [ext_resource type="Texture2D" uid="uid://c4nlp8upwa24n" path="res://assets/Interfaz_Menu/Libro_Hover.png" id="5_8shpa"]
-[ext_resource type="Script" uid="uid://dqsyaihxqlevf" path="res://Scripts_gd/texture_button.gd" id="6_8shpa"]
 [ext_resource type="FontFile" uid="uid://btqpguoupa7eh" path="res://Fredoka-VariableFont_wdth,wght.ttf" id="7_arsku"]
 [ext_resource type="Texture2D" uid="uid://dyom2ylwape35" path="res://assets/Interfaz_Menu/Menu.png" id="7_m10g6"]
 [ext_resource type="FontFile" uid="uid://cvwfc51hrkou3" path="res://Fuentes/Fredoka/static/Fredoka-Bold.ttf" id="8_bcw8w"]
@@ -13,6 +12,7 @@
 [ext_resource type="Texture2D" uid="uid://bgieuvs7x1834" path="res://assets/Interfaz_Menu/Boton_Jugar_Presionado.png" id="9_27k2t"]
 [ext_resource type="Texture2D" uid="uid://bgldlwytwfean" path="res://assets/Interfaz_Menu/Boton_Instrucciones.png" id="9_bcw8w"]
 [ext_resource type="Texture2D" uid="uid://db6fk04h4y028" path="res://assets/Interfaz_Menu/Logros_Hover.png" id="9_ik8kc"]
+[ext_resource type="Texture2D" uid="uid://b5egvgrk63pp3" path="res://assets/Interfaz_Menu/Boton_Instrucciones_Presionado.png" id="11_27k2t"]
 
 [node name="Node2D" type="Node2D" unique_id=1460850462]
 script = ExtResource("1_o2l53")
@@ -51,7 +51,6 @@ offset_bottom = 714.4286
 scale = Vector2(0.24, 0.24)
 texture_normal = ExtResource("4_2ahv8")
 texture_hover = ExtResource("5_8shpa")
-script = ExtResource("6_8shpa")
 
 [node name="Boton_Jugar" type="TextureButton" parent="CanvasLayer/Menu" unique_id=1875968279]
 offset_left = -242.85861
@@ -88,6 +87,7 @@ offset_right = 1304.1743
 offset_bottom = 394.6997
 scale = Vector2(0.25, 0.25)
 texture_normal = ExtResource("9_bcw8w")
+texture_pressed = ExtResource("11_27k2t")
 
 [node name="Texto_Instrucciones" type="RichTextLabel" parent="CanvasLayer/Menu/Boton_Como_Jugar" unique_id=1547262374]
 layout_mode = 0

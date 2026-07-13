@@ -16,9 +16,14 @@ var paginas_mundial: Array = [
 ]
 
 var pagina_actual_indice: int = 0
+var posicion_original_y: float = 0.0 # 📌 Guardará la altura correcta
+var posicion_original_x: float = 0.0 # 📌 Nueva variable para bloquear la X inicial
 
 func _ready():
 	pagina_actual_indice = 0
+	# Registramos la posición vertical inicial configurada desde el editor
+	posicion_original_y = grid_laminas.position.y
+	posicion_original_x = grid_laminas.position.x
 	await ConexionSupabase.cargar_album_nube()
 	_mostrar_pagina(pagina_actual_indice, "derecha")
 
@@ -69,15 +74,17 @@ func _mostrar_pagina(indice: int, direccion: String):
 	boton_siguiente.visible = (indice < paginas_mundial.size() - 1)
 	
 	# 🎬 4. ANIMACIÓN DE ENTRADA
-	var posicion_original_x = (size.x - grid_laminas.size.x) / 2
 	var offset_entrada = 300 if direccion == "derecha" else -300
-	
+
+	# El punto de destino final siempre será 'posicion_original_x' fijo
 	grid_laminas.position.x = posicion_original_x + offset_entrada
-	
+	grid_laminas.position.y = posicion_original_y 
+
 	var tween_entrada = create_tween().set_parallel(true)
+	# Animamos hacia la posición X fija guardada del editor
 	tween_entrada.tween_property(grid_laminas, "position:x", posicion_original_x, 0.3).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 	tween_entrada.tween_property(grid_laminas, "modulate:a", 1.0, 0.3)
-	
+
 	await tween_entrada.finished
 	
 	# 🔓 5. REINICIO: Reactivamos botones y liberamos el bloqueo

@@ -69,7 +69,6 @@ func verificar_respuesta(texto_boton: String):
 		# Esperamos un segundo para que el niño lea el logro
 		await get_tree().create_timer(1.2).timeout
 		
-		# Restauramos el color original blanco y avisamos al tablero
 		respuesta_completada.emit(true, segundos_tardados)
 	else:
 		print("Incorrecto... ")

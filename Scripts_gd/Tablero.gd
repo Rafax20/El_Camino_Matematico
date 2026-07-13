@@ -3,7 +3,7 @@ extends Node2D
 
 @onready var path_follow = $Path2D/PathFollow2D
 @onready var boton_dado = $BotonDado 
-@onready var Menu_Volver =  $Tablero/Volver_Menu
+@onready var Menu_Volver =  $Tablero1/Volver_Menu
 
 var total_casillas = 23
 var casilla_actual = 0

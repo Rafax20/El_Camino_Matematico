@@ -1,7 +1,7 @@
 extends Node2D
 
 func _on_boton_jugar_pressed():
-	get_tree().change_scene_to_file("res://Escenas/Tablero.tscn")
+	get_tree().change_scene_to_file("res://Escenas/Tablero2.tscn")
 
 func _on_boton_iniciar_sesion_pressed():
 	$CanvasLayer/Menu/Ventana_Autenticacion.aparecer()

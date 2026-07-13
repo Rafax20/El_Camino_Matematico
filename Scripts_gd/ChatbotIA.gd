@@ -56,8 +56,8 @@ func _enviar_mensaje():
 	
 	# 🔀 Estructura condicional según el entorno donde corra el juego
 	if modo_local:
-		# Si es local, enviamos el JSON complejo estructurado que Google exige directamente
-		var prompt_sistema = "Eres July, una tutora pedagógica amigable. Responde solo dudas sobre matemáticas de primaria."
+		# Añadimos la orden estricta de no usar LaTeX ni símbolos de formato científico
+		var prompt_sistema = "Eres July, una tutora pedagógica amigable de matemáticas para niños de primaria. Responde de forma muy corta, directa y alegre (máximo 3 o 4 líneas). IMPORTANTE: Escribe las operaciones matemáticas de forma simple usando la letra 'x' para multiplicar y el signo '+' para sumar. Está estrictamente prohibido usar símbolos de formato matemático como $, \\times o expresiones de tipo LaTeX."
 		var payload_google = {
 			"contents": [{"parts": [{"text": prompt_sistema + "\nNiño: " + texto}]}]
 		}
@@ -146,15 +146,17 @@ func agregar_mensaje_a_pantalla(texto: String):
 	label.fit_content = true
 	label.custom_minimum_size.x = 600
 	
-	# 🛠️ INYECCIÓN DE EMOJIS: Creamos el soporte antes de pintar el texto
-	var fuente_sistema_emojis = SystemFont.new()
-	fuente_sistema_emojis.font_names = PackedStringArray(["Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji"])
+	# 🛠️ CORRECCIÓN DE FUENTES Y EMOJIS EMBEBIDOS
+	# 1. Cargamos Fredoka con tu ruta corregida
+	var fuente_fredoka = load("res://Fuentes/Fredoka/static/Fredoka-Bold.ttf")
+	label.add_theme_font_override("normal_font", fuente_fredoka)
 	
-	# Le decimos a este label específico que si no conoce un caracter, use los emojis del sistema
-	label.add_theme_font_override("normal_font", load("res://Fuentes/Fredoka-Bold.ttf")) # Revisa que tu ruta de Fredoka sea exacta
-	var fuente_principal = label.get_theme_font("normal_font")
-	if fuente_principal:
-		fuente_principal.fallbacks.append(fuente_sistema_emojis)
+	# 2. Cargamos el archivo físico de emojis que descargaste
+	var fuente_emojis = load("res://Fuentes/NotoColorEmoji.ttf")
+	
+	# 3. Se lo asignamos como fallback directo a la fuente principal
+	if fuente_fredoka and fuente_emojis:
+		fuente_fredoka.fallbacks.append(fuente_emojis)
 	
 	# Añadimos el color de texto oscuro
 	label.add_theme_color_override("default_color", Color("263238"))
