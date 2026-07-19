@@ -3,7 +3,7 @@ extends Node2D
 
 @onready var path_follow = $Path2D/PathFollow2D
 @onready var path_alternativo = $Path2D_Derecha
-@onready var boton_dado = $BotonDado 
+@onready var boton_dado = $Panel/BotonDado 
 @onready var Menu_Volver =  $Tablero2/Volver_Menu
 
 var total_casillas = 30
@@ -68,6 +68,7 @@ func _on_boton_dado_pressed():
 	
 	var resultado = randi_range(1, 5)
 	print("🎲 Salió un: ", resultado)
+	$Panel/BotonDado/Numero_Dado.add_text(str(resultado))
 	
 	casilla_actual = clampi(casilla_actual + resultado, 0, total_casillas)
 	
