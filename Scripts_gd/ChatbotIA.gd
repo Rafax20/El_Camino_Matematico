@@ -48,6 +48,9 @@ func _enviar_mensaje():
 	var texto = line_edit.text.strip_edges()
 	if texto == "": return
 	
+	# 🔒 Bloquear botón mientras Render responde
+	$VBoxContainer/HBoxContainer/Button.disabled = true
+	
 	agregar_mensaje_a_pantalla("Niño: " + texto)
 	line_edit.text = ""
 	
@@ -72,6 +75,8 @@ func _enviar_mensaje():
 	http_request.request(URL, headers, HTTPClient.METHOD_POST, payload_string)
 
 func _on_request_completed(_result, response_code, _headers, body):
+	# 🔓 Desbloquear botón al recibir respuesta de Render
+	$VBoxContainer/HBoxContainer/Button.disabled = false
 	if response_code == 200:
 		var texto_crudo = body.get_string_from_utf8().strip_edges()
 		
