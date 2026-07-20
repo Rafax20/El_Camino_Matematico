@@ -60,7 +60,7 @@ theme_override_constants/separation = 10
 
 [node name="TextureButton" type="TextureButton" parent="VBoxContainer/ScrollContainer/VBoxContainer" unique_id=925840870]
 layout_mode = 2
-size_flags_horizontal = 0
+size_flags_horizontal = 8
 size_flags_vertical = 4
 texture_normal = ExtResource("2_bo32l")
 texture_pressed = ExtResource("3_ft1x8")

@@ -5,6 +5,7 @@ extends Node2D
 @onready var path_alternativo = $Path2D_Derecha
 @onready var boton_dado = $Panel/BotonDado 
 @onready var Menu_Volver =  $Tablero2/Volver_Menu
+@onready var boton_chat = $Preguntar_ChatBox
 
 var total_casillas = 30
 var casilla_actual = 0
@@ -26,11 +27,13 @@ var casilla_destino = [
 
 
 func _ready():
+	$Panel.play()
 	$Path2D.visible = true
 	$Path2D/PathFollow2D/Animacion.visible = true
-	await get_tree().process_frame
+	#await get_tree().process_frame
 	servidor_listo = false
 	boton_dado.disabled = true # Bloqueado momentáneamente mientras bajan las preguntas
+	boton_chat.disabled = true
 	$Interfaz.visible = false
 	
 	# 🧭 CONTROL GLOBAL: Leemos los datos que cargó el menú directamente de la memoria RAM
@@ -57,6 +60,7 @@ func _on_preguntas_cargadas(lista):
 	else:
 		print("✅ Camino libre. ¡Desbloqueando botón del dado!")
 		boton_dado.disabled = false
+		boton_chat.disabled = false
 
 func _on_boton_dado_pressed():
 	print("DEBUG: ¡El botón dado fue presionado!") # 👈 ESTO ES CLAVE
@@ -68,6 +72,7 @@ func _on_boton_dado_pressed():
 	
 	var resultado = randi_range(1, 5)
 	print("🎲 Salió un: ", resultado)
+	$Panel/BotonDado/Numero_Dado.clear()
 	$Panel/BotonDado/Numero_Dado.add_text(str(resultado))
 	
 	casilla_actual = clampi(casilla_actual + resultado, 0, total_casillas)
@@ -105,35 +110,33 @@ func _mover_ficha_visualmente(casilla: int, instantaneo: bool):
 func mostrar_pregunta_en_pantalla():
 	if lista_preguntas.size() == 0: return
 	
-	# 1. 🧭 FILTRADO: Creamos la sublista con la dificultad del niño
-	var preguntas_filtradas = lista_preguntas.filter(func(pregunta):
-		return int(pregunta.get("dificultad", 0)) == DatosUsuario.dificultad_actual
-	)
-	
-	# Control de seguridad
-	if preguntas_filtradas.size() == 0:
-		print("⚠️ No hay preguntas para la dificultad: ", DatosUsuario.dificultad_actual)
-		preguntas_filtradas = lista_preguntas
-
-	# 2. 🔄 CONTROL DEL MAZO: ¿Se acabaron las preguntas de esta dificultad?
-	if pregunta_actual_indice >= preguntas_filtradas.size():
-		print("🔄 [Mazo Agotado] El niño respondió todas las preguntas de nivel ", DatosUsuario.dificultad_actual, ". Reiniciando mazo...")
-		pregunta_actual_indice = 0
-		# Barajamos la lista principal para que el nuevo ciclo sea totalmente aleatorio
-		lista_preguntas.shuffle()
-		
-		# Re-filtramos para asegurarnos de tener el mazo fresco y barajado
-		preguntas_filtradas = lista_preguntas.filter(func(pregunta):
+	# 🟢 1. REUTILIZAR PREGUNTA: Si ya había una pregunta asignada y pendiente, mostramos ESA MISMA
+	if not DatosUsuario.pregunta_actual_guardada.is_empty():
+		print("📌 Cargando la misma pregunta pendiente de la memoria...")
+		pregunta_actual = DatosUsuario.pregunta_actual_guardada
+	else:
+		# 🧭 2. FILTRADO POR DIFICULTAD
+		var preguntas_filtradas = lista_preguntas.filter(func(pregunta):
 			return int(pregunta.get("dificultad", 0)) == DatosUsuario.dificultad_actual
 		)
+		
+		if preguntas_filtradas.size() == 0:
+			preguntas_filtradas = lista_preguntas
 
-	# 3. 🎯 ASIGNACIÓN: Tomamos la pregunta usando el índice correlativo
-	pregunta_actual = preguntas_filtradas[pregunta_actual_indice]
+		# 🔄 3. CONTROL DEL MAZO AGOTADO
+		if pregunta_actual_indice >= preguntas_filtradas.size():
+			pregunta_actual_indice = 0
+			lista_preguntas.shuffle()
+			preguntas_filtradas = lista_preguntas.filter(func(pregunta):
+				return int(pregunta.get("dificultad", 0)) == DatosUsuario.dificultad_actual
+			)
+
+		# 🎯 4. NUEVA ASIGNACIÓN Y GUARDADO GLOBAL
+		pregunta_actual = preguntas_filtradas[pregunta_actual_indice]
+		DatosUsuario.pregunta_actual_guardada = pregunta_actual # 👈 Guardamos la referencia
+		pregunta_actual_indice += 1
 	
-	# 4. 📈 AVANCE: Incrementamos el índice para la siguiente casilla
-	pregunta_actual_indice += 1
-	
-	# 5. 📺 INTERFAZ: Mostramos en pantalla
+	# 📺 5. MOSTRAR EN PANTALLA
 	$Interfaz.visible = true
 	$Interfaz.actualizar_datos_pantalla(pregunta_actual)
 	
@@ -145,6 +148,9 @@ func mostrar_pregunta_en_pantalla():
 func _on_interfaz_respuesta_completada(es_correcta: bool, tiempo_tardado: float) -> void:
 	# 🚨 REMOVIDO: Ya no cerramos la interfaz aquí arriba de golpe.
 	DatosUsuario.pregunta_pendiente_db = false
+	
+	# 🧹 LIMPIEZA: Liberamos la pregunta guardada para que la siguiente casilla genere una nueva
+	DatosUsuario.pregunta_actual_guardada = {}
 	
 	# 1. 🧠 EVALUACIÓN DEL SISTEMA EXPERTO
 	var dificultad_anterior = DatosUsuario.dificultad_actual
@@ -172,9 +178,8 @@ func _on_interfaz_respuesta_completada(es_correcta: bool, tiempo_tardado: float)
 		GestionAudio.reproducir_audio_local("Elogios/" + ["elogio1", "elogio2", "elogio3"].pick_random())
 		
 		# --- SISTEMA DE PREMIACIÓN VISUAL ---
-		# --- SISTEMA DE PREMIACIÓN VISUAL ---
 		if randf() < 0.80:
-			var id_ganado = randi_range(19, 36) 
+			var id_ganado = randi_range(1, 38) 
 			
 			# 🔍 REVISIÓN: ¿Ya la tiene en su lista global?
 			var es_repetida: bool = DatosUsuario.laminas_poseidas.has(id_ganado)
@@ -182,12 +187,11 @@ func _on_interfaz_respuesta_completada(es_correcta: bool, tiempo_tardado: float)
 			if DatosUsuario.CATALOGO_LAMINAS.has(id_ganado):
 				# 1. Asignamos la textura correspondiente de la lámina
 				
-				
 				# 2. 🔀 Modificamos el texto del Label y filtramos el registro en Supabase
 				if es_repetida:
 					print("LAMINA REPETIDA: " + str(id_ganado) + " | No se registra en la base de datos.")
 				else:
-					$CapaLogro/Control/TextureRect.texture = load(DatosUsuario.CATALOGO_LAMINAS[id_ganado])
+					$CapaLogro/Control/TextureRect.texture = DatosUsuario.CATALOGO_LAMINAS[id_ganado]
 					$CapaLogro/Control/TextureRect/Label.text = "¡Ganaste una nueva lámina!"
 					print("¡NUEVA LAMINA!: " + str(id_ganado) + " | Registrando en Supabase...")
 					
@@ -195,12 +199,11 @@ func _on_interfaz_respuesta_completada(es_correcta: bool, tiempo_tardado: float)
 					ConexionSupabase.registrar_lamina_ganada(id_ganado)
 					# La agregamos al inventario local de inmediato
 					DatosUsuario.laminas_poseidas.append(id_ganado)
-				
-				# 3. Activamos la visibilidad y la animación de escala
-				$CapaLogro.visible = true
-				$CapaLogro/Control.scale = Vector2.ZERO
-				var tween = create_tween().set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
-				tween.tween_property($CapaLogro/Control, "scale", Vector2.ONE, 0.4)
+					# 3. Activamos la visibilidad y la animación de escala
+					$CapaLogro.visible = true
+					$CapaLogro/Control.scale = Vector2.ZERO
+					var tween = create_tween().set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+					tween.tween_property($CapaLogro/Control, "scale", Vector2.ONE, 0.4)
 				
 				# ⏳ Esperamos 3 segundos para que el niño vea su lámina y lea el cartel
 				await get_tree().create_timer(3.0).timeout
@@ -248,3 +251,7 @@ func enviar_puntuacion(nombre_jugador: String, puntos: int):
 	}
 	var consulta = SupabaseQuery.new().from("puntuaciones").insert([datos])
 	Supabase.database.query(consulta)
+
+
+func _on_preguntar_chat_box_pressed() -> void:
+	NavegacionGlobal.abrir_chatbot()

@@ -63,7 +63,7 @@ func _mostrar_pagina(indice: int, direccion: String):
 		
 		# Referencia al catálogo centralizado en DatosUsuario
 		if DatosUsuario.CATALOGO_LAMINAS.has(id):
-			nueva_ranura.textura_jugador = load(DatosUsuario.CATALOGO_LAMINAS[id])
+			nueva_ranura.textura_jugador = DatosUsuario.CATALOGO_LAMINAS[id]
 		else:
 			nueva_ranura.textura_jugador = null
 			

@@ -180,4 +180,4 @@ func agregar_mensaje_a_pantalla(texto: String):
 
 
 func _on_texture_button_pressed() -> void:
-	get_tree().change_scene_to_file("res://Escenas/Menu.tscn") # Replace with function body.
+	NavegacionGlobal.volver_a_pantalla_previa()

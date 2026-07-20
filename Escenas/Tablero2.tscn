@@ -71,6 +71,7 @@
 [ext_resource type="Texture2D" uid="uid://nkq3askosahg" path="res://assets/Interfaz_Tablero2/Panel_Animacion/Panel_Animacion_33.png" id="38_20eps"]
 [ext_resource type="Texture2D" uid="uid://cjij5skh02bb7" path="res://assets/Interfaz_Tablero2/Boton_Dado_Presionado1.png" id="40_7wci5"]
 [ext_resource type="FontFile" uid="uid://cvwfc51hrkou3" path="res://Fuentes/Fredoka/static/Fredoka-Bold.ttf" id="41_r3pb0"]
+[ext_resource type="Texture2D" uid="uid://5mtmva50cl6" path="res://assets/Interfaz_Tablero2/Gemini_Generated_Image_c4xybqc4xybqc4xy.png" id="72_x60ep"]
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_fwkr1"]
 animations = [{
@@ -543,6 +544,34 @@ visible = false
 
 [node name="CapaLogro" parent="." unique_id=1899274380 instance=ExtResource("34_6anpw")]
 
+[node name="Preguntar_ChatBox" type="TextureButton" parent="." unique_id=2094264741]
+offset_left = 926.0
+offset_top = 341.0
+offset_right = 1928.0
+offset_bottom = 978.0
+scale = Vector2(0.18, 0.18)
+texture_normal = ExtResource("72_x60ep")
+
+[node name="RichTextLabel" type="RichTextLabel" parent="Preguntar_ChatBox" unique_id=1741907789]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 84.99999
+offset_top = -186.99994
+offset_right = 661.11084
+offset_bottom = -11.999939
+grow_vertical = 0
+theme_override_colors/default_color = Color(0.99607843, 0.8745098, 0.27450982, 1)
+theme_override_colors/font_outline_color = Color(0.69411767, 0.2509804, 0.3764706, 1)
+theme_override_constants/outline_size = 18
+theme_override_fonts/normal_font = ExtResource("41_r3pb0")
+theme_override_font_sizes/normal_font_size = 71
+text = "¡Preguntale a la IA!"
+horizontal_alignment = 1
+vertical_alignment = 1
+
 [connection signal="pressed" from="Tablero2/Volver_Menu" to="Tablero2/Volver_Menu" method="_on_boton_volver_pressed"]
 [connection signal="pressed" from="Panel/BotonDado" to="." method="_on_boton_dado_pressed"]
 [connection signal="respuesta_completada" from="Interfaz" to="." method="_on_interfaz_respuesta_completada"]
+[connection signal="pressed" from="Preguntar_ChatBox" to="." method="_on_preguntar_chat_box_pressed"]

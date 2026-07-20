@@ -6,7 +6,6 @@
 [ext_resource type="PackedScene" uid="uid://6cu6p1u6fgt6" path="res://Escenas/interfaz_Pregunta.tscn" id="4_alv5u"]
 [ext_resource type="Texture2D" uid="uid://bb1a12tdtvavi" path="res://assets/Boton_Volver_Presionado.png" id="4_yvbnv"]
 [ext_resource type="Script" uid="uid://bgomtc5pyiuqx" path="res://Scripts_gd/volver_menu.gd" id="5_yvbnv"]
-[ext_resource type="Texture2D" uid="uid://n5e7wjmtqfbq" path="res://Frames Saltando/PixVerse-V5-Image-Text-360P-ha-unscreen/unscreen-022-removebg-preview.png" id="6_4uepw"]
 [ext_resource type="PackedScene" uid="uid://d3jfy5ugxu4nq" path="res://Escenas/capa_logro.tscn" id="8_almmo"]
 
 [sub_resource type="Curve2D" id="Curve2D_vauqj"]
@@ -55,7 +54,6 @@ rotates = false
 [node name="Sprite2D" type="Sprite2D" parent="Path2D/PathFollow2D" unique_id=129189860]
 position = Vector2(7.4440565, -43.927048)
 scale = Vector2(0.43, 0.362)
-texture = ExtResource("6_4uepw")
 
 [node name="Interfaz" parent="." unique_id=562769401 instance=ExtResource("4_alv5u")]
 visible = false
