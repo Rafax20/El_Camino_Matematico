@@ -21,12 +21,13 @@ func _ready():
 		http_request.request_completed.connect(_on_request_completed)
 	http_request.accept_gzip = false
 	
-	# ⏳ NUEVO SEGURO: Si estamos en la Web, esperamos a que GlobalConfig reciba las credenciales de Render
+	# Espera máxima de 2 segundos si estamos en Web; de lo contrario, continúa con el respaldo
 	if not FileAccess.file_exists("res://.env"):
-		print("⏳ InterfazLogin: Esperando a que se sincronicen las credenciales de Render...")
-		while GlobalConfig.SUPABASE_URL == "":
-			await get_tree().create_timer(0.1).timeout # Espera ráfagas de 100ms
-		print("✨ InterfazLogin: Credenciales recibidas. Interfaz lista para operar.")
+		var tiempo_espera = 0.0
+		while GlobalConfig.SUPABASE_URL == "" and tiempo_espera < 2.0:
+			await get_tree().create_timer(0.1).timeout
+			tiempo_espera += 0.1
+		print("✨ InterfazLogin: Listo para operar con URL: ", GlobalConfig.SUPABASE_URL)
 
 func aparecer():
 	self.visible = true
@@ -43,12 +44,16 @@ func _on_boton_cerrar_pressed() -> void:
 
 # 🛠️ FUNCIÓN AUXILIAR PARA ASEGURAR UNA RUTA LIMPIA
 func _obtener_url_tabla(tabla: String) -> String:
-	# Apuntamos directamente al almacén central que se llena desde Render
 	var url_base = GlobalConfig.SUPABASE_URL
 	
-	# Si por alguna razón la URL no termina en "/", se la agregamos de forma dinámica
+	# Fallback de seguridad si GlobalConfig aún no tiene una URL absoluta válida (empieza con http/https)
+	if not url_base.begins_with("http://") and not url_base.begins_with("https://"):
+		print("⚠️ URL inválida en GlobalConfig ('", url_base, "'). Aplicando fallback de respaldo...")
+		url_base = "https://zwgiwmspfuebqvbsttto.supabase.co/rest/v1/"
+	
 	if not url_base.ends_with("/"):
 		url_base += "/"
+		
 	return url_base + tabla
 
 func _on_boton_entrar_pressed() -> void:

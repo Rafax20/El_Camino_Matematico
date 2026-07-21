@@ -11,17 +11,9 @@ var SUPABASE_ANON_KEY = ""
 func _ready():
 	await get_tree().process_frame
 	
-	# 🛡️ PROTECCIÓN: Si GlobalConfig falló al inyectar (viene vacío), 
-	# cargamos el respaldo manual para que el juego al menos pueda conectar.
-	if GlobalConfig.SUPABASE_URL == "":
-		print("⚠️ [ADVERTENCIA] GlobalConfig vacío, usando URL de respaldo.")
-		SUPABASE_URL = "https://zwgiwmspfuebqvbsttto.supabase.co/rest/v1/"
-		SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp3Z2l3bXNwZnVlYnF2YnN0dHRvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg1ODg2MjMsImV4cCI6MjA5NDE2NDYyM30.tkM_AYmXhLEqfCLgvpTczRMigV-hL44bpHCs5Z-sHuc"
-	else:
-		SUPABASE_URL = GlobalConfig.SUPABASE_URL
-		SUPABASE_ANON_KEY = GlobalConfig.SUPABASE_ANON_KEY
+	SUPABASE_URL = GlobalConfig.SUPABASE_URL
+	SUPABASE_ANON_KEY = GlobalConfig.SUPABASE_ANON_KEY
 	
-	# Aseguramos que la URL termine en /
 	if not SUPABASE_URL.ends_with("/"):
 		SUPABASE_URL += "/"
 
