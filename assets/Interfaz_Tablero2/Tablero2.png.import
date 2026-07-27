@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://wo3upt2qeo15"
-path="res://.godot/imported/Tablero2.png-f87d2f52c465bc5b43382f2e6a03be5b.ctex"
+path="res://.godot/imported/Tablero2.png-07438756544e0d3b7ebd38971ccedab2.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/Tablero2.png"
-dest_files=["res://.godot/imported/Tablero2.png-f87d2f52c465bc5b43382f2e6a03be5b.ctex"]
+source_file="res://assets/Interfaz_Tablero2/Tablero2.png"
+dest_files=["res://.godot/imported/Tablero2.png-07438756544e0d3b7ebd38971ccedab2.ctex"]
 
 [params]
 

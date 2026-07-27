@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://dm06re2c3dhp2"]
 
 [ext_resource type="Script" uid="uid://mdp5bjjc8pjr" path="res://Scripts_gd/tablero_2.gd" id="1_c1qpa"]
-[ext_resource type="Texture2D" uid="uid://wo3upt2qeo15" path="res://assets/Tablero2.png" id="2_2xxau"]
+[ext_resource type="Texture2D" uid="uid://wo3upt2qeo15" path="res://assets/Interfaz_Tablero2/Tablero2.png" id="2_2xxau"]
 [ext_resource type="Texture2D" uid="uid://cay7rraob4uqq" path="res://assets/Boton_Volver.png" id="3_xuisg"]
 [ext_resource type="Texture2D" uid="uid://bb1a12tdtvavi" path="res://assets/Boton_Volver_Presionado.png" id="4_h3ra3"]
 [ext_resource type="Texture2D" uid="uid://c1uor2yqvwyun" path="res://assets/Interfaz_Tablero2/Frames_Espacio/Saltando_Espacio/wmremove-transformed_025.png" id="4_hdy3b"]
