@@ -14,6 +14,10 @@ func _ready():
 	await get_tree().process_frame
 	await get_tree().process_frame
 
+	# 2. AHORA SÍ pedimos la carga en segundo plano (ya con la pantalla de carga visible)
+	if ruta_destino != "":
+		ResourceLoader.load_threaded_request(ruta_destino)
+		
 func _process(_delta):
 	if ruta_destino == "": return
 	

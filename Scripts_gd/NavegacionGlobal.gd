@@ -28,11 +28,7 @@ func volver_a_pantalla_previa():
 # 🛠️ CAMBIO CLAVE 1: Iniciar carga en segundo plano
 func cambiar_escena_con_carga(nueva_escena: String):
 	escena_destino = nueva_escena
-	
-	# Pedimos a Godot que empiece a preparar la escena en segundo plano
-	ResourceLoader.load_threaded_request(escena_destino)
-	
-	# Cambiamos visualmente a la pantalla de carga
+	# ⚡ Cambio instantáneo sin procesar nada pesado todavía:
 	get_tree().change_scene_to_file("res://Escenas/PantallaCarga.tscn")
 
 # 🛠️ CAMBIO CLAVE 2: Obtener el estado actual (para usarlo en PantallaCarga.gd)
