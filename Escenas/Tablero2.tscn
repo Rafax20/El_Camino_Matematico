@@ -72,6 +72,7 @@
 [ext_resource type="Texture2D" uid="uid://cjij5skh02bb7" path="res://assets/Interfaz_Tablero2/Boton_Dado_Presionado1.png" id="40_7wci5"]
 [ext_resource type="FontFile" uid="uid://cvwfc51hrkou3" path="res://Fuentes/Fredoka/static/Fredoka-Bold.ttf" id="41_r3pb0"]
 [ext_resource type="Texture2D" uid="uid://5mtmva50cl6" path="res://assets/Interfaz_Tablero2/Gemini_Generated_Image_c4xybqc4xybqc4xy.png" id="72_x60ep"]
+[ext_resource type="PackedScene" uid="uid://sfpevw8md85y" path="res://Escenas/minijuego_asteroides.tscn" id="73_it4fw"]
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_fwkr1"]
 animations = [{
@@ -570,6 +571,8 @@ theme_override_font_sizes/normal_font_size = 71
 text = "¡Preguntale a la IA!"
 horizontal_alignment = 1
 vertical_alignment = 1
+
+[node name="MinijuegoAsteroides" parent="." unique_id=1267125036 instance=ExtResource("73_it4fw")]
 
 [connection signal="pressed" from="Tablero2/Volver_Menu" to="Tablero2/Volver_Menu" method="_on_boton_volver_pressed"]
 [connection signal="pressed" from="Panel/BotonDado" to="." method="_on_boton_dado_pressed"]

@@ -1,0 +1,30 @@
+[gd_scene format=3 uid="uid://sfpevw8md85y"]
+
+[ext_resource type="Script" uid="uid://cq8i7is44q7ia" path="res://Scripts_gd/Minijuegos/MinijuegoAsteroides.gd" id="1_710gb"]
+[ext_resource type="PackedScene" uid="uid://b88qqq3s5mt7s" path="res://Escenas/objeto_flotante.tscn" id="2_tl4fp"]
+[ext_resource type="Texture2D" uid="uid://dj2dbf5wj21uj" path="res://assets/Album/Fondo_Album.png" id="3_tl4fp"]
+
+[node name="MinijuegoAsteroides" type="Node2D" unique_id=1267125036]
+script = ExtResource("1_710gb")
+escena_objeto = ExtResource("2_tl4fp")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1779273060]
+layer = 5
+visible = false
+
+[node name="FondoAlbum" type="Sprite2D" parent="CanvasLayer" unique_id=1451089409]
+texture = ExtResource("3_tl4fp")
+centered = false
+
+[node name="LabelPregunta" type="Label" parent="CanvasLayer" unique_id=1905062283]
+offset_left = 522.0
+offset_top = 79.0
+offset_right = 562.0
+offset_bottom = 102.0
+
+[node name="Timer" type="Timer" parent="." unique_id=1738231467]
+wait_time = 1.5
+
+[node name="HTTPRequest" type="HTTPRequest" parent="." unique_id=1602476914]
+
+[connection signal="timeout" from="Timer" to="." method="_on_timer_spawn_timeout"]

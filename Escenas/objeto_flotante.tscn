@@ -1,0 +1,23 @@
+[gd_scene format=3 uid="uid://b88qqq3s5mt7s"]
+
+[ext_resource type="Script" uid="uid://ogmtrfhaiqur" path="res://Scripts_gd/Minijuegos/objeto_flotante.gd" id="1_v8xn7"]
+[ext_resource type="Texture2D" uid="uid://yp5l2fjr5r5x" path="res://assets/Imagenes/globo_tablero1.png" id="2_6txkm"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_u58nm"]
+radius = 88.0
+height = 222.0
+
+[node name="ObjetoFlotante" type="Area2D" unique_id=739929153]
+script = ExtResource("1_v8xn7")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1786279139]
+texture = ExtResource("2_6txkm")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=628081771]
+position = Vector2(-1, -67)
+shape = SubResource("CapsuleShape2D_u58nm")
+
+[node name="Label" type="Label" parent="." unique_id=2081832532]
+offset_right = 40.0
+offset_bottom = 23.0
+metadata/_edit_use_anchors_ = true

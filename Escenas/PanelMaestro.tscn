@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://bf7h20y00hoqw"]
 
-[ext_resource type="Script" uid="uid://ca4hucargkapm" path="res://Scripts_gd/ArbolDecisionMaestro.gd" id="1_bhrul"]
+[ext_resource type="Script" uid="uid://ca4hucargkapm" path="res://Scripts_gd/Globales/ArbolDecisionMaestro.gd" id="1_bhrul"]
 
 [node name="PanelMaestro" type="Node" unique_id=1455383684]
 script = ExtResource("1_bhrul")

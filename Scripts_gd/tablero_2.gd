@@ -6,6 +6,7 @@ extends Node2D
 @onready var boton_dado = $Panel/BotonDado 
 @onready var Menu_Volver =  $Tablero2/Volver_Menu
 @onready var boton_chat = $Preguntar_ChatBox
+@onready var minijuego = $MinijuegoAsteroides
 
 var total_casillas = 30
 var casilla_actual = 0
@@ -89,9 +90,9 @@ func _on_boton_dado_pressed():
 	await $Path2D/PathFollow2D/Animacion.Animar_Caida(true)
 	await get_tree().create_timer(1.2).timeout
 	if casilla_actual == total_casillas:
-		pass #Examen
-	else:
 		mostrar_pregunta_en_pantalla()
+	else:
+		lanzar_minijuego_casilla()
 
 func _mover_ficha_visualmente(casilla: int, instantaneo: bool):
 	if casilla == 0:
@@ -243,6 +244,45 @@ func _on_interfaz_respuesta_completada(es_correcta: bool, tiempo_tardado: float)
 		boton_dado.disabled = false
 		Menu_Volver.disabled = false
 
+func lanzar_minijuego_casilla():
+	# 1. Seleccionamos una pregunta del banco precargado
+	var pregunta_para_minijuego = _obtener_pregunta_actual()
+	
+	# 2. Conectamos la señal de término si no está conectada
+	if not minijuego.minijuego_finalizado.is_connected(_on_minijuego_resuelto):
+		minijuego.minijuego_finalizado.connect(_on_minijuego_resuelto)
+	
+	# 3. Iniciamos el minijuego pasándole la pregunta y el tema ("colegio" o "espacio")
+	minijuego.iniciar_minijuego(pregunta_para_minijuego, "colegio")
+
+
+func _obtener_pregunta_actual() -> Dictionary:
+	if lista_preguntas.size() == 0:
+		# Respaldo alineado con las columnas de tu tabla en Supabase
+		return {"operacion": "2 más 2", "respuesta_correcta": 4}
+		
+	var preguntas_filtradas = lista_preguntas.filter(func(p):
+		return int(p.get("dificultad", 0)) == DatosUsuario.dificultad_actual
+	)
+	if preguntas_filtradas.size() == 0:
+		preguntas_filtradas = lista_preguntas
+		
+	return preguntas_filtradas.pick_random()
+
+
+# Callback cuando el niño explota el globo correcto
+func _on_minijuego_resuelto(es_correcto: bool):
+	if es_correcto:
+		print("🎉 ¡Minijuego superado exitosamente!")
+		
+		# Liberamos el candado de la pregunta y actualizamos progreso
+		DatosUsuario.pregunta_pendiente_db = false
+		ConexionSupabase.actualizar_progreso_en_nube(casilla_actual, false)
+		
+		# Habilitamos el dado para el siguiente turno
+		boton_dado.disabled = false
+		Menu_Volver.disabled = false
+		
 func enviar_puntuacion(nombre_jugador: String, puntos: int):
 	var datos = {
 		"user_id": DatosUsuario.usuario_id_db,
