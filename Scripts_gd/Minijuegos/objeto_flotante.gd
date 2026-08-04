@@ -5,11 +5,12 @@ signal objeto_tocado(valor)
 
 @export var velocidad: float = 140.0
 var valor_numero: int = 0
+var vel_rotacion: float = 0.0 # 🔄 Velocidad de giro para asteroides
 
 @onready var sprite = $Sprite2D
 @onready var label_numero = $Sprite2D/Label
 
-# 🎨 Colores EXCLUSIVOS para el globo (sin tonos oscuros)
+# 🎨 Colores EXCLUSIVOS para el globo (se usan solo en tema 'colegio')
 var paleta_globos: Array[Color] = [
 	Color("#ff3366"), # Rojo brillante
 	Color("#33cc33"), # Verde
@@ -21,40 +22,44 @@ var paleta_globos: Array[Color] = [
 	Color("#ffffff")  # Blanco puro
 ]
 
-# 🖊️ Color gris oscuro reservado EXCLUSIVAMENTE para el texto sobre globos claros
+# 🖊️ Color gris oscuro fijo para el texto
 var color_texto_oscuro: Color = Color("#333333")
 
 func _ready():
 	input_event.connect(_on_input_event)
 
-func configurar(numero: int, textura_imagen: Texture2D, vel_inicial: float):
+func configurar(numero: int, textura_imagen: Texture2D, vel_inicial: float, tema: String = "colegio"):
 	valor_numero = numero
 	velocidad = vel_inicial
 	
 	if label_numero:
 		label_numero.text = str(numero)
+		# 🖊️ SIEMPRE en gris oscuro/negro, sin calcular luminancia
+		label_numero.add_theme_color_override("font_color", color_texto_oscuro)
 		
 	if sprite and textura_imagen:
 		sprite.texture = textura_imagen
 		
-		# 1. Seleccionamos un color vistoso para el globo
-		var color_elegido = paleta_globos.pick_random()
-		sprite.self_modulate = color_elegido
-		
-		# 2. CALCULAMOS EL CONTRASTE PARA EL TEXTO:
-		#var luminancia = (0.299 * color_elegido.r) + (0.587 * color_elegido.g) + (0.114 * color_elegido.b)
-		#
-		#if label_numero:
-			#if luminancia > 0.5:
-				## ☀️ Globo claro / blanco -> Usamos tu gris oscuro (#333333)
-				#label_numero.add_theme_color_override("font_color", color_texto_oscuro)
-			#else:
-				## 🌙 Globo oscuro / saturado -> Texto blanco para que resalte
-				#label_numero.add_theme_color_override("font_color", Color.WHITE)
-		label_numero.add_theme_color_override("font_color", color_texto_oscuro)
+		# 🌌 MODO ESPACIO (ASTEROIDES)
+		if tema == "espacio":
+			vel_rotacion = randf_range(-1.8, 1.8)
+			sprite.self_modulate = Color.WHITE
+				
+		# 🎈 MODO COLEGIO (GLOBOS)
+		else:
+			vel_rotacion = 0.0
+			sprite.rotation = 0.0
+			var color_elegido = paleta_globos.pick_random()
+			sprite.self_modulate = color_elegido
 
 func _process(delta):
+	# Flota hacia arriba
 	position.y -= velocidad * delta
+	
+	# 🔄 Rotación del asteroide (solo la imagen)
+	if vel_rotacion != 0.0 and sprite:
+		sprite.rotation += vel_rotacion * delta
+	
 	if position.y < -120:
 		queue_free()
 

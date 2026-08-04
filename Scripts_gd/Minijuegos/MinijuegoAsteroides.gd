@@ -82,7 +82,7 @@ func _on_timer_spawn_timeout():
 		add_child(nuevo_objeto)
 	
 	var textura_a_usar = texturas_tableros.get(tema_actual)
-	nuevo_objeto.configurar(numero_a_mostrar, textura_a_usar, randf_range(120.0, 180.0))
+	nuevo_objeto.configurar(numero_a_mostrar, textura_a_usar, randf_range(120.0, 180.0), tema_actual)
 
 func _on_objeto_tocado(valor_tocado: int):
 	if not juego_activo: return

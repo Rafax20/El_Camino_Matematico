@@ -1,12 +1,12 @@
 [gd_scene format=3 uid="uid://rer72pm8ucwf"]
 
 [ext_resource type="Script" uid="uid://cit56mwt4hpd6" path="res://Scripts_gd/menu.gd" id="1_o2l53"]
+[ext_resource type="Texture2D" uid="uid://ma6nfjv0fo4e" path="res://assets/Interfaz_Menu/Menu1.jpg" id="2_bcw8w"]
 [ext_resource type="PackedScene" uid="uid://dqppd6655ghfu" path="res://Escenas/Ventana_Autenticacion.tscn" id="3_j7eae"]
 [ext_resource type="Texture2D" uid="uid://koi0nw6y63j6" path="res://assets/Interfaz_Menu/Boton_Jugar.png" id="3_m10g6"]
 [ext_resource type="Texture2D" uid="uid://crdvwp45mjaud" path="res://assets/Interfaz_Menu/Libro.png" id="4_2ahv8"]
 [ext_resource type="Texture2D" uid="uid://c4nlp8upwa24n" path="res://assets/Interfaz_Menu/Libro_Hover.png" id="5_8shpa"]
 [ext_resource type="FontFile" uid="uid://btqpguoupa7eh" path="res://Fredoka-VariableFont_wdth,wght.ttf" id="7_arsku"]
-[ext_resource type="Texture2D" uid="uid://dyom2ylwape35" path="res://assets/Interfaz_Menu/Menu.png" id="7_m10g6"]
 [ext_resource type="FontFile" uid="uid://cvwfc51hrkou3" path="res://Fuentes/Fredoka/static/Fredoka-Bold.ttf" id="8_bcw8w"]
 [ext_resource type="Texture2D" uid="uid://tngpiue2scxd" path="res://assets/Interfaz_Menu/Logros.png" id="8_y57nq"]
 [ext_resource type="Texture2D" uid="uid://bgieuvs7x1834" path="res://assets/Interfaz_Menu/Boton_Jugar_Presionado.png" id="9_27k2t"]
@@ -20,9 +20,9 @@ script = ExtResource("1_o2l53")
 [node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=381282370]
 
 [node name="Menu" type="Sprite2D" parent="CanvasLayer" unique_id=1638479562]
-position = Vector2(577.5, 323)
-scale = Vector2(0.83793604, 0.8411459)
-texture = ExtResource("7_m10g6")
+position = Vector2(573.99994, 323)
+scale = Vector2(0.83430237, 0.8411459)
+texture = ExtResource("2_bcw8w")
 
 [node name="Titulo" type="RichTextLabel" parent="CanvasLayer/Menu" unique_id=779805543]
 offset_left = -414.70947
@@ -143,10 +143,10 @@ visible = false
 anchors_preset = 13
 anchor_left = 0.5
 anchor_right = 0.5
-offset_left = -1272.1735
-offset_top = -335.25696
-offset_right = -81.15173
-offset_bottom = -449.3871
+offset_left = -1217.9462
+offset_top = -261.19385
+offset_right = -26.924438
+offset_bottom = -375.32397
 
 [node name="HTTPRequest" type="HTTPRequest" parent="." unique_id=983556898]
 
