@@ -2,6 +2,8 @@
 
 [ext_resource type="Script" uid="uid://mdp5bjjc8pjr" path="res://Scripts_gd/tablero_2.gd" id="1_c1qpa"]
 [ext_resource type="Texture2D" uid="uid://wo3upt2qeo15" path="res://assets/Interfaz_Tablero2/Tablero2.png" id="2_2xxau"]
+[ext_resource type="Texture2D" uid="uid://dox8b6tueqqph" path="res://assets/Interfaz_Tablero2/tablero sin fondo.png" id="2_3wkis"]
+[ext_resource type="Texture2D" uid="uid://bqhkwnfsggi86" path="res://assets/Interfaz_Tablero2/FondoEspacio.png" id="2_p2vkf"]
 [ext_resource type="Texture2D" uid="uid://cay7rraob4uqq" path="res://assets/Boton_Volver.png" id="3_xuisg"]
 [ext_resource type="Texture2D" uid="uid://bb1a12tdtvavi" path="res://assets/Boton_Volver_Presionado.png" id="4_h3ra3"]
 [ext_resource type="Texture2D" uid="uid://c1uor2yqvwyun" path="res://assets/Interfaz_Tablero2/Frames_Espacio/Saltando_Espacio/wmremove-transformed_025.png" id="4_hdy3b"]
@@ -9,6 +11,7 @@
 [ext_resource type="Texture2D" uid="uid://c3jx3u35241d7" path="res://assets/Interfaz_Tablero2/Frames_Espacio/Saltando_Espacio/wmremove-transformed_026.png" id="5_d02cx"]
 [ext_resource type="Texture2D" uid="uid://cpkklo3hl1t7h" path="res://assets/Interfaz_Tablero2/Frames_Espacio/Saltando_Espacio/wmremove-transformed_027.png" id="6_2cwxo"]
 [ext_resource type="Texture2D" uid="uid://c6rox6dbtyggr" path="res://assets/Interfaz_Tablero2/Panel_Animacion/Panel_Animacion_1.png" id="6_7wci5"]
+[ext_resource type="Texture2D" uid="uid://2261ci288oyh" path="res://assets/Interfaz_Tablero2/Planeta.png" id="7_p2vkf"]
 [ext_resource type="Texture2D" uid="uid://dlw5cj8wfqvkb" path="res://assets/Interfaz_Tablero2/Boton_Dado.png" id="7_wsdqj"]
 [ext_resource type="Texture2D" uid="uid://5wyl02e03trn" path="res://assets/Interfaz_Tablero2/Panel_Animacion/Panel_Animacion_2.png" id="7_x60ep"]
 [ext_resource type="Texture2D" uid="uid://6tly1ernnnuc" path="res://assets/Interfaz_Tablero2/Frames_Espacio/Saltando_Espacio/wmremove-transformed_028.png" id="7_xuisg"]
@@ -276,9 +279,9 @@ animations = [{
 
 [sub_resource type="Curve2D" id="Curve2D_85yh5"]
 _data = {
-"points": PackedVector2Array(0, 0, 0, 0, 457, 641, 0, 0, 0, 0, 535, 613, 0, 0, 0, 0, 609, 569, 0, 0, 0, 0, 542, 531, 0, 0, 0, 0, 490, 503, 0, 0, 0, 0, 488, 430, 0, 0, 0, 0, 428, 469, 0, 0, 0, 0, 358, 511, 0, 0, 0, 0, 263, 529, 0, 0, 0, 0, 176, 512, 0, 0, 0, 0, 124, 462, 0, 0, 0, 0, 153, 398, 0, 0, 0, 0, 205, 347, 0, 0, 0, 0, 148, 286, 0, 0, 0, 0, 168, 203, 0, 0, 0, 0, 237, 163, 0, 0, 0, 0, 317, 138, 0, 0, 0, 0, 419, 164, 0, 0, 0, 0, 489, 208, 0, 0, 0, 0, 491, 276, 0, 0, 0, 0, 422, 322, 0, 0, 0, 0, 490, 358, 0, 0, 0, 0, 548, 396, 0, 0, 0, 0, 622, 434, 0, 0, 0, 0, 687, 473, 0, 0, 0, 0, 757, 509, 0, 0, 0, 0, 737, 429, 0, 0, 0, 0, 773, 385, 0, 0, 0, 0, 803, 340, 0, 0, 0, 0, 854, 298, 0, 0, 0, 0, 909, 262)
+"points": PackedVector2Array(0, 0, 0, 0, 478, 641, 0, 0, 0, 0, 548, 603, 0, 0, 0, 0, 615, 556, 0, 0, 0, 0, 558, 523, 0, 0, 0, 0, 504, 493, 0, 0, 0, 0, 501, 425, 0, 0, 0, 0, 446, 461, 0, 0, 0, 0, 378, 502, 0, 0, 0, 0, 296, 521, 0, 0, 0, 0, 214, 502, 0, 0, 0, 0, 170, 454, 0, 0, 0, 0, 189, 394, 0, 0, 0, 0, 238, 341, 0, 0, 0, 0, 192, 284, 0, 0, 0, 0, 205, 206, 0, 0, 0, 0, 262, 166, 0, 0, 0, 0, 343, 144, 0, 0, 0, 0, 437, 167, 0, 0, 0, 0, 502, 205, 0, 0, 0, 0, 502, 272, 0, 0, 0, 0, 444, 318, 0, 0, 0, 0, 504, 351, 0, 0, 0, 0, 561, 388, 0, 0, 0, 0, 624, 423, 0, 0, 0, 0, 693, 460, 0, 0, 0, 0, 738, 424, 0, 0, 0, 0, 764, 381, 0, 0, 0, 0, 800, 334, 0, 0, 0, 0, 842, 296, 0, 0, 0, 0, 894, 259)
 }
-point_count = 31
+point_count = 30
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_nc2ci"]
 animations = [{
@@ -458,23 +461,44 @@ animations = [{
 [node name="Node2D" type="Node2D" unique_id=1700597054]
 script = ExtResource("1_c1qpa")
 
+[node name="FondoEspacio" type="Sprite2D" parent="." unique_id=777447153]
+scale = Vector2(0.8126181, 0.96130955)
+texture = ExtResource("2_p2vkf")
+centered = false
+
+[node name="Mapa" type="RichTextLabel" parent="FondoEspacio" unique_id=1672901331]
+custom_minimum_size = Vector2(1000, 70)
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -20.0
+offset_right = 20.0
+offset_bottom = 40.0
+grow_horizontal = 2
+theme_override_constants/outline_size = 10
+theme_override_fonts/normal_font = ExtResource("41_r3pb0")
+theme_override_font_sizes/normal_font_size = 56
+bbcode_enabled = true
+text = "[outline_color=#77cddc]GRAN[/outline_color] [outline_color=#6a218d]MAPA DE [/outline_color][outline_color=#77cddc]AVENTURA[/outline_color] [outline_color=#6a218d]ESPACIAL[/outline_color]"
+horizontal_alignment = 1
+
 [node name="Tablero2" type="Sprite2D" parent="." unique_id=276478482]
-position = Vector2(576, 325)
-scale = Vector2(0.8970358, 0.7916666)
-texture = ExtResource("2_2xxau")
+position = Vector2(494, 331)
+scale = Vector2(0.9307117, 0.6670027)
+texture = ExtResource("2_3wkis")
 
 [node name="Volver_Menu" type="TextureButton" parent="Tablero2" unique_id=904782259]
-offset_left = -641.0
-offset_top = -408.0
-offset_right = -35.0
-offset_bottom = 198.0
+offset_left = -534.0
+offset_top = -496.0
+offset_right = 72.0
+offset_bottom = 110.0
 scale = Vector2(0.2, 0.2)
 texture_normal = ExtResource("3_xuisg")
 texture_pressed = ExtResource("4_h3ra3")
 script = ExtResource("5_6anpw")
 
 [node name="Panel" type="AnimatedSprite2D" parent="." unique_id=345216472]
-position = Vector2(1002.99994, 553.32227)
+position = Vector2(985.00006, 557)
 scale = Vector2(0.11979169, 0.14318937)
 sprite_frames = SubResource("SpriteFrames_fwkr1")
 animation = &"Animacion_Panel"
@@ -523,7 +547,7 @@ position = Vector2(575, 324)
 curve = SubResource("Curve2D_85yh5")
 
 [node name="PathFollow2D" type="PathFollow2D" parent="Path2D" unique_id=292056439]
-position = Vector2(457, 641)
+position = Vector2(478, 641)
 rotation = 0.06297966
 rotates = false
 
@@ -573,6 +597,18 @@ horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="MinijuegoAsteroides" parent="." unique_id=1267125036 instance=ExtResource("73_it4fw")]
+
+[node name="Planeta" type="Sprite2D" parent="." unique_id=1064961428]
+position = Vector2(341.00003, 227.99998)
+scale = Vector2(0.83413464, 0.57109976)
+texture = ExtResource("7_p2vkf")
+
+[node name="Tablero3" type="Sprite2D" parent="." unique_id=1956466559]
+position = Vector2(130.00002, 612)
+scale = Vector2(0.95108694, 0.8414634)
+texture = ExtResource("2_2xxau")
+region_enabled = true
+region_rect = Rect2(64, 734, 184.48947, 82)
 
 [connection signal="pressed" from="Tablero2/Volver_Menu" to="Tablero2/Volver_Menu" method="_on_boton_volver_pressed"]
 [connection signal="pressed" from="Panel/BotonDado" to="." method="_on_boton_dado_pressed"]

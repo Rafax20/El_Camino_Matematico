@@ -2,7 +2,8 @@
 
 [ext_resource type="Script" uid="uid://cq8i7is44q7ia" path="res://Scripts_gd/Minijuegos/MinijuegoAsteroides.gd" id="1_710gb"]
 [ext_resource type="PackedScene" uid="uid://b88qqq3s5mt7s" path="res://Escenas/objeto_flotante.tscn" id="2_tl4fp"]
-[ext_resource type="Texture2D" uid="uid://dj2dbf5wj21uj" path="res://assets/Album/Fondo_Album.png" id="3_tl4fp"]
+[ext_resource type="Texture2D" uid="uid://dpdanoh748h45" path="res://assets/Imagenes/Gemini_Generated_Image_rdinxtrdinxtrdin.png" id="3_pyv5d"]
+[ext_resource type="Texture2D" uid="uid://dvsatgvkavoao" path="res://assets/Imagenes/Cabina Espacial.png" id="3_tl4fp"]
 
 [node name="MinijuegoAsteroides" type="Node2D" unique_id=1267125036]
 script = ExtResource("1_710gb")
@@ -12,9 +13,18 @@ escena_objeto = ExtResource("2_tl4fp")
 layer = 5
 visible = false
 
-[node name="FondoAlbum" type="Sprite2D" parent="CanvasLayer" unique_id=1451089409]
-texture = ExtResource("3_tl4fp")
+[node name="Fondo" type="Sprite2D" parent="CanvasLayer" unique_id=1451089409]
+position = Vector2(-18, -7)
+scale = Vector2(0.9742267, 0.85807294)
+texture = ExtResource("3_pyv5d")
 centered = false
+
+[node name="ContenedorAsteroides" type="Node2D" parent="CanvasLayer" unique_id=76138876]
+
+[node name="CabinaEspacial" type="Sprite2D" parent="CanvasLayer" unique_id=89666990]
+position = Vector2(572.00006, 348)
+scale = Vector2(0.86851454, 0.9114584)
+texture = ExtResource("3_tl4fp")
 
 [node name="LabelPregunta" type="Label" parent="CanvasLayer" unique_id=1905062283]
 offset_left = 522.0

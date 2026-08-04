@@ -11,10 +11,10 @@ signal minijuego_finalizado(es_correcto)
 
 var texturas_tableros = {
 	"colegio": preload("res://assets/Imagenes/globo_tablero1.png"),
-	# "espacio": preload("res://assets/Imagenes/asteroide_tablero2.png")
+	"espacio": preload("res://assets/Imagenes/asteroide_tablero2.png")
 }
 
-var tema_actual: String = "colegio"
+var tema_actual: String
 var respuesta_correcta: int = 0
 var juego_activo: bool = false
 
@@ -56,8 +56,8 @@ func _on_timer_spawn_timeout():
 	var nuevo_objeto = escena_objeto.instantiate()
 	
 	var numero_a_mostrar: int
-	# 40% de probabilidad de mostrar la respuesta correcta
-	if randf() < 0.4:
+	# 30% de probabilidad de mostrar la respuesta correcta
+	if randf() < 0.3:
 		numero_a_mostrar = respuesta_correcta
 	else:
 		# Genera un distractor cercano (ej. entre -4 y +5 de la respuesta real)
@@ -71,13 +71,13 @@ func _on_timer_spawn_timeout():
 			numero_a_mostrar = respuesta_correcta + randi_range(1, 6)
 
 	# Posición horizontal aleatoria
-	var x_pos = randf_range(150, 950)
-	nuevo_objeto.position = Vector2(x_pos, 580)
+	var x_pos = randf_range(150, 1000)
+	nuevo_objeto.position = Vector2(x_pos, 680)
 	
 	nuevo_objeto.objeto_tocado.connect(_on_objeto_tocado)
 	
 	if $CanvasLayer:
-		$CanvasLayer.add_child(nuevo_objeto)
+		$CanvasLayer/ContenedorAsteroides.add_child(nuevo_objeto)
 	else:
 		add_child(nuevo_objeto)
 	

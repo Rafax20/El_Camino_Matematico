@@ -253,7 +253,7 @@ func lanzar_minijuego_casilla():
 		minijuego.minijuego_finalizado.connect(_on_minijuego_resuelto)
 	
 	# 3. Iniciamos el minijuego pasándole la pregunta y el tema ("colegio" o "espacio")
-	minijuego.iniciar_minijuego(pregunta_para_minijuego, "colegio")
+	minijuego.iniciar_minijuego(pregunta_para_minijuego, "espacio")
 
 
 func _obtener_pregunta_actual() -> Dictionary:
