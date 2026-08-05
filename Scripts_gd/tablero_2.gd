@@ -98,7 +98,7 @@ func _on_boton_dado_pressed():
 	Menu_Volver.disabled = true
 	casilla_anterior = casilla_actual
 	
-	var resultado = randi_range(30, 30)
+	var resultado = randi_range(1, 5)
 	print("🎲 Salió un: ", resultado)
 	$Panel/BotonDado/Numero_Dado.clear()
 	$Panel/BotonDado/Numero_Dado.add_text(str(resultado))
@@ -399,6 +399,7 @@ func _on_minijuego_resuelto(es_correcto: bool):
 		Menu_Volver.disabled = false
 	
 	boton_chat.disabled = false
+	visible = true
 		
 func enviar_puntuacion(nombre_jugador: String, puntos: int):
 	var datos = {

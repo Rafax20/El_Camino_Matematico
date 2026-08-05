@@ -3,19 +3,21 @@ extends Node2D
 
 signal minijuego_finalizado(es_correcto)
 
+@onready var nivel = $Nivel
 @onready var jugador = $Nivel/Jugador
-@onready var interfaz_pregunta = $CanvasLayer/InterfazPregunta
-@onready var label_operacion = $CanvasLayer/InterfazPregunta/LabelOperacion
-@onready var line_edit_respuesta = $CanvasLayer/InterfazPregunta/LineEditRespuesta
-@onready var label_gemas = $CanvasLayer/HUD/LabelGemas
-@onready var contenedor_corazones = $CanvasLayer/HUD/ContenedorCorazones
-@onready var luz_iluminacion_global = $CanvasLayer/CanvasModulate # Controla la oscuridad
+@onready var HUD = $HUD
+@onready var interfaz_pregunta = $HUD/InterfazPregunta
+@onready var label_operacion = $HUD/InterfazPregunta/LabelOperacion
+@onready var line_edit_respuesta = $HUD/InterfazPregunta/LineEditRespuesta
+@onready var label_gemas = $HUD/LabelGemas
+@onready var contenedor_corazones = $HUD/ContenedorCorazones
+@onready var luz_iluminacion_global = $Nivel/CanvasModulate # Controla la oscuridad
 
 @export var escena_caja: PackedScene # 👈 Asigna CajaMatematica.tscn en el Inspector
 @export var cantidad_cajas_a_generar: int = 4 # Genera 4 cajas de entre todos los puntos
 
-@onready var puntos_spawn = $PuntosSpawn
-@onready var contenedor_cajas = $ContenedorCajas
+@onready var puntos_spawn = $Nivel/PuntosSpawn
+@onready var contenedor_cajas = $Nivel/ContenedorCajas
 
 var textura_corazon_lleno = preload("res://assets/Imagenes/corazon_lleno.png")
 var textura_corazon_vacio = preload("res://assets/Imagenes/corazon_vacio.png")
@@ -32,7 +34,8 @@ func iniciar_minijuego(datos_pregunta: Dictionary, tema: String = "espacio"):
 	gemas_obtenidas = 0
 	vidas_actuales = 3
 	juego_activo = true
-	visible = true
+	nivel.visible = true
+	HUD.visible = true
 	
 	# 🎲 Spawnea las cajas en ubicaciones distintas
 	generar_cajas_aleatorias()
@@ -113,6 +116,7 @@ func _actualizar_interfaz_corazones():
 func _finalizar_juego(es_exito: bool):
 	juego_activo = false
 	visible = false
+	HUD.visible = false
 	minijuego_finalizado.emit(es_exito)
 
 func _obtener_datos_operacion() -> Dictionary:

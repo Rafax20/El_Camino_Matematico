@@ -1,6 +1,25 @@
 [gd_scene format=3 uid="uid://dqr8wuvj26u46"]
 
 [ext_resource type="Script" uid="uid://dmbucwiyov8np" path="res://Scripts_gd/Minijuegos/Minijuego_oscuras/MinijuegoBuscador.gd" id="1_2yfm0"]
+[ext_resource type="PackedScene" uid="uid://bevco1cmjoqt5" path="res://Escenas/caja_matematica.tscn" id="2_0h46i"]
+[ext_resource type="Texture2D" uid="uid://bto4byrrdaj78" path="res://assets/Imagenes/corazon_lleno.png" id="2_t5ej4"]
+[ext_resource type="Texture2D" uid="uid://jlej3rli6pq6" path="res://assets/Interfaz_Tablero2/Frames_Espacio/Saltando_Espacio/wmremove-transformed_051.png" id="2_tjxs5"]
+[ext_resource type="Texture2D" uid="uid://cldvj45dfkb6n" path="res://assets/Imagenes/FondoGris.png" id="2_xshwr"]
+[ext_resource type="Script" uid="uid://churqb50w3qdl" path="res://Scripts_gd/jugador.gd" id="3_hjcrm"]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_xshwr"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("2_tjxs5")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_hjcrm"]
+size = Vector2(62, 257)
 
 [sub_resource type="Gradient" id="Gradient_pxs8w"]
 
@@ -10,39 +29,58 @@ fill = 1
 
 [node name="MinijuegoBuscador" type="Node2D" unique_id=18950765]
 script = ExtResource("1_2yfm0")
+escena_caja = ExtResource("2_0h46i")
 
-[node name="CanvasModulate" type="CanvasModulate" parent="." unique_id=1895824029]
+[node name="Nivel" type="TextureRect" parent="." unique_id=1783952882]
+visible = false
+offset_right = 1156.0
+offset_bottom = 649.0
+texture = ExtResource("2_xshwr")
 
-[node name="TileMapLayer" type="TileMapLayer" parent="." unique_id=1053980837]
+[node name="CanvasModulate" type="CanvasModulate" parent="Nivel" unique_id=1895824029]
 
-[node name="PuntosSpawn" type="Node2D" parent="." unique_id=705101132]
+[node name="TileMapLayer" type="TileMapLayer" parent="Nivel" unique_id=1053980837]
 
-[node name="Marker2D" type="Marker2D" parent="PuntosSpawn" unique_id=1217367400]
+[node name="PuntosSpawn" type="Node2D" parent="Nivel" unique_id=705101132]
 
-[node name="Marker2D2" type="Marker2D" parent="PuntosSpawn" unique_id=1653835911]
+[node name="Marker2D" type="Marker2D" parent="Nivel/PuntosSpawn" unique_id=1217367400]
+position = Vector2(100, 100)
 
-[node name="Marker2D3" type="Marker2D" parent="PuntosSpawn" unique_id=942931952]
+[node name="Marker2D2" type="Marker2D" parent="Nivel/PuntosSpawn" unique_id=1653835911]
+position = Vector2(200, 100)
 
-[node name="Marker2D4" type="Marker2D" parent="PuntosSpawn" unique_id=90246351]
+[node name="Marker2D3" type="Marker2D" parent="Nivel/PuntosSpawn" unique_id=942931952]
+position = Vector2(300, 100)
 
-[node name="Marker2D5" type="Marker2D" parent="PuntosSpawn" unique_id=1691791863]
+[node name="Marker2D4" type="Marker2D" parent="Nivel/PuntosSpawn" unique_id=90246351]
+position = Vector2(400, 100)
 
-[node name="ContenedorCajas" type="Node2D" parent="." unique_id=715988774]
+[node name="Marker2D5" type="Marker2D" parent="Nivel/PuntosSpawn" unique_id=1691791863]
+position = Vector2(500, 100)
 
-[node name="Area2D" type="Area2D" parent="." unique_id=2110256669]
+[node name="ContenedorCajas" type="Node2D" parent="Nivel" unique_id=715988774]
 
-[node name="CharacterBody2D" type="CharacterBody2D" parent="." unique_id=76613506]
+[node name="Jugador" type="CharacterBody2D" parent="Nivel" unique_id=76613506 groups=["jugador"]]
+script = ExtResource("3_hjcrm")
 
-[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="CharacterBody2D" unique_id=994690478]
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="Nivel/Jugador" unique_id=994690478]
+position = Vector2(558.625, 407.87497)
+scale = Vector2(0.4019532, 0.47460932)
+sprite_frames = SubResource("SpriteFrames_xshwr")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="CharacterBody2D" unique_id=1986990454]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Nivel/Jugador" unique_id=1986990454]
+position = Vector2(562.625, 407.37494)
+shape = SubResource("RectangleShape2D_hjcrm")
 
-[node name="PointLight2D" type="PointLight2D" parent="CharacterBody2D" unique_id=166321322]
+[node name="PointLight2D" type="PointLight2D" parent="Nivel/Jugador" unique_id=166321322]
+position = Vector2(565, 330.99997)
+scale = Vector2(1.984375, 1.53125)
 texture = SubResource("GradientTexture2D_2yfm0")
 
-[node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=758163755]
+[node name="HUD" type="CanvasLayer" parent="." unique_id=758163755]
+visible = false
 
-[node name="ContenedorCorazones" type="HBoxContainer" parent="CanvasLayer" unique_id=1885237871]
+[node name="ContenedorCorazones" type="HBoxContainer" parent="HUD" unique_id=1885237871]
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
@@ -50,7 +88,20 @@ offset_left = -40.0
 offset_bottom = 40.0
 grow_horizontal = 0
 
-[node name="InterfazPregunta" type="Control" parent="CanvasLayer" unique_id=559209466]
+[node name="TextureRect3" type="TextureRect" parent="HUD/ContenedorCorazones" unique_id=512675026]
+layout_mode = 2
+texture = ExtResource("2_t5ej4")
+
+[node name="TextureRect2" type="TextureRect" parent="HUD/ContenedorCorazones" unique_id=2051717653]
+layout_mode = 2
+texture = ExtResource("2_t5ej4")
+
+[node name="TextureRect" type="TextureRect" parent="HUD/ContenedorCorazones" unique_id=1984651958]
+layout_mode = 2
+texture = ExtResource("2_t5ej4")
+
+[node name="InterfazPregunta" type="Control" parent="HUD" unique_id=559209466]
+visible = false
 custom_minimum_size = Vector2(100, 100)
 layout_mode = 3
 anchors_preset = 8
@@ -58,24 +109,30 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -50.0
-offset_top = -50.0
-offset_right = 50.0
-offset_bottom = 50.0
+offset_left = -265.0
+offset_top = -34.0
+offset_right = -165.0
+offset_bottom = 66.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="Label" type="Label" parent="CanvasLayer/InterfazPregunta" unique_id=1433422323]
+[node name="Label" type="Label" parent="HUD/InterfazPregunta" unique_id=1433422323]
 layout_mode = 0
 offset_right = 40.0
 offset_bottom = 23.0
 
-[node name="LineEdit" type="LineEdit" parent="CanvasLayer/InterfazPregunta" unique_id=747568796]
+[node name="LineEdit" type="LineEdit" parent="HUD/InterfazPregunta" unique_id=747568796]
 layout_mode = 0
 offset_right = 68.5
 offset_bottom = 31.0
 
-[node name="Button" type="Button" parent="CanvasLayer/InterfazPregunta" unique_id=1635681177]
+[node name="Button" type="Button" parent="HUD/InterfazPregunta" unique_id=1635681177]
 layout_mode = 0
 offset_right = 8.0
 offset_bottom = 8.0
+
+[node name="LabelGemas" type="Label" parent="HUD" unique_id=1265858052]
+offset_left = 311.0
+offset_top = 290.0
+offset_right = 351.0
+offset_bottom = 313.0

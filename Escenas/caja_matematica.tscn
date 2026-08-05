@@ -1,14 +1,25 @@
 [gd_scene format=3 uid="uid://bevco1cmjoqt5"]
 
 [ext_resource type="Script" uid="uid://du4w05cwku584" path="res://Scripts_gd/Minijuegos/Minijuego_oscuras/CajaMatematica.gd" id="1_vhevj"]
+[ext_resource type="Texture2D" uid="uid://dkst8j1clx8op" path="res://assets/Imagenes/Caja.png" id="2_muno8"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_muno8"]
+size = Vector2(226, 186)
 
 [node name="CajaMatematica" type="Area2D" unique_id=409990104]
 script = ExtResource("1_vhevj")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=385197606]
+scale = Vector2(0.2, 0.2)
+texture = ExtResource("2_muno8")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=183859858]
+shape = SubResource("RectangleShape2D_muno8")
 
-[node name="Label" type="Label" parent="." unique_id=423682819]
-offset_right = 40.0
-offset_bottom = 23.0
+[node name="IndicadorTecla" type="Label" parent="." unique_id=423682819]
+offset_left = -11.0
+offset_top = -147.0
+offset_right = 7.0
+offset_bottom = -101.0
+theme_override_font_sizes/font_size = 33
+text = "E"

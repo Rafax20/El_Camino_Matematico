@@ -1,0 +1,157 @@
+[gd_scene format=3 uid="uid://c2ijo78xrnxlr"]
+
+[ext_resource type="Texture2D" uid="uid://dox8b6tueqqph" path="res://assets/Interfaz_Tablero2/tablero sin fondo.png" id="1_3a43h"]
+[ext_resource type="Texture2D" uid="uid://x4qhtgmopbnr" path="res://assets/Interfaz_Tablero2/Asteroide.png" id="2_41y7p"]
+[ext_resource type="Texture2D" uid="uid://msgh2rxia8aj" path="res://assets/Interfaz_Tablero2/Bombillo.png" id="3_i17um"]
+
+[node name="Mapa_Tablero_2" type="Sprite2D" unique_id=315950505]
+texture = ExtResource("1_3a43h")
+
+[node name="Asteroides" type="Node2D" parent="." unique_id=2034155148]
+
+[node name="Asteroide" type="Sprite2D" parent="Asteroides" unique_id=1893991944]
+position = Vector2(57.8125, 402.25)
+scale = Vector2(0.07, 0.07)
+texture = ExtResource("2_41y7p")
+
+[node name="Asteroide2" type="Sprite2D" parent="Asteroides" unique_id=934650676]
+position = Vector2(16, 240)
+scale = Vector2(0.07, 0.07)
+texture = ExtResource("2_41y7p")
+
+[node name="Asteroide3" type="Sprite2D" parent="Asteroides" unique_id=634767230]
+position = Vector2(-122, 254)
+scale = Vector2(0.07, 0.07)
+texture = ExtResource("2_41y7p")
+
+[node name="Asteroide4" type="Sprite2D" parent="Asteroides" unique_id=527280212]
+position = Vector2(-347, 178)
+scale = Vector2(0.07, 0.07)
+texture = ExtResource("2_41y7p")
+
+[node name="Asteroide5" type="Sprite2D" parent="Asteroides" unique_id=598601539]
+position = Vector2(-325, -78)
+scale = Vector2(0.07, 0.07)
+texture = ExtResource("2_41y7p")
+
+[node name="Asteroide6" type="Sprite2D" parent="Asteroides" unique_id=1559248510]
+position = Vector2(-152, -283)
+scale = Vector2(0.07, 0.07)
+texture = ExtResource("2_41y7p")
+
+[node name="Asteroide7" type="Sprite2D" parent="Asteroides" unique_id=454352708]
+position = Vector2(8.999996, -91)
+scale = Vector2(0.07, 0.07)
+texture = ExtResource("2_41y7p")
+
+[node name="Asteroide8" type="Sprite2D" parent="Asteroides" unique_id=118016539]
+position = Vector2(10.999999, 35)
+scale = Vector2(0.07, 0.07)
+texture = ExtResource("2_41y7p")
+
+[node name="Asteroide9" type="Sprite2D" parent="Asteroides" unique_id=1415218052]
+position = Vector2(211, 193)
+scale = Vector2(0.07, 0.07)
+texture = ExtResource("2_41y7p")
+
+[node name="Asteroide10" type="Sprite2D" parent="Asteroides" unique_id=540794158]
+position = Vector2(327, 5)
+scale = Vector2(0.07, 0.07)
+texture = ExtResource("2_41y7p")
+
+[node name="bombillos" type="Node2D" parent="." unique_id=1646090626]
+
+[node name="Bombillo" type="Sprite2D" parent="bombillos" unique_id=462639059]
+position = Vector2(135, 336)
+scale = Vector2(0.07, 0.07)
+texture = ExtResource("3_i17um")
+
+[node name="Bombillo2" type="Sprite2D" parent="bombillos" unique_id=669974594]
+position = Vector2(70, 285)
+scale = Vector2(0.07, 0.07)
+texture = ExtResource("3_i17um")
+
+[node name="Bombillo3" type="Sprite2D" parent="bombillos" unique_id=686980431]
+position = Vector2(11, 134)
+scale = Vector2(0.07, 0.07)
+texture = ExtResource("3_i17um")
+
+[node name="Bombillo4" type="Sprite2D" parent="bombillos" unique_id=1345364821]
+position = Vector2(-49, 191)
+scale = Vector2(0.07, 0.07)
+texture = ExtResource("3_i17um")
+
+[node name="Bombillo5" type="Sprite2D" parent="bombillos" unique_id=1879501427]
+position = Vector2(-211, 281)
+scale = Vector2(0.07, 0.07)
+texture = ExtResource("3_i17um")
+
+[node name="Bombillo6" type="Sprite2D" parent="bombillos" unique_id=1674951341]
+position = Vector2(-302, 257)
+scale = Vector2(0.07, 0.07)
+texture = ExtResource("3_i17um")
+
+[node name="Bombillo7" type="Sprite2D" parent="bombillos" unique_id=1395911795]
+position = Vector2(-322, 91)
+scale = Vector2(0.07, 0.07)
+texture = ExtResource("3_i17um")
+
+[node name="Bombillo8" type="Sprite2D" parent="bombillos" unique_id=105282595]
+position = Vector2(-276, 13)
+scale = Vector2(0.07, 0.07)
+texture = ExtResource("3_i17um")
+
+[node name="Bombillo9" type="Sprite2D" parent="bombillos" unique_id=508110002]
+position = Vector2(-308, -187)
+scale = Vector2(0.07, 0.07)
+texture = ExtResource("3_i17um")
+
+[node name="Bombillo10" type="Sprite2D" parent="bombillos" unique_id=1356176994]
+position = Vector2(-246, -247)
+scale = Vector2(0.07, 0.07)
+texture = ExtResource("3_i17um")
+
+[node name="Bombillo11" type="Sprite2D" parent="bombillos" unique_id=1479304734]
+position = Vector2(-59, -251)
+scale = Vector2(0.07, 0.07)
+texture = ExtResource("3_i17um")
+
+[node name="Bombillo12" type="Sprite2D" parent="bombillos" unique_id=1853914019]
+position = Vector2(15, -186)
+scale = Vector2(0.07, 0.07)
+texture = ExtResource("3_i17um")
+
+[node name="Bombillo13" type="Sprite2D" parent="bombillos" unique_id=1480130173]
+position = Vector2(-49, -25)
+scale = Vector2(0.07, 0.07)
+texture = ExtResource("3_i17um")
+
+[node name="Bombillo14" type="Sprite2D" parent="bombillos" unique_id=1773327368]
+position = Vector2(72, 82)
+scale = Vector2(0.07, 0.07)
+texture = ExtResource("3_i17um")
+
+[node name="Bombillo15" type="Sprite2D" parent="bombillos" unique_id=1197447725]
+position = Vector2(140, 136)
+scale = Vector2(0.07, 0.07)
+texture = ExtResource("3_i17um")
+
+[node name="Bombillo16" type="Sprite2D" parent="bombillos" unique_id=92429162]
+position = Vector2(264, 136)
+scale = Vector2(0.07, 0.07)
+texture = ExtResource("3_i17um")
+
+[node name="Bombillo17" type="Sprite2D" parent="bombillos" unique_id=1623514674]
+position = Vector2(297, 70)
+scale = Vector2(0.07, 0.07)
+texture = ExtResource("3_i17um")
+
+[node name="Bombillo18" type="Sprite2D" parent="bombillos" unique_id=274612206]
+position = Vector2(379, -57)
+scale = Vector2(0.07, 0.07)
+texture = ExtResource("3_i17um")
+
+[node name="Bombillo19" type="Sprite2D" parent="bombillos" unique_id=1201978800]
+position = Vector2(440, -111)
+scale = Vector2(0.07, 0.07)
+texture = ExtResource("3_i17um")
