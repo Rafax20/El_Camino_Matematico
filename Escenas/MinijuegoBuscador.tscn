@@ -1,0 +1,81 @@
+[gd_scene format=3 uid="uid://dqr8wuvj26u46"]
+
+[ext_resource type="Script" uid="uid://dmbucwiyov8np" path="res://Scripts_gd/Minijuegos/Minijuego_oscuras/MinijuegoBuscador.gd" id="1_2yfm0"]
+
+[sub_resource type="Gradient" id="Gradient_pxs8w"]
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_2yfm0"]
+gradient = SubResource("Gradient_pxs8w")
+fill = 1
+
+[node name="MinijuegoBuscador" type="Node2D" unique_id=18950765]
+script = ExtResource("1_2yfm0")
+
+[node name="CanvasModulate" type="CanvasModulate" parent="." unique_id=1895824029]
+
+[node name="TileMapLayer" type="TileMapLayer" parent="." unique_id=1053980837]
+
+[node name="PuntosSpawn" type="Node2D" parent="." unique_id=705101132]
+
+[node name="Marker2D" type="Marker2D" parent="PuntosSpawn" unique_id=1217367400]
+
+[node name="Marker2D2" type="Marker2D" parent="PuntosSpawn" unique_id=1653835911]
+
+[node name="Marker2D3" type="Marker2D" parent="PuntosSpawn" unique_id=942931952]
+
+[node name="Marker2D4" type="Marker2D" parent="PuntosSpawn" unique_id=90246351]
+
+[node name="Marker2D5" type="Marker2D" parent="PuntosSpawn" unique_id=1691791863]
+
+[node name="ContenedorCajas" type="Node2D" parent="." unique_id=715988774]
+
+[node name="Area2D" type="Area2D" parent="." unique_id=2110256669]
+
+[node name="CharacterBody2D" type="CharacterBody2D" parent="." unique_id=76613506]
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="CharacterBody2D" unique_id=994690478]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="CharacterBody2D" unique_id=1986990454]
+
+[node name="PointLight2D" type="PointLight2D" parent="CharacterBody2D" unique_id=166321322]
+texture = SubResource("GradientTexture2D_2yfm0")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=758163755]
+
+[node name="ContenedorCorazones" type="HBoxContainer" parent="CanvasLayer" unique_id=1885237871]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -40.0
+offset_bottom = 40.0
+grow_horizontal = 0
+
+[node name="InterfazPregunta" type="Control" parent="CanvasLayer" unique_id=559209466]
+custom_minimum_size = Vector2(100, 100)
+layout_mode = 3
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -50.0
+offset_top = -50.0
+offset_right = 50.0
+offset_bottom = 50.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Label" type="Label" parent="CanvasLayer/InterfazPregunta" unique_id=1433422323]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 23.0
+
+[node name="LineEdit" type="LineEdit" parent="CanvasLayer/InterfazPregunta" unique_id=747568796]
+layout_mode = 0
+offset_right = 68.5
+offset_bottom = 31.0
+
+[node name="Button" type="Button" parent="CanvasLayer/InterfazPregunta" unique_id=1635681177]
+layout_mode = 0
+offset_right = 8.0
+offset_bottom = 8.0

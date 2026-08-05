@@ -8,6 +8,11 @@ signal minijuego_finalizado(es_correcto)
 @onready var label_pregunta = $CanvasLayer/LabelPregunta
 @onready var timer_spawn: Timer = $CanvasLayer/Timer if has_node("CanvasLayer/Timer") else $Timer
 @onready var Fondo = $CanvasLayer
+@onready var contenedor_corazones = $CanvasLayer/ContenedorCorazones
+
+# 💖 Texturas de corazones (Asegúrate de colocar las rutas correctas de tus imágenes)
+var textura_corazon_lleno = preload("res://assets/Imagenes/corazon_lleno.png")
+var textura_corazon_vacio = preload("res://assets/Imagenes/corazon_vacio.png")
 
 var texturas_tableros = {
 	"colegio": preload("res://assets/Imagenes/globo_tablero1.png"),
@@ -17,10 +22,14 @@ var texturas_tableros = {
 var tema_actual: String
 var respuesta_correcta: int = 0
 var juego_activo: bool = false
+var vidas_actuales: int = 3
 
 func iniciar_minijuego(datos_pregunta: Dictionary, tema: String):
 	Fondo.visible = true
 	tema_actual = tema
+	vidas_actuales = 3 # 👈 Reiniciamos a 3 vidas al iniciar
+	
+	_actualizar_interfaz_corazones()
 	
 	# 🛡️ Garantizamos la referencia al Timer
 	if not timer_spawn:
@@ -76,7 +85,7 @@ func _on_timer_spawn_timeout():
 	
 	nuevo_objeto.objeto_tocado.connect(_on_objeto_tocado)
 	
-	if $CanvasLayer:
+	if $CanvasLayer/ContenedorAsteroides:
 		$CanvasLayer/ContenedorAsteroides.add_child(nuevo_objeto)
 	else:
 		add_child(nuevo_objeto)
@@ -89,18 +98,52 @@ func _on_objeto_tocado(valor_tocado: int):
 	
 	if valor_tocado == respuesta_correcta:
 		print("🎉 ¡Respuesta CORRECTA tocada!")
-		juego_activo = false
-		if timer_spawn: timer_spawn.stop()
-		
-		# Limpiamos los objetos/globos flotantes que hayan quedado en pantalla
-		for hijo in get_children():
-			if hijo is Area2D: 
-				hijo.queue_free()
-			
-		visible = false
-		minijuego_finalizado.emit(true) # 👈 Notifica a Tablero.gd que se superó el minijuego
-		await get_tree().create_timer(2.0).timeout
-		Fondo.visible = false
+		_finalizar_juego(true)
 	else:
 		print("❌ Tocó el número ", valor_tocado, " pero se esperaba ", respuesta_correcta)
-		# El objeto se destruye solo en su propio script, así que el juego continúa
+		vidas_actuales -= 1
+		_actualizar_interfaz_corazones()
+		
+		if vidas_actuales <= 0:
+			print("💀 ¡Te quedaste sin vidas!")
+			_finalizar_juego(false)
+
+# 💖 Actualiza los 3 sprites de corazón en el HBoxContainer
+func _actualizar_interfaz_corazones():
+	if not contenedor_corazones: return
+	
+	print("CANTIDAD DE VIDAS RESTANTES: ", vidas_actuales)
+	var corazones = contenedor_corazones.get_children()
+	for i in range(corazones.size()):
+		if corazones[i] is TextureRect:
+			# Reseteamos el color original
+			corazones[i].modulate = Color.WHITE
+			
+			
+			if i < vidas_actuales:
+				if textura_corazon_lleno:
+					corazones[i].texture = textura_corazon_lleno
+			else:
+				if textura_corazon_vacio:
+					corazones[i].texture = textura_corazon_vacio
+				else:
+					# Si no hay textura vacía asignada, lo oscurece como respaldo
+					corazones[i].modulate = Color(0.2, 0.2, 0.2, 0.4)
+
+func _finalizar_juego(es_exito: bool):
+	juego_activo = false
+	if timer_spawn: timer_spawn.stop()
+	
+	# Limpiamos los objetos/globos flotantes que hayan quedado en pantalla
+	if $CanvasLayer/ContenedorAsteroides:
+		for hijo in $CanvasLayer/ContenedorAsteroides.get_children():
+			hijo.queue_free()
+			
+	for hijo in get_children():
+		if hijo is Area2D: 
+			hijo.queue_free()
+		
+	visible = false
+	minijuego_finalizado.emit(es_exito) # 👈 Notifica true si ganó o false si perdió todas las vidas
+	await get_tree().create_timer(2.0).timeout
+	Fondo.visible = false

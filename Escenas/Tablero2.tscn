@@ -98,6 +98,7 @@
 [ext_resource type="FontFile" uid="uid://cvwfc51hrkou3" path="res://Fuentes/Fredoka/static/Fredoka-Bold.ttf" id="41_r3pb0"]
 [ext_resource type="Texture2D" uid="uid://5mtmva50cl6" path="res://assets/Interfaz_Tablero2/Gemini_Generated_Image_c4xybqc4xybqc4xy.png" id="72_x60ep"]
 [ext_resource type="PackedScene" uid="uid://sfpevw8md85y" path="res://Escenas/minijuego_asteroides.tscn" id="73_it4fw"]
+[ext_resource type="PackedScene" uid="uid://dqr8wuvj26u46" path="res://Escenas/MinijuegoBuscador.tscn" id="97_08y31"]
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_ipnda"]
 animations = [{
@@ -636,7 +637,7 @@ horizontal_alignment = 1
 position = Vector2(929, 232.00002)
 scale = Vector2(0.27048275, 0.28662246)
 sprite_frames = SubResource("SpriteFrames_ipnda")
-frame = 39
+frame = 16
 
 [node name="Tablero2" type="Sprite2D" parent="." unique_id=276478482]
 position = Vector2(494, 331)
@@ -761,6 +762,8 @@ horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="MinijuegoAsteroides" parent="." unique_id=1267125036 instance=ExtResource("73_it4fw")]
+
+[node name="MinijuegoBuscador" parent="." unique_id=18950765 instance=ExtResource("97_08y31")]
 
 [node name="Planeta" type="Sprite2D" parent="." unique_id=1064961428]
 position = Vector2(341.00003, 227.99998)

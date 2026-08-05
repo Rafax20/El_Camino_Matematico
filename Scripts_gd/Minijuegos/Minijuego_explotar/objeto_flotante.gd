@@ -24,6 +24,7 @@ var paleta_globos: Array[Color] = [
 
 # 🖊️ Color gris oscuro fijo para el texto
 var color_texto_oscuro: Color = Color("#333333")
+var ya_tocado: bool = false # 🛡️ Candado anti doble clic
 
 func _ready():
 	input_event.connect(_on_input_event)
@@ -31,6 +32,7 @@ func _ready():
 func configurar(numero: int, textura_imagen: Texture2D, vel_inicial: float, tema: String = "colegio"):
 	valor_numero = numero
 	velocidad = vel_inicial
+	ya_tocado = false # 🔄 Reiniciamos el estado por si se reutiliza
 	
 	if label_numero:
 		label_numero.text = str(numero)
@@ -64,10 +66,21 @@ func _process(delta):
 		queue_free()
 
 func _on_input_event(_viewport: Node, event: InputEvent, _shape_idx: int):
+	if ya_tocado: return # 🛑 Si ya se procesó, ignora cualquier otro evento
+	
 	var es_clic = event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed
 	var es_toque = event is InputEventScreenTouch and event.pressed
 
 	if es_clic or es_toque:
+		# 🔒 2. Marcamos inmediatamente la variable ANTES de cualquier otra acción
+		ya_tocado = true 
+		
+		# 🛑 3. Consumimos el evento en el viewport para que no pase a otros nodos
+		get_viewport().set_input_as_handled()
+		
+		# 🔌 4. Desconectamos la señal para evitar invocaciones tardías del motor
+		if input_event.is_connected(_on_input_event):
+			input_event.disconnect(_on_input_event)
 		_explotar()
 
 func _explotar():

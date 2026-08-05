@@ -11,6 +11,11 @@ var pregunta_actual_guardada: Dictionary = {}
 var id_pregunta_pendiente_db: int = 0
 var dificultad_actual: int = 0 # 0 = Fácil, 1 = Media, 2 = Difícil
 var rol: String = "estudiante" # Puede ser "estudiante" o "maestro"
+var en_examen_final: bool = false
+var examen_correctas: int = 0
+var examen_preguntas_respondidas: int = 0
+# Cada elemento guardará: {"operacion": String, "es_correcta": bool, "respuesta_correcta": Any}
+var historial_examen: Array = []
 # ⚽ Guardará los IDs de las láminas que posee el niño (ej: [1, 5, 11])
 var laminas_poseidas: Array = []
 

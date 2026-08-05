@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dpdanoh748h45"
-path="res://.godot/imported/Gemini_Generated_Image_rdinxtrdinxtrdin.png-199cab9277757fe26b049498b43d425a.ctex"
+uid="uid://c23yy8vuvbuew"
+path="res://.godot/imported/corazon_vacio.png-6bf28322e9b3dfffedbac9f11ede80ff.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/Imagenes/Gemini_Generated_Image_rdinxtrdinxtrdin.png"
-dest_files=["res://.godot/imported/Gemini_Generated_Image_rdinxtrdinxtrdin.png-199cab9277757fe26b049498b43d425a.ctex"]
+source_file="res://assets/Imagenes/corazon_vacio.png"
+dest_files=["res://.godot/imported/corazon_vacio.png-6bf28322e9b3dfffedbac9f11ede80ff.ctex"]
 
 [params]
 

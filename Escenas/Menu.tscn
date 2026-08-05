@@ -139,14 +139,13 @@ horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="Ventana_Autenticacion" parent="CanvasLayer/Menu" unique_id=845431727 instance=ExtResource("3_j7eae")]
-visible = false
 anchors_preset = 13
 anchor_left = 0.5
 anchor_right = 0.5
-offset_left = -1217.9462
-offset_top = -261.19385
-offset_right = -26.924438
-offset_bottom = -375.32397
+offset_left = -1293.2961
+offset_top = -335.25693
+offset_right = -66.31622
+offset_bottom = -449.38705
 
 [node name="HTTPRequest" type="HTTPRequest" parent="." unique_id=983556898]
 

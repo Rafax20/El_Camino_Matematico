@@ -1,0 +1,14 @@
+[gd_scene format=3 uid="uid://bevco1cmjoqt5"]
+
+[ext_resource type="Script" uid="uid://du4w05cwku584" path="res://Scripts_gd/Minijuegos/Minijuego_oscuras/CajaMatematica.gd" id="1_vhevj"]
+
+[node name="CajaMatematica" type="Area2D" unique_id=409990104]
+script = ExtResource("1_vhevj")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=385197606]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=183859858]
+
+[node name="Label" type="Label" parent="." unique_id=423682819]
+offset_right = 40.0
+offset_bottom = 23.0

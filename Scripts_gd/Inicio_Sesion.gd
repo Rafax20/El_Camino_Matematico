@@ -180,6 +180,11 @@ func _on_request_completed(result, response_code, headers, body):
 			DatosUsuario.casilla_actual_db = int(progreso_data.get("casilla_actual", 0))
 			DatosUsuario.dificultad_actual = int(progreso_data.get("dificultad", 0))
 			
+			# 📝 AGREGAR ESTAS 3 LÍNEAS AQUÍ:
+			DatosUsuario.en_examen_final = bool(progreso_data.get("en_examen_final", false))
+			DatosUsuario.examen_correctas = int(progreso_data.get("examen_correctas", 0))
+			DatosUsuario.examen_preguntas_respondidas = int(progreso_data.get("examen_preguntas_respondidas", 0))
+			
 			ConexionSupabase.cargar_album_nube()
 			_abrir_interfaz_bienvenida()
 		else:

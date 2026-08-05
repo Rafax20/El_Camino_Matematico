@@ -2,11 +2,12 @@
 extends Node2D
 
 @onready var path_follow = $Path2D/PathFollow2D
-@onready var path_alternativo = $Path2D_Derecha
+#@onready var path_alternativo = $Path2D_Derecha
 @onready var boton_dado = $Panel/BotonDado 
 @onready var Menu_Volver =  $Tablero2/Volver_Menu
 @onready var boton_chat = $Preguntar_ChatBox
-@onready var minijuego = $MinijuegoAsteroides
+@onready var minijuego_asteroides = $MinijuegoAsteroides
+@onready var minijuego_buscador = $MinijuegoBuscador
 
 var total_casillas = 30
 var casilla_actual = 0
@@ -18,13 +19,39 @@ var servidor_listo: bool = false
 
 var pregunta_actual: Dictionary = {}
 
-# Coordenadas de ratio de tu Path2D para cada casilla
-var casilla_destino = [
-	0.037, 0.078, 0.106, 0.132, 0.164, 0.194, 0.232, 0.276, 0.314, 0.345,
-	0.376, 0.406, #Casilla 12
-	0.445, 0.475, 0.51, 0.551, 0.594, 0.634, 0.66, 0.692, 0.726, 0.757, 0.789,
-	0.825, 0.86, 0.894, 0.917, 0.944, 0.972, 1.0
-]
+# Valor: Diccionario con su ratio del Path2D y el tipo de evento
+var mapa_casillas: Dictionary = {
+	1:  {"ratio": 0.037, "tipo": "asteroides"},
+	2:  {"ratio": 0.078, "tipo": "buscador_cajas"},
+	3:  {"ratio": 0.106, "tipo": "buscador_cajas"},
+	4:  {"ratio": 0.132, "tipo": "asteroides"},
+	5:  {"ratio": 0.164, "tipo": "buscador_cajas"},
+	6:  {"ratio": 0.194, "tipo": "buscador_cajas"},
+	7:  {"ratio": 0.232, "tipo": "asteroides"},
+	8:  {"ratio": 0.276, "tipo": "buscador_cajas"},
+	9:  {"ratio": 0.314, "tipo": "buscador_cajas"},
+	10: {"ratio": 0.345, "tipo": "asteroides"},
+	11: {"ratio": 0.376, "tipo": "buscador_cajas"},
+	12: {"ratio": 0.406, "tipo": "buscador_cajas"},
+	13: {"ratio": 0.445, "tipo": "asteroides"},
+	14: {"ratio": 0.475, "tipo": "buscador_cajas"},
+	15: {"ratio": 0.510, "tipo": "buscador_cajas"},
+	16: {"ratio": 0.551, "tipo": "asteroides"},
+	17: {"ratio": 0.594, "tipo": "buscador_cajas"},
+	18: {"ratio": 0.634, "tipo": "buscador_cajas"},
+	19: {"ratio": 0.660, "tipo": "asteroides"},
+	20: {"ratio": 0.692, "tipo": "buscador_cajas"},
+	21: {"ratio": 0.726, "tipo": "buscador_cajas"},
+	22: {"ratio": 0.757, "tipo": "asteroides"},
+	23: {"ratio": 0.789, "tipo": "buscador_cajas"},
+	24: {"ratio": 0.825, "tipo": "buscador_cajas"},
+	25: {"ratio": 0.860, "tipo": "asteroides"},
+	26: {"ratio": 0.894, "tipo": "buscador_cajas"},
+	27: {"ratio": 0.917, "tipo": "buscador_cajas"},
+	28: {"ratio": 0.944, "tipo": "asteroides"},
+	29: {"ratio": 0.972, "tipo": "buscador_cajas"},
+	30: {"ratio": 1.000, "tipo": "buscador_cajas"} # Meta final
+}
 
 
 func _ready():
@@ -71,7 +98,7 @@ func _on_boton_dado_pressed():
 	Menu_Volver.disabled = true
 	casilla_anterior = casilla_actual
 	
-	var resultado = randi_range(1, 5)
+	var resultado = randi_range(30, 30)
 	print("🎲 Salió un: ", resultado)
 	$Panel/BotonDado/Numero_Dado.clear()
 	$Panel/BotonDado/Numero_Dado.add_text(str(resultado))
@@ -92,6 +119,7 @@ func _on_boton_dado_pressed():
 	if casilla_actual == total_casillas:
 		mostrar_pregunta_en_pantalla()
 	else:
+		boton_chat.disabled = true
 		lanzar_minijuego_casilla()
 
 func _mover_ficha_visualmente(casilla: int, instantaneo: bool):
@@ -99,19 +127,29 @@ func _mover_ficha_visualmente(casilla: int, instantaneo: bool):
 		path_follow.progress_ratio = 0.0
 		return
 	
-	var indice = clampi(casilla - 1, 0, casilla_destino.size() - 1)
+	# Obtenemos la posición asignada a la casilla actual (por defecto 0.0 si no existe)
+	var datos_casilla = mapa_casillas.get(casilla, {"ratio": 0.0})
+	var ratio_destino = datos_casilla["ratio"]
 	
 	if instantaneo:
-		path_follow.progress_ratio = casilla_destino[indice]
+		path_follow.progress_ratio = ratio_destino
 	else:
 		var tween = create_tween()
-		tween.tween_property(path_follow, "progress_ratio", casilla_destino[indice], 4.0).set_trans(Tween.TRANS_SINE)
+		tween.tween_property(path_follow, "progress_ratio", ratio_destino, 4.0).set_trans(Tween.TRANS_SINE)
 	
 
+# ==========================================
+# 📝 GESTIÓN DE PREGUNTAS Y EXAMEN FINAL
+# ==========================================
 func mostrar_pregunta_en_pantalla():
 	if lista_preguntas.size() == 0: return
 	
-	# 🟢 1. REUTILIZAR PREGUNTA: Si ya había una pregunta asignada y pendiente, mostramos ESA MISMA
+	# 🎯 Si estamos en la casilla final o reanudando un examen interrumpido
+	if casilla_actual == total_casillas or DatosUsuario.en_examen_final:
+		DatosUsuario.en_examen_final = true
+		print("📝 MODO EXAMEN: Pregunta ", DatosUsuario.examen_preguntas_respondidas + 1, " de 5")
+	
+	# 🟢 1. REUTILIZAR PREGUNTA: Si ya había una pregunta asignada y pendiente, mostramos esa misma
 	if not DatosUsuario.pregunta_actual_guardada.is_empty():
 		print("📌 Cargando la misma pregunta pendiente de la memoria...")
 		pregunta_actual = DatosUsuario.pregunta_actual_guardada
@@ -134,7 +172,7 @@ func mostrar_pregunta_en_pantalla():
 
 		# 🎯 4. NUEVA ASIGNACIÓN Y GUARDADO GLOBAL
 		pregunta_actual = preguntas_filtradas[pregunta_actual_indice]
-		DatosUsuario.pregunta_actual_guardada = pregunta_actual # 👈 Guardamos la referencia
+		DatosUsuario.pregunta_actual_guardada = pregunta_actual
 		pregunta_actual_indice += 1
 	
 	# 📺 5. MOSTRAR EN PANTALLA
@@ -146,11 +184,11 @@ func mostrar_pregunta_en_pantalla():
 # ==========================================
 # ⚙️ RESPUESTA DEL NIÑO DESDE LA INTERFAZ
 # ==========================================
+# ==========================================
+# ⚙️ RESPUESTA DEL NIÑO DESDE LA INTERFAZ
+# ==========================================
 func _on_interfaz_respuesta_completada(es_correcta: bool, tiempo_tardado: float) -> void:
-	# 🚨 REMOVIDO: Ya no cerramos la interfaz aquí arriba de golpe.
 	DatosUsuario.pregunta_pendiente_db = false
-	
-	# 🧹 LIMPIEZA: Liberamos la pregunta guardada para que la siguiente casilla genere una nueva
 	DatosUsuario.pregunta_actual_guardada = {}
 	
 	# 1. 🧠 EVALUACIÓN DEL SISTEMA EXPERTO
@@ -162,98 +200,151 @@ func _on_interfaz_respuesta_completada(es_correcta: bool, tiempo_tardado: float)
 	)
 	
 	if DatosUsuario.dificultad_actual != dificultad_anterior:
-		print("🧠 Tablero: El Sistema Experto cambió el nivel. Reiniciando pregunta_actual_indice a 0.")
 		pregunta_actual_indice = 0
 	
-	# 2. 📊 REGISTRO EN LA TABLA DE HISTORIAL INDEPENDIENTE
+	# 2. 📊 REGISTRO EN EL HISTORIAL GENERAL
 	var categoria_actual = "matematicas"
 	if pregunta_actual.has("categoria"):
 		categoria_actual = str(pregunta_actual.get("categoria"))
 		
 	ConexionSupabase.registrar_en_historial(categoria_actual, es_correcta, tiempo_tardado)
 	
-	# 3. 💾 MANEJO DE RESPUESTA, AUDIOS Y FLUJO VISUAL
-	# 3. 💾 MANEJO DE RESPUESTA, AUDIOS Y FLUJO VISUAL
-	if es_correcta:
-		print("🎯 ¡Correcta! El niño tardó: ", tiempo_tardado, " segundos.")
-		GestionAudio.reproducir_audio_local("Elogios/" + ["elogio1", "elogio2", "elogio3"].pick_random())
-		
-		# --- SISTEMA DE PREMIACIÓN VISUAL ---
-		if randf() < 0.80:
-			var id_ganado = randi_range(1, 38) 
-			
-			# 🔍 REVISIÓN: ¿Ya la tiene en su lista global?
-			var es_repetida: bool = DatosUsuario.laminas_poseidas.has(id_ganado)
-			
-			if DatosUsuario.CATALOGO_LAMINAS.has(id_ganado):
-				# 1. Asignamos la textura correspondiente de la lámina
-				
-				# 2. 🔀 Modificamos el texto del Label y filtramos el registro en Supabase
-				if es_repetida:
-					print("LAMINA REPETIDA: " + str(id_ganado) + " | No se registra en la base de datos.")
-				else:
-					$CapaLogro/Control/TextureRect.texture = DatosUsuario.CATALOGO_LAMINAS[id_ganado]
-					$CapaLogro/Control/TextureRect/Label.text = "¡Ganaste una nueva lámina!"
-					print("¡NUEVA LAMINA!: " + str(id_ganado) + " | Registrando en Supabase...")
-					
-					# ☁️ SOLO REGISTRAMOS EN LA NUBE SI ES NUEVA
-					ConexionSupabase.registrar_lamina_ganada(id_ganado)
-					# La agregamos al inventario local de inmediato
-					DatosUsuario.laminas_poseidas.append(id_ganado)
-					# 3. Activamos la visibilidad y la animación de escala
-					$CapaLogro.visible = true
-					$CapaLogro/Control.scale = Vector2.ZERO
-					var tween = create_tween().set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
-					tween.tween_property($CapaLogro/Control, "scale", Vector2.ONE, 0.4)
-				
-				# ⏳ Esperamos 3 segundos para que el niño vea su lámina y lea el cartel
-				await get_tree().create_timer(3.0).timeout
-				$CapaLogro.visible = false
-		else:
-			# Si contestó bien pero no ganó lámina (20% de probabilidad), esperamos 2s para que procese el éxito
-			await get_tree().create_timer(2.0).timeout
-		
-		# Cerramos la ventana de la pregunta y liberamos los controles del tablero
-		$Interfaz.visible = false
-		ConexionSupabase.actualizar_progreso_en_nube(casilla_actual, false)
-		boton_dado.disabled = false
-		Menu_Volver.disabled = false
-		
+	# 3. 🔀 BIFURCACIÓN SEGÚN EL MODO DE JUEGO
+	if DatosUsuario.en_examen_final:
+		_procesar_respuesta_examen(es_correcta)
 	else:
-		# ❌ LOGICA DE RESPUESTA INCORRECTA (¡Recuperada!)
-		print("❌ ¡Incorrecta! Regresando a casilla anterior: ", casilla_anterior)
-		
-		# 🗣️ Mandamos a reproducir el ánimo pedagógico
-		var animos = ["animo1", "animo2", "animo3"]
-		GestionAudio.reproducir_audio_local("Animos/" + animos.pick_random())
-		
-		# ⏳ Esperamos 2 segundos para que escuche el mensaje de aliento antes de mover la ficha
-		await get_tree().create_timer(2.0).timeout
-		
-		# 📺 Cerramos la ventana de la pregunta
+		_procesar_respuesta_casilla_normal(es_correcta, tiempo_tardado)
+
+
+# ------------------------------------------
+# 📝 LÓGICA DEL EXAMEN FINAL (SIN INTERRUPCIÓN)
+# ------------------------------------------
+func _procesar_respuesta_examen(es_correcta: bool):
+	DatosUsuario.examen_preguntas_respondidas += 1
+	if es_correcta:
+		DatosUsuario.examen_correctas += 1
+
+	# 📌 Guardamos el detalle de la pregunta para el resumen de errores
+	DatosUsuario.historial_examen.append({
+		"numero": DatosUsuario.examen_preguntas_respondidas,
+		"operacion": pregunta_actual.get("operacion", "Operación"),
+		"es_correcta": es_correcta,
+		"respuesta_correcta": pregunta_actual.get("respuesta_correcta", "")
+	})
+
+	# 🏁 Verificar si completó las 5 preguntas del examen
+	if DatosUsuario.examen_preguntas_respondidas >= 5:
 		$Interfaz.visible = false
+		_mostrar_resumen_y_evaluar_examen()
+	else:
+		# Solo si TODAVÍA quedan preguntas pendientes en el examen actualizamos en true
+		ConexionSupabase.actualizar_progreso_en_nube(casilla_actual, true)
+		DatosUsuario.pregunta_pendiente_db = true
+		mostrar_pregunta_en_pantalla()
+
+
+func _mostrar_resumen_y_evaluar_examen():
+	print("📊 EXAMEN FINALIZADO. Resultados del alumno:")
+	for item in DatosUsuario.historial_examen:
+		var estado = "✅ CORRECTA" if item["es_correcta"] else "❌ INCORRECTA (Respuesta: " + str(item["respuesta_correcta"]) + ")"
+		print("  P" + str(item["numero"]) + ": " + str(item["operacion"]) + " -> " + estado)
+	
+	# 🏆 EVALUACIÓN DE NOTA
+	if DatosUsuario.examen_correctas == 5:
+		print("🎉 ¡APROBADO PERFECTO (5/5)! Victoria total del tablero.")
+		_finalizar_examen(true)
+	else:
+		print("❌ NO APROBADO (", DatosUsuario.examen_correctas, "/5). Mostrando errores...")
+		# Aquí puedes desplegar tu ventana emergente o panel con el resumen de errores
+		# Ejemplo: $PanelResumenErrores.mostrar(DatosUsuario.historial_examen)
 		
-		# Ajustamos coordenadas de la memoria y hacemos el movimiento de retroceso visual
+		_finalizar_examen(false)
+
+
+func _finalizar_examen(superado: bool):
+	var aciertos = DatosUsuario.examen_correctas
+	
+	# Limpiamos el estado del examen en la RAM local
+	DatosUsuario.en_examen_final = false
+	DatosUsuario.examen_preguntas_respondidas = 0
+	DatosUsuario.examen_correctas = 0
+	DatosUsuario.pregunta_pendiente_db = false # 👈 Limpiar aquí antes de evaluar
+
+	if superado:
+		ConexionSupabase.actualizar_progreso_en_nube(casilla_actual, false)
+		# 🏆 ¡AQUÍ DESPLEGAS EL DIPLOMA O PANTALLA DE VICTORIA!
+	else:
+		# Retrocede a la casilla anterior por no aprobar las 5
 		casilla_actual = casilla_anterior
 		DatosUsuario.casilla_actual_db = casilla_actual
 		
 		ConexionSupabase.actualizar_progreso_en_nube(casilla_actual, false)
 		await _mover_ficha_visualmente(casilla_actual, false)
 		
-		# Desbloqueamos el tablero para el siguiente turno
+		boton_dado.disabled = false
+		Menu_Volver.disabled = false
+
+
+# ------------------------------------------
+# 🎲 LÓGICA DE CASILLA NORMAL
+# ------------------------------------------
+func _procesar_respuesta_casilla_normal(es_correcta: bool, tiempo_tardado: float):
+	if es_correcta:
+		print("🎯 ¡Correcta! El niño tardó: ", tiempo_tardado, " segundos.")
+		GestionAudio.reproducir_audio_local("Elogios/" + ["elogio1", "elogio2", "elogio3"].pick_random())
+		
+		if randf() < 0.80:
+			var id_ganado = randi_range(1, 38) 
+			var es_repetida: bool = DatosUsuario.laminas_poseidas.has(id_ganado)
+			
+			if DatosUsuario.CATALOGO_LAMINAS.has(id_ganado):
+				if not es_repetida:
+					$CapaLogro/Control/TextureRect.texture = DatosUsuario.CATALOGO_LAMINAS[id_ganado]
+					$CapaLogro/Control/TextureRect/Label.text = "¡Ganaste una nueva lámina!"
+					ConexionSupabase.registrar_lamina_ganada(id_ganado)
+					DatosUsuario.laminas_poseidas.append(id_ganado)
+					
+					$CapaLogro.visible = true
+					$CapaLogro/Control.scale = Vector2.ZERO
+					var tween = create_tween().set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+					tween.tween_property($CapaLogro/Control, "scale", Vector2.ONE, 0.4)
+					await get_tree().create_timer(3.0).timeout
+					$CapaLogro.visible = false
+				else:
+					await get_tree().create_timer(1.5).timeout
+		else:
+			await get_tree().create_timer(2.0).timeout
+		
+		$Interfaz.visible = false
+		ConexionSupabase.actualizar_progreso_en_nube(casilla_actual, false)
+		boton_dado.disabled = false
+		Menu_Volver.disabled = false
+		
+	else:
+		print("❌ ¡Incorrecta! Regresando a casilla anterior: ", casilla_anterior)
+		GestionAudio.reproducir_audio_local("Animos/" + ["animo1", "animo2", "animo3"].pick_random())
+		await get_tree().create_timer(2.0).timeout
+		
+		$Interfaz.visible = false
+		casilla_actual = casilla_anterior
+		DatosUsuario.casilla_actual_db = casilla_actual
+		
+		ConexionSupabase.actualizar_progreso_en_nube(casilla_actual, false)
+		await _mover_ficha_visualmente(casilla_actual, false)
+		
 		boton_dado.disabled = false
 		Menu_Volver.disabled = false
 
 func lanzar_minijuego_casilla():
 	# 1. Seleccionamos una pregunta del banco precargado
-	var pregunta_para_minijuego = _obtener_pregunta_actual()
-	
-	# 2. Conectamos la señal de término si no está conectada
-	if not minijuego.minijuego_finalizado.is_connected(_on_minijuego_resuelto):
-		minijuego.minijuego_finalizado.connect(_on_minijuego_resuelto)
-	
-	# 3. Iniciamos el minijuego pasándole la pregunta y el tema ("colegio" o "espacio")
-	minijuego.iniciar_minijuego(pregunta_para_minijuego, "espacio")
+	var datos_casilla = mapa_casillas.get(casilla_actual, {"tipo": "buscador_cajas"})
+	print("MINIJUEGO DETECTADO EN DATOS CASILLA: ", datos_casilla["tipo"])
+	match datos_casilla["tipo"]:
+		"asteroides":
+			lanzar_minijuego_asteroides()
+			
+		"buscador_cajas":
+			lanzar_minijuego_buscador()
 
 
 func _obtener_pregunta_actual() -> Dictionary:
@@ -282,6 +373,32 @@ func _on_minijuego_resuelto(es_correcto: bool):
 		# Habilitamos el dado para el siguiente turno
 		boton_dado.disabled = false
 		Menu_Volver.disabled = false
+	else:
+		# ❌ LOGICA DE RESPUESTA INCORRECTA (¡Recuperada!)
+		print("❌ ¡Incorrecta! Regresando a casilla anterior: ", casilla_anterior)
+		
+		# 🗣️ Mandamos a reproducir el ánimo pedagógico
+		var animos = ["animo1", "animo2", "animo3"]
+		GestionAudio.reproducir_audio_local("Animos/" + animos.pick_random())
+		
+		# ⏳ Esperamos 2 segundos para que escuche el mensaje de aliento antes de mover la ficha
+		await get_tree().create_timer(2.0).timeout
+		
+		# 📺 Cerramos la ventana de la pregunta
+		$Interfaz.visible = false
+		
+		# Ajustamos coordenadas de la memoria y hacemos el movimiento de retroceso visual
+		casilla_actual = casilla_anterior
+		DatosUsuario.casilla_actual_db = casilla_actual
+		
+		ConexionSupabase.actualizar_progreso_en_nube(casilla_actual, false)
+		await _mover_ficha_visualmente(casilla_actual, false)
+		
+		# Desbloqueamos el tablero para el siguiente turno
+		boton_dado.disabled = false
+		Menu_Volver.disabled = false
+	
+	boton_chat.disabled = false
 		
 func enviar_puntuacion(nombre_jugador: String, puntos: int):
 	var datos = {
@@ -295,3 +412,17 @@ func enviar_puntuacion(nombre_jugador: String, puntos: int):
 
 func _on_preguntar_chat_box_pressed() -> void:
 	NavegacionGlobal.abrir_chatbot()
+	
+# 🚀 Invocador del minijuego de asteroides
+func lanzar_minijuego_asteroides():
+	var pregunta = _obtener_pregunta_actual()
+	if not minijuego_asteroides.minijuego_finalizado.is_connected(_on_minijuego_resuelto):
+		minijuego_asteroides.minijuego_finalizado.connect(_on_minijuego_resuelto)
+	minijuego_asteroides.iniciar_minijuego(pregunta, "espacio")
+
+# 🔦 Invocador del minijuego de las cajas en la oscuridad
+func lanzar_minijuego_buscador():
+	var pregunta = _obtener_pregunta_actual()
+	if not minijuego_buscador.minijuego_finalizado.is_connected(_on_minijuego_resuelto):
+		minijuego_buscador.minijuego_finalizado.connect(_on_minijuego_resuelto)
+	minijuego_buscador.iniciar_minijuego(pregunta, "espacio")

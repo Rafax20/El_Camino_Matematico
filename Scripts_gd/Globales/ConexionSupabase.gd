@@ -92,7 +92,11 @@ func pedir_progreso_usuario():
 	http_get.request(url_final, _obtener_cabeceras(), HTTPClient.METHOD_GET)
 
 func actualizar_progreso_en_nube(casilla: int, pendiente: bool):
-	if not DatosUsuario.esta_conectado_a_la_nube: return
+	# 🛑 GUARDIA DE SEGURIDAD Y SESIÓN:
+	# Si no se ha iniciado sesión formalmente desde el Login, abortamos.
+	if not DatosUsuario.esta_conectado_a_la_nube or DatosUsuario.usuario_id_db <= 0:
+		print("⚠️ OMITIDO: No hay usuario autenticado. No se guardará progreso en Supabase.")
+		return
 	
 	var http_update = HTTPRequest.new()
 	add_child(http_update)
@@ -100,12 +104,14 @@ func actualizar_progreso_en_nube(casilla: int, pendiente: bool):
 	http_update.request_completed.connect(func(r, rc, h, b): http_update.queue_free())
 	
 	var datos_a_guardar = {
-		"casilla_actual": casilla, 
+		"casilla_actual": casilla,
 		"pregunta_pendiente": pendiente,
-		"dificultad": DatosUsuario.dificultad_actual
+		"dificultad": DatosUsuario.dificultad_actual,
+		"en_examen_final": DatosUsuario.en_examen_final,
+		"examen_correctas": DatosUsuario.examen_correctas,
+		"examen_preguntas_respondidas": DatosUsuario.examen_preguntas_respondidas
 	}
 	
-	# CONCATENACIÓN DINÁMICA
 	var url_final = SUPABASE_URL + "progreso?usuario_id=eq." + str(DatosUsuario.usuario_id_db)
 	var headers = _obtener_cabeceras(true)
 	headers.append("Prefer: return=minimal")
