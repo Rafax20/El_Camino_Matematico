@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dokgx06fai5ea"
-path="res://.godot/imported/FondoEspacial.png-8cfa3acb255c929002f30310aa01880f.ctex"
+uid="uid://yp5l2fjr5r5x"
+path="res://.godot/imported/globo_tablero1.png-7947ca57ec9bda8490ebb38d5c96e90f.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/Imagenes/FondoEspacial.png"
-dest_files=["res://.godot/imported/FondoEspacial.png-8cfa3acb255c929002f30310aa01880f.ctex"]
+source_file="res://assets/Minijuegos/minijuego Explotar/globo_tablero1.png"
+dest_files=["res://.godot/imported/globo_tablero1.png-7947ca57ec9bda8490ebb38d5c96e90f.ctex"]
 
 [params]
 

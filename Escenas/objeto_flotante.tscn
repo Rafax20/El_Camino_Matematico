@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://b88qqq3s5mt7s"]
 
 [ext_resource type="Script" uid="uid://ogmtrfhaiqur" path="res://Scripts_gd/Minijuegos/Minijuego_explotar/objeto_flotante.gd" id="1_v8xn7"]
-[ext_resource type="Texture2D" uid="uid://yp5l2fjr5r5x" path="res://assets/Imagenes/globo_tablero1.png" id="2_u58nm"]
+[ext_resource type="Texture2D" uid="uid://yp5l2fjr5r5x" path="res://assets/Minijuegos/minijuego Explotar/globo_tablero1.png" id="2_u58nm"]
 [ext_resource type="FontFile" uid="uid://cvwfc51hrkou3" path="res://Fuentes/Fredoka/static/Fredoka-Bold.ttf" id="3_u58nm"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_u58nm"]

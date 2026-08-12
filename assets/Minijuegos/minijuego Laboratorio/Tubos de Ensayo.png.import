@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dxhrw1bvtsmr6"
-path="res://.godot/imported/Imagen.png-424c0ee87ce0b03be86b21e806741176.ctex"
+uid="uid://c772pgvkg1lyl"
+path="res://.godot/imported/Tubos de Ensayo.png-68dc5c4400d8458a038affdf948413d5.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/Imagen.png"
-dest_files=["res://.godot/imported/Imagen.png-424c0ee87ce0b03be86b21e806741176.ctex"]
+source_file="res://assets/Minijuegos/minijuego Laboratorio/Tubos de Ensayo.png"
+dest_files=["res://.godot/imported/Tubos de Ensayo.png-68dc5c4400d8458a038affdf948413d5.ctex"]
 
 [params]
 

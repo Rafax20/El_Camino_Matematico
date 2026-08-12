@@ -16,9 +16,22 @@ func _ready():
 	# 1. Verificar si podemos usar el entorno local directo
 	_configurar_entorno()
 	
-	# 2. Conexión de componentes de la interfaz
-	$VBoxContainer/HBoxContainer/Button.pressed.connect(_enviar_mensaje)
-	http_request.request_completed.connect(_on_request_completed)
+	# 2. Conexión del botón de enviar
+	var boton = $VBoxContainer/HBoxContainer/Button
+	if boton and not boton.pressed.is_connected(_enviar_mensaje):
+		boton.pressed.connect(_enviar_mensaje)
+	
+	# 3. Escuchar la tecla ENTER en el LineEdit mediante su señal nativa
+	if line_edit:
+		line_edit.text_submitted.connect(_on_line_edit_text_submitted)
+	
+	# 4. Conexión de la solicitud HTTP
+	if http_request and not http_request.request_completed.is_connected(_on_request_completed):
+		http_request.request_completed.connect(_on_request_completed)
+
+# Función auxiliar para enviar el mensaje al presionar Enter en el chat box
+func _on_line_edit_text_submitted(_texto_ingresado: String):
+	_enviar_mensaje()
 	
 
 func _configurar_entorno():
@@ -53,6 +66,9 @@ func _enviar_mensaje():
 	
 	agregar_mensaje_a_pantalla("Niño: " + texto)
 	line_edit.text = ""
+	
+	# Mantiene el cursor activo dentro del LineEdit para seguir escribiendo
+	line_edit.grab_focus()
 	
 	var headers = ["Content-Type: application/json"]
 	var payload_string = ""

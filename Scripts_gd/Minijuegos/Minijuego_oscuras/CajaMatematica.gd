@@ -8,7 +8,7 @@ var ya_abierta: bool = false
 var jugador_cerca: bool = false
 
 @onready var sprite = $Sprite2D
-@onready var indicador_tecla = $IndicadorTecla # Un Label o Sprite con "E" o "Tocar"
+@onready var indicador_tecla = $Sprite2D/IndicadorTecla # Un Label o Sprite con "E" o "Tocar"
 
 func _ready():
 	body_entered.connect(_on_body_entered)

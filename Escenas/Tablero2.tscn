@@ -68,7 +68,6 @@
 [ext_resource type="Texture2D" uid="uid://c5oo6wchkwmx5" path="res://assets/Interfaz_Tablero2/Frames_Espacio/Saltando_Espacio/wmremove-transformed_044.png" id="23_wqay6"]
 [ext_resource type="Texture2D" uid="uid://dhvms7araeet" path="res://assets/Interfaz_Tablero2/Panel_Animacion/Panel_Animacion_19.png" id="24_3rmhm"]
 [ext_resource type="Texture2D" uid="uid://c20cbeynxey4f" path="res://assets/Interfaz_Tablero2/Frames_Espacio/Saltando_Espacio/wmremove-transformed_045.png" id="24_ct6n5"]
-[ext_resource type="Texture2D" uid="uid://cg2h83ckhsklv" path="res://assets/Interfaz_Tablero2/Nave_Animacion/82f24a03-d57c-49aa-989a-1fb2165d894f (1)_000/82f24a03-d57c-49aa-989a-1fb2165d894f (1)_041.png" id="24_w70ia"]
 [ext_resource type="PackedScene" uid="uid://c2ijo78xrnxlr" path="res://Escenas/mapa_tablero_2.tscn" id="25_2l76i"]
 [ext_resource type="Texture2D" uid="uid://cf47thoy5uaft" path="res://assets/Interfaz_Tablero2/Panel_Animacion/Panel_Animacion_20.png" id="25_r1efd"]
 [ext_resource type="Texture2D" uid="uid://i7g3h0o4ma8h" path="res://assets/Interfaz_Tablero2/Frames_Espacio/Saltando_Espacio/wmremove-transformed_046.png" id="25_v3b7q"]
@@ -85,7 +84,7 @@
 [ext_resource type="Texture2D" uid="uid://dfujx0ovx5w4k" path="res://assets/Interfaz_Tablero2/Panel_Animacion/Panel_Animacion_26.png" id="31_16f8d"]
 [ext_resource type="Texture2D" uid="uid://bg3o4gvgtcpqj" path="res://assets/Interfaz_Tablero2/Panel_Animacion/Panel_Animacion_27.png" id="32_1kwsu"]
 [ext_resource type="Texture2D" uid="uid://j0dxjka8o052" path="res://assets/Interfaz_Tablero2/Panel_Animacion/Panel_Animacion_28.png" id="33_2l76i"]
-[ext_resource type="Script" uid="uid://db7jevx1mq6w6" path="res://Scripts_gd/animacion.gd" id="33_6anpw"]
+[ext_resource type="Script" uid="uid://db7jevx1mq6w6" path="res://Scripts_gd/animaciones.gd" id="33_6anpw"]
 [ext_resource type="PackedScene" uid="uid://6cu6p1u6fgt6" path="res://Escenas/interfaz_Pregunta.tscn" id="33_h3ra3"]
 [ext_resource type="PackedScene" uid="uid://d3jfy5ugxu4nq" path="res://Escenas/capa_logro.tscn" id="34_6anpw"]
 [ext_resource type="Texture2D" uid="uid://drugxsicp7hcm" path="res://assets/Interfaz_Tablero2/Panel_Animacion/Panel_Animacion_29.png" id="34_08y31"]
@@ -98,6 +97,7 @@
 [ext_resource type="Texture2D" uid="uid://5mtmva50cl6" path="res://assets/Interfaz_Tablero2/Gemini_Generated_Image_c4xybqc4xybqc4xy.png" id="72_x60ep"]
 [ext_resource type="PackedScene" uid="uid://sfpevw8md85y" path="res://Escenas/minijuego_asteroides.tscn" id="73_it4fw"]
 [ext_resource type="PackedScene" uid="uid://dqr8wuvj26u46" path="res://Escenas/MinijuegoBuscador.tscn" id="97_08y31"]
+[ext_resource type="PackedScene" uid="uid://dfbugve5tujxm" path="res://Escenas/MinijuegoLaboratorio.tscn" id="98_2l76i"]
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_ipnda"]
 animations = [{
@@ -163,12 +163,6 @@ animations = [{
 "texture": ExtResource("23_v63mt")
 }, {
 "duration": 1.0,
-"texture": ExtResource("24_w70ia")
-}, {
-"duration": 1.0,
-"texture": ExtResource("23_v63mt")
-}, {
-"duration": 1.0,
 "texture": ExtResource("22_j15sf")
 }, {
 "duration": 1.0,
@@ -220,11 +214,11 @@ animations = [{
 "texture": ExtResource("6_8ffun")
 }, {
 "duration": 1.0,
-"texture": ExtResource("4_2l76i")
+"texture": ExtResource("5_08y31")
 }],
 "loop": true,
-"name": &"default",
-"speed": 10.0
+"name": &"Nave_Espacial",
+"speed": 8.0
 }]
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_fwkr1"]
@@ -636,7 +630,9 @@ horizontal_alignment = 1
 position = Vector2(929, 232.00002)
 scale = Vector2(0.27048275, 0.28662246)
 sprite_frames = SubResource("SpriteFrames_ipnda")
-frame = 16
+animation = &"Nave_Espacial"
+frame_progress = 0.65503776
+script = ExtResource("33_6anpw")
 
 [node name="Mapa_Tablero_2" parent="." unique_id=315950505 instance=ExtResource("25_2l76i")]
 position = Vector2(499, 330.25)
@@ -731,6 +727,7 @@ offset_top = 341.0
 offset_right = 1928.0
 offset_bottom = 978.0
 scale = Vector2(0.18, 0.18)
+mouse_filter = 1
 texture_normal = ExtResource("72_x60ep")
 
 [node name="RichTextLabel" type="RichTextLabel" parent="Preguntar_ChatBox" unique_id=1741907789]
@@ -767,6 +764,13 @@ region_rect = Rect2(64, 734, 184.48947, 82)
 [node name="MinijuegoAsteroides" parent="." unique_id=1267125036 instance=ExtResource("73_it4fw")]
 
 [node name="MinijuegoBuscador" parent="." unique_id=18950765 instance=ExtResource("97_08y31")]
+
+[node name="CapaMinijuegos" type="CanvasLayer" parent="." unique_id=1983300214]
+layer = 10
+visible = false
+
+[node name="MinijuegoLaboratorio" parent="CapaMinijuegos" unique_id=479700857 instance=ExtResource("98_2l76i")]
+visible = true
 
 [connection signal="pressed" from="Mapa_Tablero_2/Volver_Menu" to="Mapa_Tablero_2/Volver_Menu" method="_on_boton_volver_pressed"]
 [connection signal="pressed" from="Panel/BotonDado" to="." method="_on_boton_dado_pressed"]

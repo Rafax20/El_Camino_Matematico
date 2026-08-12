@@ -30,3 +30,9 @@ func Animar_Caida(ejecutar: bool):
 		await animation_finished
 		
 		print("✅ Ciclo de animación completado")
+		
+func Animar_Nave(ejecutar: bool):
+	if ejecutar:
+		
+		play("Nave_Espacial")
+		print("Ejecutando Nave Espacial")

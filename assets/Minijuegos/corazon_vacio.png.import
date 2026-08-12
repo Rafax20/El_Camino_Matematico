@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bto4byrrdaj78"
-path="res://.godot/imported/corazon_lleno.png-972f351a31c467429f87e9b395fccce6.ctex"
+uid="uid://c23yy8vuvbuew"
+path="res://.godot/imported/corazon_vacio.png-f550c769ce989a212b01721b5e5f9a51.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/Imagenes/corazon_lleno.png"
-dest_files=["res://.godot/imported/corazon_lleno.png-972f351a31c467429f87e9b395fccce6.ctex"]
+source_file="res://assets/Minijuegos/corazon_vacio.png"
+dest_files=["res://.godot/imported/corazon_vacio.png-f550c769ce989a212b01721b5e5f9a51.ctex"]
 
 [params]
 

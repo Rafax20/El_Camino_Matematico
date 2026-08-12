@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dkst8j1clx8op"
-path="res://.godot/imported/Caja.png-95f87e5c698f23ead1e3a9569e6d6d51.ctex"
+uid="uid://dvsatgvkavoao"
+path="res://.godot/imported/Cabina Espacial.png-2db908689a134208d55606debc04ca49.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/Imagenes/Caja.png"
-dest_files=["res://.godot/imported/Caja.png-95f87e5c698f23ead1e3a9569e6d6d51.ctex"]
+source_file="res://assets/Minijuegos/minijuego Explotar/Cabina Espacial.png"
+dest_files=["res://.godot/imported/Cabina Espacial.png-2db908689a134208d55606debc04ca49.ctex"]
 
 [params]
 

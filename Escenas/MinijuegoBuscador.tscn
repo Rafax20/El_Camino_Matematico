@@ -2,39 +2,118 @@
 
 [ext_resource type="Script" uid="uid://dmbucwiyov8np" path="res://Scripts_gd/Minijuegos/Minijuego_oscuras/MinijuegoBuscador.gd" id="1_2yfm0"]
 [ext_resource type="PackedScene" uid="uid://bevco1cmjoqt5" path="res://Escenas/caja_matematica.tscn" id="2_0h46i"]
-[ext_resource type="Texture2D" uid="uid://bto4byrrdaj78" path="res://assets/Imagenes/corazon_lleno.png" id="2_t5ej4"]
-[ext_resource type="Texture2D" uid="uid://jlej3rli6pq6" path="res://assets/Interfaz_Tablero2/Frames_Espacio/Saltando_Espacio/wmremove-transformed_051.png" id="2_tjxs5"]
-[ext_resource type="Texture2D" uid="uid://cldvj45dfkb6n" path="res://assets/Imagenes/FondoGris.png" id="2_xshwr"]
+[ext_resource type="Texture2D" uid="uid://bto4byrrdaj78" path="res://assets/Minijuegos/corazon_lleno.png" id="2_t5ej4"]
+[ext_resource type="Texture2D" uid="uid://cldvj45dfkb6n" path="res://assets/Minijuegos/minijuego Buscador/FondoGris.png" id="2_xshwr"]
 [ext_resource type="Script" uid="uid://churqb50w3qdl" path="res://Scripts_gd/jugador.gd" id="3_hjcrm"]
+[ext_resource type="PackedScene" uid="uid://bsj37kbbc4irt" path="res://Escenas/FichaNumero.tscn" id="3_r50aa"]
+[ext_resource type="PackedScene" uid="uid://cj3jrqab0at24" path="res://Escenas/CasillaDestino.tscn" id="4_r50aa"]
+[ext_resource type="Texture2D" uid="uid://c2pby6mg3luat" path="res://assets/Minijuegos/minijuego Buscador/Caminar_Abajo_1.png" id="5_fj5ap"]
+[ext_resource type="Texture2D" uid="uid://xltt0n8m1bga" path="res://assets/Minijuegos/minijuego Buscador/Caminar_Abajo_2.png" id="6_wk387"]
+[ext_resource type="Texture2D" uid="uid://05nv2vhl75qu" path="res://assets/Minijuegos/minijuego Buscador/Caminar_Abajo_3.png" id="7_r50aa"]
+[ext_resource type="Texture2D" uid="uid://cqmo0rj13mmnl" path="res://assets/Minijuegos/minijuego Buscador/Caminar_Abajo_4.png" id="8_kbjnn"]
+[ext_resource type="Texture2D" uid="uid://7k0i1cpiaush" path="res://assets/Minijuegos/minijuego Buscador/Caminar_Arriba_1.png" id="9_06tuf"]
+[ext_resource type="Texture2D" uid="uid://ph5gjwwxi52e" path="res://assets/Minijuegos/minijuego Buscador/Caminar_Arriba_2.png" id="10_tos66"]
+[ext_resource type="Texture2D" uid="uid://b0yyyl45nmh4c" path="res://assets/Minijuegos/minijuego Buscador/Caminar_Arriba_3.png" id="11_nhj8j"]
+[ext_resource type="Texture2D" uid="uid://cd5qnjervygga" path="res://assets/Minijuegos/minijuego Buscador/Caminar_Arriba_4.png" id="12_1y2bk"]
+[ext_resource type="Texture2D" uid="uid://cq6vyn3q8cn3g" path="res://assets/Minijuegos/minijuego Buscador/Caminar_Derecha_1.png" id="13_jtu6a"]
+[ext_resource type="Texture2D" uid="uid://5tcs3v5r85ai" path="res://assets/Minijuegos/minijuego Buscador/Caminar_Derecha_2.png" id="14_hajbp"]
+[ext_resource type="Texture2D" uid="uid://c534u7fmx6dfg" path="res://assets/Minijuegos/minijuego Buscador/Caminar_Derecha_3.png" id="15_djhpd"]
+[ext_resource type="Texture2D" uid="uid://bsn0ikbu5d2tv" path="res://assets/Minijuegos/minijuego Buscador/Caminar_Izquierda_1.png" id="16_rfepn"]
+[ext_resource type="Texture2D" uid="uid://b0uxgfrrfelmg" path="res://assets/Minijuegos/minijuego Buscador/Caminar_Izquierda_2.png" id="17_6ljao"]
+[ext_resource type="Texture2D" uid="uid://8eekukcd37lv" path="res://assets/Minijuegos/minijuego Buscador/Caminar_Izquierda_3.png" id="18_ot35v"]
+[ext_resource type="Texture2D" uid="uid://ds26rqnf1pwj3" path="res://assets/Minijuegos/minijuego Buscador/Espacio.png" id="22_kbjnn"]
+[ext_resource type="Texture2D" uid="uid://bvpa45wa6p8fk" path="res://assets/Minijuegos/minijuego Buscador/Panel.png" id="23_06tuf"]
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_xshwr"]
 animations = [{
 "frames": [{
 "duration": 1.0,
-"texture": ExtResource("2_tjxs5")
+"texture": ExtResource("5_fj5ap")
+}, {
+"duration": 1.0,
+"texture": ExtResource("6_wk387")
+}, {
+"duration": 1.0,
+"texture": ExtResource("7_r50aa")
+}, {
+"duration": 1.0,
+"texture": ExtResource("8_kbjnn")
 }],
 "loop": true,
-"name": &"default",
+"name": &"caminar_abajo",
 "speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("9_06tuf")
+}, {
+"duration": 1.0,
+"texture": ExtResource("10_tos66")
+}, {
+"duration": 1.0,
+"texture": ExtResource("11_nhj8j")
+}, {
+"duration": 1.0,
+"texture": ExtResource("12_1y2bk")
+}],
+"loop": true,
+"name": &"caminar_arriba",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("13_jtu6a")
+}, {
+"duration": 1.0,
+"texture": ExtResource("14_hajbp")
+}, {
+"duration": 1.0,
+"texture": ExtResource("15_djhpd")
+}],
+"loop": true,
+"name": &"caminar_derecha",
+"speed": 4.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("16_rfepn")
+}, {
+"duration": 1.0,
+"texture": ExtResource("17_6ljao")
+}, {
+"duration": 1.0,
+"texture": ExtResource("18_ot35v")
+}],
+"loop": true,
+"name": &"caminar_izquierda",
+"speed": 4.0
 }]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_hjcrm"]
-size = Vector2(62, 257)
+size = Vector2(62, 154.5)
 
 [sub_resource type="Gradient" id="Gradient_pxs8w"]
+offsets = PackedFloat32Array(0.1758794, 0.96482414)
+colors = PackedColorArray(1, 1, 1, 1, 0, 0, 0, 1)
 
 [sub_resource type="GradientTexture2D" id="GradientTexture2D_2yfm0"]
 gradient = SubResource("Gradient_pxs8w")
 fill = 1
+fill_from = Vector2(0.491453, 0.47008547)
+fill_to = Vector2(0.508547, 1)
 
 [node name="MinijuegoBuscador" type="Node2D" unique_id=18950765]
 script = ExtResource("1_2yfm0")
 escena_caja = ExtResource("2_0h46i")
+escena_ficha = ExtResource("3_r50aa")
+escena_casilla_destino = ExtResource("4_r50aa")
 
 [node name="Nivel" type="TextureRect" parent="." unique_id=1783952882]
 visible = false
-offset_right = 1156.0
-offset_bottom = 649.0
+offset_left = -1.0
+offset_top = -1.0
+offset_right = 1155.0
+offset_bottom = 659.0
 texture = ExtResource("2_xshwr")
 
 [node name="CanvasModulate" type="CanvasModulate" parent="Nivel" unique_id=1895824029]
@@ -44,41 +123,133 @@ texture = ExtResource("2_xshwr")
 [node name="PuntosSpawn" type="Node2D" parent="Nivel" unique_id=705101132]
 
 [node name="Marker2D" type="Marker2D" parent="Nivel/PuntosSpawn" unique_id=1217367400]
-position = Vector2(100, 100)
+position = Vector2(100, 200)
 
 [node name="Marker2D2" type="Marker2D" parent="Nivel/PuntosSpawn" unique_id=1653835911]
-position = Vector2(200, 100)
+position = Vector2(200, 200)
 
 [node name="Marker2D3" type="Marker2D" parent="Nivel/PuntosSpawn" unique_id=942931952]
-position = Vector2(300, 100)
+position = Vector2(300, 200)
 
 [node name="Marker2D4" type="Marker2D" parent="Nivel/PuntosSpawn" unique_id=90246351]
-position = Vector2(400, 100)
+position = Vector2(400, 200)
 
 [node name="Marker2D5" type="Marker2D" parent="Nivel/PuntosSpawn" unique_id=1691791863]
-position = Vector2(500, 100)
+position = Vector2(500, 200)
 
 [node name="ContenedorCajas" type="Node2D" parent="Nivel" unique_id=715988774]
 
 [node name="Jugador" type="CharacterBody2D" parent="Nivel" unique_id=76613506 groups=["jugador"]]
 script = ExtResource("3_hjcrm")
 
-[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="Nivel/Jugador" unique_id=994690478]
-position = Vector2(558.625, 407.87497)
+[node name="Animacion" type="AnimatedSprite2D" parent="Nivel/Jugador" unique_id=994690478]
+position = Vector2(570, 320)
 scale = Vector2(0.4019532, 0.47460932)
 sprite_frames = SubResource("SpriteFrames_xshwr")
+animation = &"caminar_abajo"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Nivel/Jugador" unique_id=1986990454]
-position = Vector2(562.625, 407.37494)
+position = Vector2(570, 319.75)
 shape = SubResource("RectangleShape2D_hjcrm")
 
 [node name="PointLight2D" type="PointLight2D" parent="Nivel/Jugador" unique_id=166321322]
-position = Vector2(565, 330.99997)
-scale = Vector2(1.984375, 1.53125)
+position = Vector2(570, 320)
+scale = Vector2(4.2499995, 5.132813)
 texture = SubResource("GradientTexture2D_2yfm0")
 
 [node name="HUD" type="CanvasLayer" parent="." unique_id=758163755]
 visible = false
+
+[node name="InterfazPregunta" type="Control" parent="HUD" unique_id=559209466]
+custom_minimum_size = Vector2(100, 100)
+layout_mode = 3
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -536.0
+offset_top = -309.0
+offset_right = 521.0
+offset_bottom = 282.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TextureRect" type="TextureRect" parent="HUD/InterfazPregunta" unique_id=1468891099]
+layout_mode = 1
+offset_right = 1320.0
+offset_bottom = 736.0
+scale = Vector2(0.8, 0.73)
+texture = ExtResource("22_kbjnn")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HUD/InterfazPregunta" unique_id=1869181265]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 8
+
+[node name="LabelTitulo" type="Label" parent="HUD/InterfazPregunta/VBoxContainer" unique_id=922699084]
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "¡Arrastra el resultado correcto!"
+horizontal_alignment = 1
+
+[node name="PanelOperacion" type="Panel" parent="HUD/InterfazPregunta/VBoxContainer" unique_id=419373508]
+custom_minimum_size = Vector2(0, 500)
+layout_mode = 2
+
+[node name="TextureRect" type="TextureRect" parent="HUD/InterfazPregunta/VBoxContainer/PanelOperacion" unique_id=895895597]
+layout_mode = 0
+offset_left = 92.0
+offset_top = 5.999996
+offset_right = 1166.9999
+offset_bottom = 631.0
+scale = Vector2(0.8, 0.8)
+texture = ExtResource("23_06tuf")
+
+[node name="LabelNum1" type="Label" parent="HUD/InterfazPregunta/VBoxContainer/PanelOperacion" unique_id=578810558]
+custom_minimum_size = Vector2(30, 30)
+layout_mode = 0
+offset_left = 120.0
+offset_top = 30.0
+offset_right = 160.0
+offset_bottom = 53.0
+theme_override_font_sizes/font_size = 35
+
+[node name="LabelSigno" type="Label" parent="HUD/InterfazPregunta/VBoxContainer/PanelOperacion" unique_id=478855501]
+layout_mode = 0
+offset_left = 70.0
+offset_top = 70.0
+offset_right = 110.0
+offset_bottom = 93.0
+theme_override_font_sizes/font_size = 30
+
+[node name="LabelNum2" type="Label" parent="HUD/InterfazPregunta/VBoxContainer/PanelOperacion" unique_id=462185305]
+custom_minimum_size = Vector2(30, 30)
+layout_mode = 0
+offset_left = 120.0
+offset_top = 70.0
+offset_right = 160.0
+offset_bottom = 93.0
+theme_override_font_sizes/font_size = 35
+
+[node name="LineaRestaSuma" type="ColorRect" parent="HUD/InterfazPregunta/VBoxContainer/PanelOperacion" unique_id=1193215280]
+layout_mode = 0
+offset_left = 79.0
+offset_top = 112.0
+offset_right = 154.0
+offset_bottom = 121.0
+
+[node name="ContenedorDestino" type="HBoxContainer" parent="HUD/InterfazPregunta/VBoxContainer/PanelOperacion" unique_id=642871008]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="ContenedorFichas" type="HBoxContainer" parent="HUD/InterfazPregunta/VBoxContainer" unique_id=423698053]
+layout_mode = 2
 
 [node name="ContenedorCorazones" type="HBoxContainer" parent="HUD" unique_id=1885237871]
 anchors_preset = 1
@@ -100,39 +271,7 @@ texture = ExtResource("2_t5ej4")
 layout_mode = 2
 texture = ExtResource("2_t5ej4")
 
-[node name="InterfazPregunta" type="Control" parent="HUD" unique_id=559209466]
-visible = false
-custom_minimum_size = Vector2(100, 100)
-layout_mode = 3
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -265.0
-offset_top = -34.0
-offset_right = -165.0
-offset_bottom = 66.0
-grow_horizontal = 2
-grow_vertical = 2
-
-[node name="Label" type="Label" parent="HUD/InterfazPregunta" unique_id=1433422323]
-layout_mode = 0
+[node name="LabelGemas" type="Label" parent="HUD" unique_id=1265858052]
 offset_right = 40.0
 offset_bottom = 23.0
-
-[node name="LineEdit" type="LineEdit" parent="HUD/InterfazPregunta" unique_id=747568796]
-layout_mode = 0
-offset_right = 68.5
-offset_bottom = 31.0
-
-[node name="Button" type="Button" parent="HUD/InterfazPregunta" unique_id=1635681177]
-layout_mode = 0
-offset_right = 8.0
-offset_bottom = 8.0
-
-[node name="LabelGemas" type="Label" parent="HUD" unique_id=1265858052]
-offset_left = 311.0
-offset_top = 290.0
-offset_right = 351.0
-offset_bottom = 313.0
+theme_override_font_sizes/font_size = 20

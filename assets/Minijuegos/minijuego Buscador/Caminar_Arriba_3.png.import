@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://l6mae4a6eog3"
-path="res://.godot/imported/asteroide_tablero2.png-17d0aa18c7f7157ce7b2541c3b662084.ctex"
+uid="uid://b0yyyl45nmh4c"
+path="res://.godot/imported/Caminar_Arriba_3.png-46f827e7e7090f49010a0dfc121a3106.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/Imagenes/asteroide_tablero2.png"
-dest_files=["res://.godot/imported/asteroide_tablero2.png-17d0aa18c7f7157ce7b2541c3b662084.ctex"]
+source_file="res://assets/Minijuegos/minijuego Buscador/Caminar_Arriba_3.png"
+dest_files=["res://.godot/imported/Caminar_Arriba_3.png-46f827e7e7090f49010a0dfc121a3106.ctex"]
 
 [params]
 

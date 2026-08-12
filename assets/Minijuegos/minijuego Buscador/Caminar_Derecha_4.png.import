@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://b5txfu2x333ur"
-path="res://.godot/imported/magnific_puedes-crear-un-camino-di_EqnJX9VuuO.svg-91b8e1da7e99fcb3479ed62b9e1dfa97.ctex"
+uid="uid://ctevedjiesff4"
+path="res://.godot/imported/Caminar_Derecha_4.png-e7a0d910372554ce2117a42f55686421.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/magnific_puedes-crear-un-camino-di_EqnJX9VuuO.svg"
-dest_files=["res://.godot/imported/magnific_puedes-crear-un-camino-di_EqnJX9VuuO.svg-91b8e1da7e99fcb3479ed62b9e1dfa97.ctex"]
+source_file="res://assets/Minijuegos/minijuego Buscador/Caminar_Derecha_4.png"
+dest_files=["res://.godot/imported/Caminar_Derecha_4.png-e7a0d910372554ce2117a42f55686421.ctex"]
 
 [params]
 
@@ -38,6 +38,3 @@ process/hdr_as_srgb=false
 process/hdr_clamp_exposure=false
 process/size_limit=0
 detect_3d/compress_to=1
-svg/scale=1.0
-editor/scale_with_editor_scale=false
-editor/convert_colors_with_editor_theme=false

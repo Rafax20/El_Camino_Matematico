@@ -1,6 +1,7 @@
 extends Node
 
 # --- VARIABLES GLOBALES DEL JUGADOR ---
+var banco_preguntas: Array = [] # 🧠 AQUÍ SE GUARDAN TODAS LAS PREGUNTAS EN RAM
 var esta_conectado_a_la_nube: bool = false
 var usuario_id_db: int = 0
 var usuario_uuid: String = ""

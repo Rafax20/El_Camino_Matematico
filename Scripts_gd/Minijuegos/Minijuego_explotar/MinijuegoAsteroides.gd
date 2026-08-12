@@ -11,14 +11,15 @@ signal minijuego_finalizado(es_correcto)
 @onready var contenedor_corazones = $CanvasLayer/ContenedorCorazones
 
 # 💖 Texturas de corazones (Asegúrate de colocar las rutas correctas de tus imágenes)
-var textura_corazon_lleno = preload("res://assets/Imagenes/corazon_lleno.png")
-var textura_corazon_vacio = preload("res://assets/Imagenes/corazon_vacio.png")
+var textura_corazon_lleno = preload("res://assets/Minijuegos/corazon_lleno.png")
+var textura_corazon_vacio = preload("res://assets/Minijuegos/corazon_vacio.png")
 
 var texturas_tableros = {
-	"colegio": preload("res://assets/Imagenes/globo_tablero1.png"),
-	"espacio": preload("res://assets/Imagenes/asteroide_tablero2.png")
+	"colegio": preload("res://assets/Minijuegos/minijuego Explotar/globo_tablero1.png"),
+	"espacio": preload("res://assets/Minijuegos/minijuego Explotar/asteroide_tablero2.png")
 }
 
+var tiempo_inicio_asteroide: float = 0.0
 var tema_actual: String
 var respuesta_correcta: int = 0
 var juego_activo: bool = false
@@ -27,7 +28,10 @@ var vidas_actuales: int = 3
 func iniciar_minijuego(datos_pregunta: Dictionary, tema: String):
 	Fondo.visible = true
 	tema_actual = tema
-	vidas_actuales = 3 # 👈 Reiniciamos a 3 vidas al iniciar
+	vidas_actuales = 3
+	
+	# ⏱️ 1. Registrar inicio
+	tiempo_inicio_asteroide = Time.get_ticks_msec()
 	
 	_actualizar_interfaz_corazones()
 	
@@ -97,15 +101,31 @@ func _on_objeto_tocado(valor_tocado: int):
 	if not juego_activo: return
 	
 	if valor_tocado == respuesta_correcta:
-		print("🎉 ¡Respuesta CORRECTA tocada!")
+		var tiempo_tardado = (Time.get_ticks_msec() - tiempo_inicio_asteroide) / 1000.0
+		
+		# 🧠 Evaluar acierto rápido
+		DatosUsuario.dificultad_actual = SistemaExperto.evaluar_desempeno(
+			DatosUsuario.dificultad_actual, 
+			true, 
+			tiempo_tardado
+		)
+		print("🎉 Correcto en asteroides. Nueva dificultad: ", DatosUsuario.dificultad_actual)
 		_finalizar_juego(true)
+		
 	else:
 		print("❌ Tocó el número ", valor_tocado, " pero se esperaba ", respuesta_correcta)
 		vidas_actuales -= 1
 		_actualizar_interfaz_corazones()
 		
 		if vidas_actuales <= 0:
-			print("💀 ¡Te quedaste sin vidas!")
+			var tiempo_tardado = (Time.get_ticks_msec() - tiempo_inicio_asteroide) / 1000.0
+			
+			# 🧠 Evaluar fallo al agotar vidas
+			DatosUsuario.dificultad_actual = SistemaExperto.evaluar_desempeno(
+				DatosUsuario.dificultad_actual, 
+				false, 
+				tiempo_tardado
+			)
 			_finalizar_juego(false)
 
 # 💖 Actualiza los 3 sprites de corazón en el HBoxContainer

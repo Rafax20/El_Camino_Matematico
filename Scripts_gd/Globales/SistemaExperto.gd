@@ -5,7 +5,7 @@ extends Node
 enum Dificultad { FACIL, MEDIA, DIFICIL }
 
 # Umbrales de tiempo pedagógicos (en segundos) para niños de 4to grado
-const TIEMPO_RAPIDO = 10.0  # Menos de 10s: Domina el tema
+const TIEMPO_RAPIDO = 12.0  # Menos de 10s: Domina el tema
 const TIEMPO_LENTO = 25.0   # Más de 25s: Le cuesta procesar el problema
 
 # --- MOTOR DE INFERENCIA ---

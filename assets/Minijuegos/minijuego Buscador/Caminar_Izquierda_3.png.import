@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://c23yy8vuvbuew"
-path="res://.godot/imported/corazon_vacio.png-6bf28322e9b3dfffedbac9f11ede80ff.ctex"
+uid="uid://8eekukcd37lv"
+path="res://.godot/imported/Caminar_Izquierda_3.png-063ae1fb45a80d7fe37e51926e7bf347.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/Imagenes/corazon_vacio.png"
-dest_files=["res://.godot/imported/corazon_vacio.png-6bf28322e9b3dfffedbac9f11ede80ff.ctex"]
+source_file="res://assets/Minijuegos/minijuego Buscador/Caminar_Izquierda_3.png"
+dest_files=["res://.godot/imported/Caminar_Izquierda_3.png-063ae1fb45a80d7fe37e51926e7bf347.ctex"]
 
 [params]
 

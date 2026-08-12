@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://u6qf7fmdygk5"
-path="res://.godot/imported/Gemini_Generated_Image_njn68bnjn68bnjn6.png-396291c13daff50a6a82f86aa47d3ef1.ctex"
+uid="uid://b0uxgfrrfelmg"
+path="res://.godot/imported/Caminar_Izquierda_2.png-6660bb72b314c2262a452b226049d072.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/Gemini_Generated_Image_njn68bnjn68bnjn6.png"
-dest_files=["res://.godot/imported/Gemini_Generated_Image_njn68bnjn68bnjn6.png-396291c13daff50a6a82f86aa47d3ef1.ctex"]
+source_file="res://assets/Minijuegos/minijuego Buscador/Caminar_Izquierda_2.png"
+dest_files=["res://.godot/imported/Caminar_Izquierda_2.png-6660bb72b314c2262a452b226049d072.ctex"]
 
 [params]
 

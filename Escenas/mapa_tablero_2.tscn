@@ -150,8 +150,3 @@ texture = ExtResource("3_i17um")
 position = Vector2(379, -57)
 scale = Vector2(0.07, 0.07)
 texture = ExtResource("3_i17um")
-
-[node name="Bombillo19" type="Sprite2D" parent="bombillos" unique_id=1201978800]
-position = Vector2(440, -111)
-scale = Vector2(0.07, 0.07)
-texture = ExtResource("3_i17um")

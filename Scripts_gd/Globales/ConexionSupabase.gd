@@ -39,30 +39,30 @@ func descargar_preguntas():
 	add_child(cliente_http)
 	cliente_http.accept_gzip = false
 	
-	# 1. Conectamos la señal
 	cliente_http.request_completed.connect(func(result, response_code, headers, body):
 		if response_code == 200:
 			var json = JSON.new()
 			var error = json.parse(body.get_string_from_utf8())
 			if error == OK:
 				print("✅ [API] Preguntas descargadas. Total: ", json.data.size())
-				preguntas_descargadas.emit(json.data)
+				
+				# 🔀 MEZCLAMOS AQUÍ UNA SOLA VEZ
+				var preguntas_aleatorias = json.data.duplicate()
+				preguntas_aleatorias.shuffle()
+				
+				# 🔑 GUARDAMOS EL BANCO YA MEZCLADO EN LA RAM GLOBAL
+				DatosUsuario.banco_preguntas = preguntas_aleatorias
+				preguntas_descargadas.emit(preguntas_aleatorias)
 			else:
 				print("❌ ERROR: No se pudo parsear el JSON de preguntas.")
 		else:
 			print("❌ ERROR: Servidor respondió con código ", response_code)
-			print("Detalles: ", body.get_string_from_utf8())
 		
-		cliente_http.queue_free() # Importante: limpiar memoria siempre
+		cliente_http.queue_free()
 	)
 	
-	# 2. Construimos la URL
 	var url_final = _build_url("preguntas?select=*")
-	
-	# 3. Lanzamos el request
-	var error = cliente_http.request(url_final, _obtener_cabeceras(), HTTPClient.METHOD_GET)
-	if error != OK:
-		print("❌ Error crítico enviando petición: ", error)
+	cliente_http.request(url_final, _obtener_cabeceras(), HTTPClient.METHOD_GET)
 
 func pedir_progreso_usuario():
 	if not DatosUsuario.esta_conectado_a_la_nube: return
