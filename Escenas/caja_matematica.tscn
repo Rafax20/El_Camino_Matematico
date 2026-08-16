@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://bevco1cmjoqt5"]
 
 [ext_resource type="Script" uid="uid://du4w05cwku584" path="res://Scripts_gd/Minijuegos/Minijuego_oscuras/CajaMatematica.gd" id="1_vhevj"]
-[ext_resource type="Texture2D" uid="uid://hkxpyw8xmqw" path="res://assets/Imagenes/Gemini_Generated_Image_4esl7h4esl7h4esl.png" id="2_muno8"]
+[ext_resource type="Texture2D" uid="uid://hkxpyw8xmqw" path="res://assets/Imagenes/Caja_Fuerte.png" id="2_muno8"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_muno8"]
 size = Vector2(54, 41)

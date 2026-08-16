@@ -65,10 +65,10 @@ var btn_comprobar: Button = null
 # 📐 Offsets y posiciones de UI
 var OFFSET_Y_GLOBAL: float = 100.0
 
-#func _ready() -> void:
-	#ConexionSupabase.descargar_preguntas()
-	#await get_tree().create_timer(1).timeout
-	#iniciar_minijuego("espacio")
+func _ready():
+	# Si ejecutas la escena del minijuego sola directamente (F6), la iniciamos manualmente
+	if get_tree().current_scene == self:
+		iniciar_minijuego("espacio")
 
 func iniciar_minijuego(_tema: String = "espacio"):
 	gemas_obtenidas = 0

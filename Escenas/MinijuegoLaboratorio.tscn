@@ -4,7 +4,6 @@
 [ext_resource type="Texture2D" uid="uid://btkja74suwdob" path="res://assets/Imagenes/Gemini_Generated_Image_o18alao18alao18a.png" id="2_neunb"]
 
 [node name="MinijuegoLaboratorio" type="Control" unique_id=479700857]
-visible = false
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -44,6 +43,7 @@ layout_mode = 2
 layout_mode = 2
 
 [node name="PanelOperacion" type="Panel" parent="." unique_id=596744303]
+visible = false
 custom_minimum_size = Vector2(800, 400)
 layout_mode = 1
 anchors_preset = 8

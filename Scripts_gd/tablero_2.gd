@@ -3,6 +3,8 @@ extends Node2D
 
 @onready var path_follow = $Path2D/PathFollow2D
 #@onready var path_alternativo = $Path2D_Derecha
+@onready var dado_objeto = $ContenedorDado/DadoObjeto
+@onready var anim_dado = $ContenedorDado/DadoObjeto/AnimationPlayer
 @onready var boton_dado = $Panel/BotonDado 
 @onready var Menu_Volver =  $Mapa_Tablero_2/Volver_Menu
 @onready var boton_chat = $Preguntar_ChatBox
@@ -95,36 +97,142 @@ func _on_preguntas_cargadas(lista):
 		boton_chat.disabled = false
 
 func _on_boton_dado_pressed():
-	print("DEBUG: ¡El botón dado fue presionado!") # 👈 ESTO ES CLAVE
+	print("DEBUG: ¡El botón dado fue presionado!")
 	if not servidor_listo or lista_preguntas.size() == 0: return
 	
+	# Bloqueamos la interfaz para evitar doble clic
 	boton_dado.disabled = true
 	Menu_Volver.disabled = true
 	casilla_anterior = casilla_actual
 	
+	# 1. Calculamos el resultado de Supabase / Random
 	var resultado = randi_range(3, 3)
 	print("🎲 Salió un: ", resultado)
+	
+	# 2. 🎲 LANZAR Y MOSTRAR EL DADO EN PANTALLA
+	await _animar_lanzamiento_dado(resultado)
 	$Panel/BotonDado/Numero_Dado.clear()
 	$Panel/BotonDado/Numero_Dado.add_text(str(resultado))
-	
+	# 3. Lógica del juego: actualizar posición y progresos
 	casilla_actual = clampi(casilla_actual + resultado, 0, total_casillas)
 	
-	# Sincronizamos la memoria global y mandamos el candado a la nube (si aplica) en background
 	DatosUsuario.casilla_actual_db = casilla_actual
 	DatosUsuario.pregunta_pendiente_db = true
 	ConexionSupabase.actualizar_progreso_en_nube(casilla_actual, true)
 	
-	# Animación normal de avance
+	# 4. Continuación de animaciones de mapa
 	await $Path2D/PathFollow2D/Animacion.Animar_Movimiento(true)
 	await _mover_ficha_visualmente(casilla_actual, false)
 	await get_tree().create_timer(2.5).timeout
 	await $Path2D/PathFollow2D/Animacion.Animar_Caida(true)
 	await get_tree().create_timer(1.2).timeout
+	
 	if casilla_actual == total_casillas:
 		mostrar_pregunta_en_pantalla()
 	else:
 		boton_chat.disabled = true
 		lanzar_minijuego_casilla()
+
+
+# 🎬 Función auxiliar encargada del efecto de lanzamiento con físicas de rebote y audio
+func _animar_lanzamiento_dado(resultado_final: int) -> void:
+	var centro_pantalla = get_viewport_rect().size / 2.0
+	
+	# 1. ESTADO INICIAL (Gigante y cerca de la cámara)
+	dado_objeto.global_position = centro_pantalla
+	dado_objeto.scale = Vector2(2.2, 2.2)
+	dado_objeto.rotation = deg_to_rad(randf_range(-30, 30))
+	dado_objeto.visible = true
+	
+	anim_dado.play("rodar")
+	
+	# ------------------------------------------------------------------
+	# 💥 PRIMER IMPACTO: Caída rápida desde el aire hacia el primer punto
+	# ------------------------------------------------------------------
+	var punto_impacto_1 = centro_pantalla + Vector2(randf_range(-100, 100), randf_range(-60, 60))
+	
+	var tween_caida = create_tween().set_parallel(true)
+	tween_caida.tween_property(dado_objeto, "scale", Vector2(0.5, 0.5), 0.6)\
+		.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+	tween_caida.tween_property(dado_objeto, "global_position", punto_impacto_1, 0.4)\
+		.set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+	tween_caida.tween_property(dado_objeto, "rotation", deg_to_rad(randf_range(360, 540)), 0.8)
+	
+	await tween_caida.finished
+	
+	# ------------------------------------------------------------------
+	# 🏀 REBOTE 1: Salto mediano + Desviación de trayectoria
+	# ------------------------------------------------------------------
+	# Calculamos una nueva dirección en base al punto donde tocó suelo
+	var punto_impacto_2 = punto_impacto_1 + Vector2(randf_range(-60, 60), randf_range(-40, 40))
+	
+	# Salto en el aire (Crece la escala)
+	var tween_salto1_subida = create_tween().set_parallel(true)
+	tween_salto1_subida.tween_property(dado_objeto, "scale", Vector2(0.75, 0.75), 0.15)\
+		.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	tween_salto1_subida.tween_property(dado_objeto, "global_position", (punto_impacto_1 + punto_impacto_2) / 2.0, 0.15)
+	
+	await tween_salida1_subida_or_timeout(tween_salto1_subida)
+	
+	# Caída del primer salto (Se reduce la escala al impactar)
+	var tween_salto1_bajada = create_tween().set_parallel(true)
+	tween_salto1_bajada.tween_property(dado_objeto, "scale", Vector2(0.5, 0.5), 0.15)\
+		.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+	tween_salto1_bajada.tween_property(dado_objeto, "global_position", punto_impacto_2, 0.15)
+	tween_salto1_bajada.tween_property(dado_objeto, "rotation", dado_objeto.rotation + deg_to_rad(180), 0.3)
+	
+	await tween_salto1_bajada.finished
+	
+	# ------------------------------------------------------------------
+	# ⚽ REBOTE 2: Micro-rebote final (Más corto y suave)
+	# ------------------------------------------------------------------
+	var punto_final = punto_impacto_2 + Vector2(randf_range(-30, 30), randf_range(-20, 20))
+	
+	var tween_rebote2 = create_tween().set_parallel(true)
+	# Subidita ligera
+	tween_rebote2.tween_property(dado_objeto, "scale", Vector2(0.6, 0.6), 0.1)\
+		.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	tween_rebote2.tween_property(dado_objeto, "global_position", punto_final, 0.18)\
+		.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+	
+	await tween_rebote2.finished
+	
+	# Asentamiento en el suelo
+	var tween_asentar = create_tween()
+	tween_asentar.tween_property(dado_objeto, "scale", Vector2(0.5, 0.5), 0.08)
+	await tween_asentar.finished
+
+	# ------------------------------------------------------------------
+	# 🛑 3. FRENO, CARA FINAL Y AUDIO DE JULY
+	# ------------------------------------------------------------------
+	anim_dado.stop()
+	dado_objeto.frame = clampi(resultado_final - 1, 0, 5)
+	dado_objeto.rotation = 0.0
+	
+	await get_tree().create_timer(0.3).timeout
+	
+	# 🗣️ Voz de July
+	GestionAudio.reproducir_audio_local("Voces/numero" + str(resultado_final))
+	
+	# 🔍 4. ENFOQUE FINAL EN PANTALLA (Zoom de resultado)
+	var tween_enfoque = create_tween()
+	tween_enfoque.tween_property(dado_objeto, "scale", Vector2(1.5, 1.5), 0.25)\
+		.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	
+	await get_tree().create_timer(1.4).timeout
+	
+	# 💨 5. SALIDA
+	var tween_salida = create_tween()
+	tween_salida.tween_property(dado_objeto, "scale", Vector2.ZERO, 0.25)\
+		.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_IN)
+	await tween_salida.finished
+	
+	dado_objeto.visible = false
+
+
+# Función auxiliar rápida para esperar la subida del primer salto
+func tween_salida1_subida_or_timeout(tw: Tween) -> void:
+	await tw.finished
 
 func _mover_ficha_visualmente(casilla: int, instantaneo: bool):
 	if casilla == 0:

@@ -1,14 +1,28 @@
 [gd_scene format=3 uid="uid://bsj37kbbc4irt"]
 
 [ext_resource type="Script" uid="uid://biv4lc2q7s3ad" path="res://Scripts_gd/Minijuegos/Minijuego_oscuras/FichaNumero.gd" id="1_1m3kj"]
+[ext_resource type="Texture2D" uid="uid://ojc5qd34hug3" path="res://assets/Minijuegos/minijuego Buscador/Bateria_azul.png" id="2_vpubt"]
+[ext_resource type="Texture2D" uid="uid://cslvlbjxueca5" path="res://assets/Minijuegos/minijuego Buscador/Bateria_Morado.png" id="3_yb82k"]
+[ext_resource type="Texture2D" uid="uid://3e2kq2mwk4rw" path="res://assets/Minijuegos/minijuego Buscador/Bateria_Naranja.png" id="4_mnogd"]
+[ext_resource type="Texture2D" uid="uid://1vsf8ye3sniv" path="res://assets/Minijuegos/minijuego Buscador/Bateria_Rojo.png" id="5_cw6ow"]
+[ext_resource type="Texture2D" uid="uid://clvt6lxb1jywu" path="res://assets/Minijuegos/minijuego Buscador/Bateria_Verde.png" id="6_rtlrl"]
 
-[node name="PanelContainer" type="Button" unique_id=1611219708]
+[node name="PanelContainer" type="TextureButton" unique_id=681695911]
 offset_right = 40.0
 offset_bottom = 40.0
+scale = Vector2(0.5, 0.5)
 script = ExtResource("1_1m3kj")
+texturas_baterias = Array[Texture2D]([ExtResource("2_vpubt"), ExtResource("3_yb82k"), ExtResource("4_mnogd"), ExtResource("5_cw6ow"), ExtResource("6_rtlrl")])
 
-[node name="Label" type="Label" parent="." unique_id=1589102788]
-layout_mode = 0
-offset_top = 8.0
-offset_right = 40.0
-offset_bottom = 31.0
+[node name="LabelNumero" type="Label" parent="." unique_id=1589102788]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 10
+theme_override_font_sizes/font_size = 40
+horizontal_alignment = 1
+vertical_alignment = 1

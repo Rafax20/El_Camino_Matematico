@@ -8,6 +8,11 @@ extends Control
 @onready var gemas_label = $UIHeader/GemasLabel
 @onready var vidas_container = $UIHeader/VidasContainer
 
+var textura_corazon_lleno = preload("res://assets/Minijuegos/corazon_lleno.png")
+var textura_corazon_vacio = preload("res://assets/Minijuegos/corazon_vacio.png")
+var tubo_ensayo = preload("res://assets/Imagenes/Tubito.png")
+var Check_Morado = preload("res://assets/Imagenes/Check_pequeno.png")
+
 signal minijuego_finalizado(es_correcto: bool)
 
 # --- ESTADO DEL JUEGO ---
@@ -105,8 +110,14 @@ func _disposicion_regla_de_tres(datos: Dictionary):
 	var y_base = OFFSET_Y_GLOBAL + 80.0
 	
 	# 1. Título de la Misión
+	var icono_titulo = Sprite2D.new()
+	icono_titulo.texture = tubo_ensayo
+	icono_titulo.position = Vector2(centro_x - 200.0, y_base)
+	icono_titulo.scale = Vector2(0.2, 0.2)
+	panel_operacion.add_child(icono_titulo)
+	elementos_dinamicos.append(icono_titulo)
 	var lbl_titulo = Label.new()
-	lbl_titulo.text = "🧪 MEZCLA DE PROPULSIÓN GALÁCTICA"
+	lbl_titulo.text = "MEZCLA DE PROPULSIÓN GALÁCTICA"
 	lbl_titulo.position = Vector2(centro_x - 180.0, y_base)
 	lbl_titulo.add_theme_font_size_override("font_size", 20)
 	panel_operacion.add_child(lbl_titulo)
@@ -114,7 +125,7 @@ func _disposicion_regla_de_tres(datos: Dictionary):
 	
 	# 2. Fila 1: Base conocida
 	var y_fila1 = y_base + 60.0
-	var texto_fila1 = str(a1) + " " + obj_a + "   ────────►   " + str(b1) + " " + obj_b
+	var texto_fila1 = str(a1) + " " + obj_a + "   -------------->   " + str(b1) + " " + obj_b
 	var lbl_f1 = _crear_label_formateado(texto_fila1, Vector2(centro_x - 220.0, y_fila1))
 	lbl_f1.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
 	panel_operacion.add_child(lbl_f1)
@@ -122,7 +133,7 @@ func _disposicion_regla_de_tres(datos: Dictionary):
 	
 	# 3. Fila 2: Incógnita
 	var y_fila2 = y_fila1 + 50.0
-	var texto_fila2_izq = str(a2) + " " + obj_a + "   ────────►   "
+	var texto_fila2_izq = str(a2) + " " + obj_a + "   -------------->   "
 	var lbl_f2_izq = _crear_label_formateado(texto_fila2_izq, Vector2(centro_x - 220.0, y_fila2))
 	lbl_f2_izq.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
 	panel_operacion.add_child(lbl_f2_izq)
@@ -184,7 +195,7 @@ func _posicionar_contenedor_fichas():
 		
 		# Forzamos anclaje centrado en X y cerca del borde inferior en Y
 		var x_pos = (pantalla_size.x - 600.0) / 2.0
-		var y_pos = pantalla_size.y - 120.0 # Se despega 120px del fondo
+		var y_pos = pantalla_size.y - 50 # Se despega 50px del fondo
 		
 		contenedor_fichas.position = Vector2(x_pos, y_pos)
 		
@@ -228,17 +239,22 @@ func _insertar_digito_en_casilla_vacia(digito: String):
 			break
 
 func _crear_boton_comprobar(y_pos: float):
+	
+	
 	var btn = Button.new()
-	btn.text = "✔ Comprobar"
+	btn.text = "Comprobar"
 	btn.custom_minimum_size = Vector2(140, 40)
 	var centro_x = _obtener_ancho_panel() / 2.0
 	btn.position = Vector2(centro_x - 70.0, y_pos)
 	btn.add_theme_font_size_override("font_size", 18)
+	btn.icon = Check_Morado
 	
 	btn.pressed.connect(_validar_respuesta)
 	
 	panel_operacion.add_child(btn)
 	elementos_dinamicos.append(btn)
+	
+	
 
 # --- LÓGICA DE VALIDACIÓN Y CONTROL DE FLUJO ---
 func _validar_respuesta():
