@@ -106,7 +106,7 @@ func _on_boton_dado_pressed():
 	casilla_anterior = casilla_actual
 	
 	# 1. Calculamos el resultado de Supabase / Random
-	var resultado = randi_range(3, 3)
+	var resultado = randi_range(1, 6)
 	print("🎲 Salió un: ", resultado)
 	
 	# 2. 🎲 LANZAR Y MOSTRAR EL DADO EN PANTALLA

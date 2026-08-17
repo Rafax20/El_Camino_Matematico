@@ -4,6 +4,7 @@ extends Node2D
 signal minijuego_finalizado(es_correcto)
 
 @onready var nivel = $Nivel
+@onready var Parallax = $Parallax2D
 @onready var jugador = $Nivel/Jugador
 @onready var HUD = $HUD
 @onready var interfaz_pregunta = $HUD/InterfazPregunta
@@ -76,6 +77,7 @@ func iniciar_minijuego(_tema: String = "espacio"):
 	juego_activo = true
 	nivel.visible = true
 	HUD.visible = true
+	Parallax.visible = true
 	
 	generar_cajas_aleatorias()
 	_actualizar_hud_gemas()

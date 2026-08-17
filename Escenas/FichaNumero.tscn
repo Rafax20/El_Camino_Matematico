@@ -1,11 +1,11 @@
 [gd_scene format=3 uid="uid://bsj37kbbc4irt"]
 
 [ext_resource type="Script" uid="uid://biv4lc2q7s3ad" path="res://Scripts_gd/Minijuegos/Minijuego_oscuras/FichaNumero.gd" id="1_1m3kj"]
-[ext_resource type="Texture2D" uid="uid://ojc5qd34hug3" path="res://assets/Minijuegos/minijuego Buscador/Bateria_azul.png" id="2_vpubt"]
-[ext_resource type="Texture2D" uid="uid://cslvlbjxueca5" path="res://assets/Minijuegos/minijuego Buscador/Bateria_Morado.png" id="3_yb82k"]
-[ext_resource type="Texture2D" uid="uid://3e2kq2mwk4rw" path="res://assets/Minijuegos/minijuego Buscador/Bateria_Naranja.png" id="4_mnogd"]
-[ext_resource type="Texture2D" uid="uid://1vsf8ye3sniv" path="res://assets/Minijuegos/minijuego Buscador/Bateria_Rojo.png" id="5_cw6ow"]
-[ext_resource type="Texture2D" uid="uid://clvt6lxb1jywu" path="res://assets/Minijuegos/minijuego Buscador/Bateria_Verde.png" id="6_rtlrl"]
+[ext_resource type="Texture2D" uid="uid://ojc5qd34hug3" path="res://assets/Minijuegos/minijuego Buscador/Interfaz_Pregunta/Bateria_azul.png" id="2_vpubt"]
+[ext_resource type="Texture2D" uid="uid://cslvlbjxueca5" path="res://assets/Minijuegos/minijuego Buscador/Interfaz_Pregunta/Bateria_Morado.png" id="3_yb82k"]
+[ext_resource type="Texture2D" uid="uid://3e2kq2mwk4rw" path="res://assets/Minijuegos/minijuego Buscador/Interfaz_Pregunta/Bateria_Naranja.png" id="4_mnogd"]
+[ext_resource type="Texture2D" uid="uid://1vsf8ye3sniv" path="res://assets/Minijuegos/minijuego Buscador/Interfaz_Pregunta/Bateria_Rojo.png" id="5_cw6ow"]
+[ext_resource type="Texture2D" uid="uid://clvt6lxb1jywu" path="res://assets/Minijuegos/minijuego Buscador/Interfaz_Pregunta/Bateria_Verde.png" id="6_rtlrl"]
 
 [node name="PanelContainer" type="TextureButton" unique_id=681695911]
 offset_right = 40.0
