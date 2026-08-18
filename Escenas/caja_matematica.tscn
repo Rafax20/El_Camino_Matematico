@@ -19,12 +19,12 @@ texture = ExtResource("2_muno8")
 anchors_preset = 5
 anchor_left = 0.5
 anchor_right = 0.5
-offset_left = -312.01852
-offset_top = -416.33722
-offset_right = -271.25928
-offset_bottom = -328.1977
+offset_left = -322.7778
+offset_top = -469.3256
+offset_right = -266.7778
+offset_bottom = -332.3256
 grow_horizontal = 2
-theme_override_font_sizes/font_size = 66
+theme_override_font_sizes/font_size = 100
 text = "E"
 horizontal_alignment = 1
 

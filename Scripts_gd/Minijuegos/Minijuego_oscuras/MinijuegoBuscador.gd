@@ -324,6 +324,10 @@ func _crear_control_prestamo_cascada(digito_char: String, pos: Vector2, idx_posi
 	cont.set_meta("linea_tacho", linea_tacho)
 	
 	btn_click.pressed.connect(func():
+		# 🚫 El dígito de las unidades (el último a la derecha) no puede prestar
+		if idx_posicion == numero_completo.length() - 1:
+			return
+			
 		var esta_tachado = cont.get_meta("tachado")
 		cont.set_meta("tachado", not esta_tachado)
 		_recalcular_prestamos_resta(numero_completo)
@@ -444,11 +448,27 @@ func _disposicion_multiplicacion_larga(num1: int, num2: int):
 	var str_num1 = str(num1)
 	var str_num2 = str(num2)
 	
-	# Productos parciales (Ej para 24 x 12: Prod 1 = 48, Prod 2 = 24)
-	prod_parcial_1_str = str(num1 * int(str_num2[str_num2.length() - 1]))
-	prod_parcial_2_str = str(num1 * int(str_num2[0]))
+	# 1. Obtener los dígitos del multiplicador (de derecha a izquierda)
+	var d_unidades = int(str_num2[str_num2.length() - 1])
+	var d_decenas = int(str_num2[0])
+	
+	# 2. Calcular los productos parciales numéricos
+	var val_p1 = num1 * d_unidades
+	var val_p2 = num1 * d_decenas
 
-	# 1. OCULTAR el Label de signo de la escena para que no flote esa X a la izquierda
+	# 3. Forzar a que la representación en texto tenga el ancho adecuado
+	# Si val_p1 es 0 (ej: 26 x 0), se rellena a "00" para dar el espacio de unidades y decenas
+	if val_p1 == 0:
+		prod_parcial_1_str = "%0*d" % [str_num1.length(), 0]
+	else:
+		prod_parcial_1_str = str(val_p1)
+
+	if val_p2 == 0:
+		prod_parcial_2_str = "%0*d" % [str_num1.length(), 0]
+	else:
+		prod_parcial_2_str = str(val_p2)
+
+	# 1. OCULTAR el Label de signo de la escena
 	if label_signo:
 		label_signo.visible = false
 
@@ -493,12 +513,10 @@ func _disposicion_multiplicacion_larga(num1: int, num2: int):
 	panel_operacion.add_child(linea_base)
 	elementos_dinamicos.append(linea_base)
 
-	# 6. CASILLAS: Generar los DOS productos parciales (4 casillas en total)
-	
-	# Punto X de referencia alineado a la derecha de los números (Unidades)
+	# 6. CASILLAS: Generar los DOS productos parciales
 	var x_unidades = x_inicio + (str_num1.length() - 1) * separacion_x
 	
-	# Fila 1: Primer producto parcial (24 x 2 = 48) -> 2 casillas ? ?
+	# Fila 1: Primer producto parcial (ej: 00) -> 2 casillas ? ?
 	var y_prod1 = y_linea + 15.0
 	var cas_prod1 = _instanciar_casillas(
 		prod_parcial_1_str.length(), 
@@ -509,7 +527,7 @@ func _disposicion_multiplicacion_larga(num1: int, num2: int):
 		0
 	)
 
-	# Fila 2: Segundo producto parcial (24 x 1 = 24) -> 2 casillas ? ? desplazadas a la izquierda (Decenas)
+	# Fila 2: Segundo producto parcial (ej: 26) -> 2 casillas ? ? (desplazadas a las decenas)
 	var y_prod2 = y_prod1 + 45.0
 	var x_decenas = x_unidades - separacion_x
 	var cas_prod2 = _instanciar_casillas(
@@ -521,17 +539,15 @@ func _disposicion_multiplicacion_larga(num1: int, num2: int):
 		prod_parcial_1_str.length()
 	)
 
-	# Registrar las 4 casillas juntas para la validación
+	# Registrar las casillas para la validación
 	casillas_paso_1 = cas_prod1 + cas_prod2
 	
 	# Generar fichas de números para arrastrar
 	_generar_fichas_digitos_combinadas([prod_parcial_1_str, prod_parcial_2_str])
 
-	# 7. Botón Comprobar abajo alejado
+	# 7. Botón Comprobar
 	_crear_boton_comprobar(y_prod2 + 80.0)
 
-# ➕ Etapa 2: Dibuja la suma final con controles de llevada/acarreo
-# ➕ Etapa 2: Dibuja la suma final con controles de llevada/acarreo
 func _activar_etapa_2_multiplicacion():
 	etapa_multi = 2
 	
@@ -927,8 +943,8 @@ func _obtener_datos_operacion() -> Dictionary:
 		return lista.pick_random()
 	
 	# 3. Respaldo dinámico
-	var n1 = randi_range(10, 30)
-	var n2 = randi_range(1, 15)
+	var n1 = randi_range(15, 30)
+	var n2 = randi_range(1, 10)
 	print("FALLO: No hay preguntas en la RAM (DatosUsuario.banco_preguntas está vacío)")
 	return {
 		"num1": n1, 
