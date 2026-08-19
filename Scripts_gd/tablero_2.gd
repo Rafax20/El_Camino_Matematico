@@ -8,7 +8,7 @@ extends Node2D
 @onready var boton_dado = $Panel/BotonDado 
 @onready var Menu_Volver =  $Mapa_Tablero_2/Volver_Menu
 @onready var boton_chat = $Preguntar_ChatBox
-@onready var minijuego_asteroides = $MinijuegoAsteroides
+@onready var minijuego_asteroides = $CapaMinijuegos/MinijuegoAsteroides
 @onready var minijuego_buscador = $MinijuegoBuscador
 @onready var minijuego_laboratorio = $CapaMinijuegos/MinijuegoLaboratorio
 
@@ -478,42 +478,40 @@ func _obtener_pregunta_actual() -> Dictionary:
 
 func _on_minijuego_resuelto(es_correcto: bool):
 	$CapaMinijuegos.visible = false
+	minijuego_asteroides.visible = false
+	minijuego_buscador.visible = false
 	minijuego_laboratorio.visible = false
+
+	# 🎥 RESTAURAR CÁMARA DEL TABLERO
+	$CamaraTablero.enabled = true
+	$CamaraTablero.make_current()
+
+	# 🔄 Reorganizamos la lista del tablero para la siguiente casilla
+	lista_preguntas.shuffle()
+
 	if es_correcto:
 		print("🎉 ¡Minijuego superado exitosamente!")
-		
-		# Liberamos el candado de la pregunta y actualizamos progreso
 		DatosUsuario.pregunta_pendiente_db = false
 		ConexionSupabase.actualizar_progreso_en_nube(casilla_actual, false)
-		
-		# Habilitamos el dado para el siguiente turno
 		boton_dado.disabled = false
 		Menu_Volver.disabled = false
 	else:
-		# ❌ LOGICA DE RESPUESTA INCORRECTA (¡Recuperada!)
 		print("❌ ¡Incorrecta! Regresando a casilla anterior: ", casilla_anterior)
-		
-		# 🗣️ Mandamos a reproducir el ánimo pedagógico
 		var animos = ["animo1", "animo2", "animo3"]
 		GestionAudio.reproducir_audio_local("Animos/" + animos.pick_random())
 		
-		# ⏳ Esperamos 2 segundos para que escuche el mensaje de aliento antes de mover la ficha
 		await get_tree().create_timer(2.0).timeout
 		
-		# 📺 Cerramos la ventana de la pregunta
 		$Interfaz.visible = false
-		
-		# Ajustamos coordenadas de la memoria y hacemos el movimiento de retroceso visual
 		casilla_actual = casilla_anterior
 		DatosUsuario.casilla_actual_db = casilla_actual
 		
 		ConexionSupabase.actualizar_progreso_en_nube(casilla_actual, false)
 		await _mover_ficha_visualmente(casilla_actual, false)
 		
-		# Desbloqueamos el tablero para el siguiente turno
 		boton_dado.disabled = false
 		Menu_Volver.disabled = false
-	
+
 	boton_chat.disabled = false
 	visible = true
 		
@@ -531,16 +529,28 @@ func _on_preguntar_chat_box_pressed() -> void:
 	NavegacionGlobal.abrir_chatbot()
 	
 # 🚀 Invocador del minijuego de asteroides
+# 🚀 Invocador del minijuego de asteroides
+# 🚀 Invocador del minijuego de asteroides
 func lanzar_minijuego_asteroides():
-	var pregunta = _obtener_pregunta_actual()
 	if not minijuego_asteroides.minijuego_finalizado.is_connected(_on_minijuego_resuelto):
 		minijuego_asteroides.minijuego_finalizado.connect(_on_minijuego_resuelto)
-	minijuego_asteroides.iniciar_minijuego(pregunta, "espacio")
+		
+	$CapaMinijuegos.visible = true
+	minijuego_asteroides.visible = true
+	
+	# Solo pasamos el tema. El minijuego se encarga de leer DatosUsuario.banco_preguntas
+	minijuego_asteroides.iniciar_minijuego("espacio")
 
 # 🔦 Invocador del minijuego de las cajas en la oscuridad
 func lanzar_minijuego_buscador():
 	if not minijuego_buscador.minijuego_finalizado.is_connected(_on_minijuego_resuelto):
 		minijuego_buscador.minijuego_finalizado.connect(_on_minijuego_resuelto)
+	
+	minijuego_buscador.visible = true
+	
+	# Desactivamos momentáneamente la cámara del tablero principal
+	$CamaraTablero.enabled = false 
+	
 	minijuego_buscador.iniciar_minijuego("espacio")
 	
 

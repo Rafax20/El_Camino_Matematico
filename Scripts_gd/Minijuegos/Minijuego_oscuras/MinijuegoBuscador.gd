@@ -28,9 +28,15 @@ signal minijuego_finalizado(es_correcto)
 
 @onready var puntos_spawn = $Nivel/PuntosSpawn
 @onready var contenedor_cajas = $Nivel/ContenedorCajas
+@onready var mesa_generador: Area2D = $Nivel/MesaGenerador # Ajusta la ruta a tu nodo Area2D
+@onready var collision_mesa: CollisionShape2D = $Nivel/MesaGenerador/CollisionShape2D
+@onready var label_mensaje: Label = $HUD/LabelMensaje # Opcional: Label para el mensaje final
+@onready var animador: AnimationPlayer = $AnimationPlayer # O AnimatedSprite2D según utilices
 
 var textura_corazon_lleno = preload("res://assets/Minijuegos/corazon_lleno.png")
 var textura_corazon_vacio = preload("res://assets/Minijuegos/corazon_vacio.png")
+var Check_Morado = preload("res://assets/Imagenes/Check_pequeno.png")
+
 
 var num1_activo: int = 0
 var num2_activo: int = 0
@@ -66,12 +72,29 @@ var btn_comprobar: Button = null
 # 📐 Offsets y posiciones de UI
 var OFFSET_Y_GLOBAL: float = 100.0
 
+const POSICION_INICIAL: Vector2 = Vector2(376, 249)
+
 func _ready():
 	# Si ejecutas la escena del minijuego sola directamente (F6), la iniciamos manualmente
 	if get_tree().current_scene == self:
 		iniciar_minijuego("espacio")
 
 func iniciar_minijuego(_tema: String = "espacio"):
+	if jugador:
+		jugador.position = POSICION_INICIAL
+		var cam_jugador = $Nivel/Jugador/Camera2D
+		if cam_jugador:
+			cam_jugador.enabled = true
+			cam_jugador.make_current()
+			
+		if jugador.has_method("activar_movimiento"):
+			jugador.activar_movimiento()
+	
+	if collision_mesa:
+		collision_mesa.set_deferred("disabled", true)
+	if label_mensaje:
+		label_mensaje.visible = false
+		
 	gemas_obtenidas = 0
 	vidas_actuales = 3
 	juego_activo = true
@@ -200,12 +223,13 @@ func _crear_boton_comprobar(pos_y: float):
 		btn_comprobar.queue_free()
 		
 	btn_comprobar = Button.new()
-	btn_comprobar.text = "✔ Comprobar"
+	btn_comprobar.text = "Comprobar"
 	btn_comprobar.custom_minimum_size = Vector2(140, 40)
 	var ancho_p = _obtener_ancho_panel()
 	btn_comprobar.position = Vector2((ancho_p / 2.0) - 70, pos_y)
 	btn_comprobar.add_theme_font_size_override("font_size", 18)
 	btn_comprobar.pressed.connect(_validar_intento)
+	btn_comprobar.icon = Check_Morado
 	
 	panel_operacion.add_child(btn_comprobar)
 	elementos_dinamicos.append(btn_comprobar)
@@ -677,10 +701,8 @@ func _validar_intento():
 				_procesar_error(resp_alumno, resultado_final_str)
 
 func _procesar_acierto():
-	# ⏱️ 2. Calcular tiempo tardado en ESTA caja
 	var tiempo_tardado = (Time.get_ticks_msec() - tiempo_inicio_caja) / 1000.0
 	
-	# 🧠 3. Evaluar con el Sistema Experto inmediatamente
 	DatosUsuario.dificultad_actual = SistemaExperto.evaluar_desempeno(
 		DatosUsuario.dificultad_actual, 
 		true, 
@@ -694,8 +716,19 @@ func _procesar_acierto():
 	interfaz_pregunta.visible = false
 	pregunta_abierta = false
 	
+	# ⚡ En lugar de terminar el juego, activamos la mesa del generador dinámicamente
 	if gemas_obtenidas >= gemas_requeridas:
-		_finalizar_juego(true)
+		
+		_activar_generador()
+
+func _activar_generador():
+	print("Se activo el Generador ")
+	if collision_mesa:
+		collision_mesa.set_deferred("disabled", false)
+		# Opcional: Mostrar aviso al jugador
+		if label_mensaje:
+			label_mensaje.text = "¡Gemas recolectadas! Ve al Generador."
+			label_mensaje.visible = true
 
 func _procesar_error(_ingresado: String, _esperado: String):
 	# ⏱️ 2. Calcular tiempo tardado antes del error
@@ -914,6 +947,14 @@ func _actualizar_interfaz_corazones():
 				else: corazones[i].modulate = Color(0.2, 0.2, 0.2, 0.4)
 
 func _finalizar_juego(es_exito: bool):
+	if jugador and jugador.has_method("desactivar_movimiento"):
+		jugador.desactivar_movimiento()
+		
+	# Apagamos la cámara local para que no interfiera con el tablero
+	var cam_jugador = $Nivel/Jugador/Camera2D
+	if cam_jugador:
+		cam_jugador.enabled = false
+		
 	juego_activo = false
 	visible = false
 	HUD.visible = false
@@ -1024,3 +1065,41 @@ func _obtener_ancho_panel() -> float:
 	elif interfaz_pregunta and interfaz_pregunta.size.x > 50:
 		return interfaz_pregunta.size.x
 	return get_viewport_rect().size.x * 0.65
+
+func _on_mesa_generador_body_entered(body: Node2D):
+	# Verificamos que sea el jugador y que tengamos el total de gemas
+	if body == jugador and gemas_obtenidas >= gemas_requeridas and juego_activo:
+		_secuencia_restaurar_energia()
+
+func _secuencia_restaurar_energia():
+	juego_activo = false # Desactivar interacción
+	
+	# 1. Bloquear al jugador para que no camine durante la secuencia
+	if jugador and jugador.has_method("desactivar_movimiento"):
+		jugador.desactivar_movimiento()
+		
+	if label_mensaje:
+		label_mensaje.text = "Insertando gemas en el generador..."
+		label_mensaje.visible = true
+
+	# 2. Transición progresiva de luz con CanvasModulate usando un Tween
+	if luz_iluminacion_global:
+		var tween = create_tween()
+		# Transiciona el color oscuro al blanco normal en 2.5 segundos
+		tween.tween_property(luz_iluminacion_global, "color", Color(1.0, 1.0, 1.0, 1.0), 2.5)\
+			.set_trans(Tween.TRANS_SINE)\
+			.set_ease(Tween.EASE_OUT)
+		await tween.finished
+
+	# 3. Mostrar mensaje de éxito
+	if label_mensaje:
+		label_mensaje.text = "¡Excelente! La energía ha sido restaurada."
+		
+	# Esperar 2 segundos para que el jugador lea el mensaje
+	await get_tree().create_timer(2.0).timeout
+	
+	# 4. Ocultar mensaje y salir al tablero
+	if label_mensaje:
+		label_mensaje.visible = false
+		
+	_finalizar_juego(true)

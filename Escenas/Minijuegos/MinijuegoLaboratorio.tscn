@@ -1,7 +1,9 @@
 [gd_scene format=3 uid="uid://dfbugve5tujxm"]
 
 [ext_resource type="Script" uid="uid://cfdvh7ggp0rrd" path="res://Scripts_gd/Minijuegos/Minijuego_laboratorio/MinijuegoLaboratorio.gd" id="1_aycmi"]
-[ext_resource type="Texture2D" uid="uid://btkja74suwdob" path="res://assets/Imagenes/Gemini_Generated_Image_o18alao18alao18a.png" id="2_neunb"]
+[ext_resource type="Texture2D" uid="uid://craiu6a1fshom" path="res://assets/Minijuegos/minijuego Laboratorio/Fondo_Mercado.png" id="2_67c37"]
+[ext_resource type="Texture2D" uid="uid://bto4byrrdaj78" path="res://assets/Minijuegos/corazon_lleno.png" id="3_67c37"]
+[ext_resource type="Texture2D" uid="uid://bu0451xaiue4q" path="res://assets/Minijuegos/minijuego Laboratorio/Mesa_Mercado.png" id="3_cb6m8"]
 
 [node name="MinijuegoLaboratorio" type="Control" unique_id=479700857]
 layout_mode = 3
@@ -12,14 +14,47 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_aycmi")
 
-[node name="Fondo" type="TextureRect" parent="." unique_id=1001070745]
+[node name="Mercado" type="TextureRect" parent="." unique_id=1488223118]
+layout_mode = 0
+offset_right = 1456.962
+offset_bottom = 820.0
+scale = Vector2(0.79, 0.79)
+texture = ExtResource("2_67c37")
+
+[node name="ClienteAlien" type="TextureRect" parent="." unique_id=1901642834]
 layout_mode = 0
 offset_right = 40.0
 offset_bottom = 40.0
-texture = ExtResource("2_neunb")
+
+[node name="Mesa" type="TextureRect" parent="." unique_id=1001070745]
+layout_mode = 0
+offset_right = 1456.962
+offset_bottom = 820.0
+scale = Vector2(0.79, 0.79)
+texture = ExtResource("3_cb6m8")
+
+[node name="GloboDialogo" type="Panel" parent="." unique_id=2092170073]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -300.0
+offset_right = 300.0
+offset_bottom = 100.0
+grow_horizontal = 2
+
+[node name="TextoDialogo" type="Label" parent="GloboDialogo" unique_id=166984445]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 2
 
 [node name="UIHeader" type="CanvasLayer" parent="." unique_id=401165314]
-visible = false
 
 [node name="GemasLabel" type="Label" parent="UIHeader" unique_id=472818090]
 offset_right = 40.0
@@ -30,20 +65,26 @@ offset_right = 40.0
 offset_bottom = 23.0
 
 [node name="VidasContainer" type="HBoxContainer" parent="UIHeader" unique_id=80222621]
-offset_right = 40.0
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -40.0
 offset_bottom = 40.0
+grow_horizontal = 0
 
 [node name="TextureRect" type="TextureRect" parent="UIHeader/VidasContainer" unique_id=1529386971]
 layout_mode = 2
+texture = ExtResource("3_67c37")
 
 [node name="TextureRect2" type="TextureRect" parent="UIHeader/VidasContainer" unique_id=121358532]
 layout_mode = 2
+texture = ExtResource("3_67c37")
 
 [node name="TextureRect3" type="TextureRect" parent="UIHeader/VidasContainer" unique_id=238647001]
 layout_mode = 2
+texture = ExtResource("3_67c37")
 
 [node name="PanelOperacion" type="Panel" parent="." unique_id=596744303]
-visible = false
 custom_minimum_size = Vector2(800, 400)
 layout_mode = 1
 anchors_preset = 8
