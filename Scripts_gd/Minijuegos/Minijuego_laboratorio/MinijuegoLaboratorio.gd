@@ -4,12 +4,13 @@ extends Control
 @export var OFFSET_Y_GLOBAL: float = 60.0
 
 @onready var cliente_alien: TextureRect = $ClienteAlien
-@onready var globo_dialogo: Panel = $GloboDialogo
+@onready var globo_dialogo: PanelContainer = $GloboDialogo
 @onready var texto_dialogo: Label = $GloboDialogo/TextoDialogo
 @onready var panel_operacion: Panel = $PanelOperacion
 @onready var contenedor_fichas = $ContenedorFichas
 @onready var gemas_label = $UIHeader/GemasLabel
 @onready var vidas_container = $UIHeader/VidasContainer
+@onready var pizarra_borrador = $PizarraBorrador # Asegúrate de que el nombre coincida
 
 # 🔊 NODO DE AUDIO (Asegúrate de agregar un AudioStreamPlayer en tu escena como hijo de la raíz)
 @onready var audio_player: AudioStreamPlayer = $AudioPlayer 
@@ -54,6 +55,11 @@ var datos_pregunta_actual: Dictionary = {}
 func _ready():
 	panel_operacion.visible = false
 	globo_dialogo.visible = false
+	
+	# Desactivar la pizarra al iniciar la escena
+	if pizarra_borrador:
+		pizarra_borrador.visible = false
+		
 	if panel_operacion:
 		posicion_original_panel = panel_operacion.position
 		
@@ -105,59 +111,55 @@ func _disposicion_regla_de_tres(datos: Dictionary):
 	for i in range(resultado_final_str.length()):
 		valores_paso_1.append("")
 	
-	var separacion_x: float = 40.0
-	var centro_x = _obtener_ancho_panel() / 2.0
-	var y_base = OFFSET_Y_GLOBAL + 80.0
+	var x_margen = 10.0
 	
-	# Titulo
-	var icono_titulo = Sprite2D.new()
-	icono_titulo.texture = tubo_ensayo
-	icono_titulo.position = Vector2(centro_x - 200.0, y_base)
-	icono_titulo.scale = Vector2(0.2, 0.2)
-	panel_operacion.add_child(icono_titulo)
-	elementos_dinamicos.append(icono_titulo)
-	
+	# --- TÍTULO ---
+	var y_titulo = 6.0
 	var lbl_titulo = Label.new()
-	lbl_titulo.text = "MEZCLA DE PROPULSIÓN GALÁCTICA"
-	lbl_titulo.position = Vector2(centro_x - 180.0, y_base)
-	lbl_titulo.add_theme_font_size_override("font_size", 20)
+	lbl_titulo.text = "MEZCLA GALÁCTICA"
+	lbl_titulo.position = Vector2(x_margen, y_titulo)
+	lbl_titulo.add_theme_font_size_override("font_size", 10)
 	panel_operacion.add_child(lbl_titulo)
 	elementos_dinamicos.append(lbl_titulo)
 	
-	# Fila 1
-	var y_fila1 = y_base + 60.0
-	var texto_fila1 = str(a1) + " " + obj_a + "   -------------->   " + str(b1) + " " + obj_b
-	var lbl_f1 = _crear_label_formateado(texto_fila1, Vector2(centro_x - 220.0, y_fila1))
-	lbl_f1.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
+	# --- FILA 1 ---
+	var y_fila1 = y_titulo + 18.0
+	var texto_fila1 = str(a1) + " " + obj_a + "  ➜  " + str(b1) + " " + obj_b
+	var lbl_f1 = _crear_label_formateado(texto_fila1, Vector2(x_margen, y_fila1))
+	lbl_f1.add_theme_font_size_override("font_size", 9)
 	panel_operacion.add_child(lbl_f1)
 	elementos_dinamicos.append(lbl_f1)
 	
-	# Fila 2
-	var y_fila2 = y_fila1 + 50.0
-	var texto_fila2_izq = str(a2) + " " + obj_a + "   -------------->   "
-	var lbl_f2_izq = _crear_label_formateado(texto_fila2_izq, Vector2(centro_x - 220.0, y_fila2))
-	lbl_f2_izq.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
+	# --- FILA 2 ---
+	var y_fila2 = y_fila1 + 16.0
+	var texto_fila2_izq = str(a2) + " " + obj_a + "  ➜  "
+	var lbl_f2_izq = _crear_label_formateado(texto_fila2_izq, Vector2(x_margen, y_fila2))
+	lbl_f2_izq.add_theme_font_size_override("font_size", 9)
 	panel_operacion.add_child(lbl_f2_izq)
 	elementos_dinamicos.append(lbl_f2_izq)
 	
-	# Casillas
-	var x_casillas = centro_x + 50.0
+	# --- FILA 3 (Casillas + Nombre del objeto abajo para espacio completo) ---
+	var y_fila3 = y_fila2 + 16.0
+	var separacion_x: float = 22.0
+	var x_casillas = x_margen + 5.0
+	
 	casillas_paso_1 = _instanciar_casillas(
 		resultado_final_str.length(), 
 		x_casillas, 
 		separacion_x, 
-		y_fila2 - 5.0, 
+		y_fila3 - 2.0, 
 		valores_paso_1
 	)
 	
 	var ancho_casillas = resultado_final_str.length() * separacion_x
-	var lbl_unidad = _crear_label_formateado(obj_b, Vector2(x_casillas + ancho_casillas + 10.0, y_fila2))
-	lbl_unidad.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
+	var lbl_unidad = _crear_label_formateado(obj_b, Vector2(x_casillas + ancho_casillas + 4.0, y_fila3))
+	lbl_unidad.add_theme_font_size_override("font_size", 9)
 	panel_operacion.add_child(lbl_unidad)
 	elementos_dinamicos.append(lbl_unidad)
 
 	_generar_fichas_digitos_combinadas([resultado_final_str])
-	_crear_boton_comprobar(y_fila2 + 90.0)
+	_crear_boton_comprobar(y_fila3 + 22.0)
+	_crear_boton_libreta()
 
 # --- EFECTO DE SACUDIDA (SCREEN SHAKE) ---
 func _sacudir_panel():
@@ -294,9 +296,9 @@ func _instanciar_casillas(cantidad: int, x_inicio: float, sep_x: float, y_pos: f
 	for i in range(cantidad):
 		var btn = Button.new()
 		btn.text = "?"
-		btn.custom_minimum_size = Vector2(35, 35)
+		btn.custom_minimum_size = Vector2(20, 20)
 		btn.position = Vector2(x_inicio + (i * sep_x), y_pos)
-		btn.add_theme_font_size_override("font_size", 20)
+		btn.add_theme_font_size_override("font_size", 10)
 		
 		var idx = i
 		btn.pressed.connect(func():
@@ -310,18 +312,13 @@ func _instanciar_casillas(cantidad: int, x_inicio: float, sep_x: float, y_pos: f
 	return lista_casillas
 
 func _posicionar_contenedor_fichas():
-	var pantalla_size = get_viewport_rect().size
 	if contenedor_fichas:
-		contenedor_fichas.custom_minimum_size = Vector2(600, 60)
+		# Si cambiaste el nodo a GridContainer en el editor, forzamos 4 columnas
+		if contenedor_fichas is GridContainer:
+			contenedor_fichas.columns = 4
 		
-		# Forzamos anclaje centrado en X y cerca del borde inferior en Y
-		var x_pos = (pantalla_size.x - 600.0) / 2.0
-		var y_pos = pantalla_size.y - 50 # Se despega 50px del fondo
-		
-		contenedor_fichas.position = Vector2(x_pos, y_pos)
-		
-		if contenedor_fichas.has_method("set_alignment"):
-			contenedor_fichas.alignment = BoxContainer.ALIGNMENT_CENTER
+		# Ajusta la posición para que caiga sobre el teclado de la registradora
+		contenedor_fichas.position = Vector2(650, 435)
 
 func _generar_fichas_digitos_combinadas(respuestas: Array):
 	for child in contenedor_fichas.get_children():
@@ -345,8 +342,8 @@ func _generar_fichas_digitos_combinadas(respuestas: Array):
 	for digito in pool_digitos:
 		var btn_ficha = Button.new()
 		btn_ficha.text = digito
-		btn_ficha.custom_minimum_size = Vector2(50, 50)
-		btn_ficha.add_theme_font_size_override("font_size", 24)
+		btn_ficha.custom_minimum_size = Vector2(28, 28)
+		btn_ficha.add_theme_font_size_override("font_size", 12)
 		
 		var d_val = digito
 		btn_ficha.pressed.connect(func(): _insertar_digito_en_casilla_vacia(d_val))
@@ -360,14 +357,17 @@ func _insertar_digito_en_casilla_vacia(digito: String):
 			break
 
 func _crear_boton_comprobar(y_pos: float):
-	
 	var btn = Button.new()
-	btn.text = "Comprobar"
-	btn.custom_minimum_size = Vector2(140, 40)
+	btn.text = "OK"
+	btn.custom_minimum_size = Vector2(80, 25)
+	
+	# Centrar el botón en el panel de la computadora
 	var centro_x = _obtener_ancho_panel() / 2.0
-	btn.position = Vector2(centro_x - 70.0, y_pos)
-	btn.add_theme_font_size_override("font_size", 18)
-	btn.icon = Check_Morado
+	btn.position = Vector2(centro_x - 40.0, y_pos)
+	btn.add_theme_font_size_override("font_size", 12)
+	
+	if Check_Morado:
+		btn.icon = Check_Morado
 	
 	btn.pressed.connect(_validar_respuesta)
 	
@@ -387,3 +387,18 @@ func _obtener_ancho_panel() -> float:
 		return panel_operacion.size.x
 	# Si por algún motivo el panel no ha calculado su layout, usamos un estándar
 	return 800.0
+	
+func _crear_boton_libreta():
+	var btn_libreta = Button.new()
+	btn_libreta.text = "✏️ Borrador"
+	btn_libreta.custom_minimum_size = Vector2(75, 22)
+	btn_libreta.position = Vector2(10, 105)
+	btn_libreta.add_theme_font_size_override("font_size", 9)
+	
+	btn_libreta.pressed.connect(func():
+		if pizarra_borrador:
+			pizarra_borrador.visible = !pizarra_borrador.visible
+	)
+	
+	panel_operacion.add_child(btn_libreta)
+	elementos_dinamicos.append(btn_libreta)

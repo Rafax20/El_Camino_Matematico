@@ -788,6 +788,7 @@ region_enabled = true
 region_rect = Rect2(64, 734, 184.48947, 82)
 
 [node name="MinijuegoBuscador" parent="." unique_id=18950765 instance=ExtResource("97_08y31")]
+visible = false
 position = Vector2(0, 1000)
 
 [node name="CapaMinijuegos" type="CanvasLayer" parent="." unique_id=1983300214]

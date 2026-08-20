@@ -4,15 +4,18 @@
 [ext_resource type="PackedScene" uid="uid://b88qqq3s5mt7s" path="res://Escenas/objeto_flotante.tscn" id="2_tl4fp"]
 [ext_resource type="Texture2D" uid="uid://dvsatgvkavoao" path="res://assets/Minijuegos/minijuego Explotar/Cabina Espacial.png" id="3_tl4fp"]
 [ext_resource type="Texture2D" uid="uid://dokgx06fai5ea" path="res://assets/Minijuegos/minijuego Explotar/FondoEspacial.png" id="3_yew5j"]
+[ext_resource type="AudioStream" uid="uid://cp8qv1fmna1sw" path="res://Audios/Sonidos/Sonido_de_tecleo.mp3" id="3_yntrb"]
+[ext_resource type="FontFile" uid="uid://lxqlntkqlcu3" path="res://Fuentes/Press_Start_2P/PressStart2P-Regular.ttf" id="5_4vabm"]
+[ext_resource type="Texture2D" uid="uid://c3q8xfbyv4y0e" path="res://assets/Minijuegos/minijuego Explotar/Panel_operacion.png" id="5_8a38x"]
 [ext_resource type="Texture2D" uid="uid://bto4byrrdaj78" path="res://assets/Minijuegos/corazon_lleno.png" id="5_bnn3a"]
 
 [node name="MinijuegoAsteroides" type="Node2D" unique_id=1267125036]
 script = ExtResource("1_710gb")
 escena_objeto = ExtResource("2_tl4fp")
+sonido_tecleo = ExtResource("3_yntrb")
 
 [node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1779273060]
 layer = 5
-visible = false
 
 [node name="Fondo" type="Sprite2D" parent="CanvasLayer" unique_id=1451089409]
 position = Vector2(0.9999981, 2.3841858e-07)
@@ -20,13 +23,33 @@ scale = Vector2(0.9599332, 0.84375006)
 texture = ExtResource("3_yew5j")
 centered = false
 
-[node name="LabelPregunta" type="Label" parent="CanvasLayer" unique_id=1905062283]
-offset_left = 522.0
-offset_top = 79.0
-offset_right = 578.0
-offset_bottom = 102.0
-
 [node name="ContenedorAsteroides" type="Node2D" parent="CanvasLayer" unique_id=76138876]
+
+[node name="PantallaOperacion" type="TextureRect" parent="CanvasLayer" unique_id=1283557634]
+offset_left = 257.0
+offset_top = 37.0
+offset_right = 2108.0
+offset_bottom = 530.0
+scale = Vector2(0.34, 0.34)
+texture = ExtResource("5_8a38x")
+
+[node name="LabelPregunta" type="Label" parent="CanvasLayer/PantallaOperacion" unique_id=1905062283]
+custom_minimum_size = Vector2(1000, 100)
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -500.0
+offset_top = 175.0
+offset_right = 500.0
+offset_bottom = 275.0
+grow_horizontal = 2
+theme_override_colors/font_color = Color(0.3019608, 0.93333334, 0.91764706, 1)
+theme_override_fonts/font = ExtResource("5_4vabm")
+theme_override_font_sizes/font_size = 36
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 2
 
 [node name="CabinaEspacial" type="Sprite2D" parent="CanvasLayer" unique_id=89666990]
 position = Vector2(572.00006, 348)
@@ -53,9 +76,15 @@ texture = ExtResource("5_bnn3a")
 layout_mode = 2
 texture = ExtResource("5_bnn3a")
 
+[node name="LabelAciertos" type="Label" parent="CanvasLayer" unique_id=1430017248]
+offset_right = 40.0
+offset_bottom = 23.0
+
 [node name="Timer" type="Timer" parent="." unique_id=1738231467]
 wait_time = 1.5
 
 [node name="HTTPRequest" type="HTTPRequest" parent="." unique_id=1602476914]
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="." unique_id=1196542878]
 
 [connection signal="timeout" from="Timer" to="." method="_on_timer_spawn_timeout"]

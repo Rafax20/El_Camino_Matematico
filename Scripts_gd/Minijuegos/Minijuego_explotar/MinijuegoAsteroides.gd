@@ -3,15 +3,17 @@ extends Node2D
 
 signal minijuego_finalizado(es_correcto)
 
-@export var escena_objeto: PackedScene # Asigna ObjetoFlotante.tscn en el inspector
+@export var escena_objeto: PackedScene
+@export var sonido_tecleo: AudioStream # Asigna el efecto de sonido .wav / .mp3 en el inspector
 
-@onready var label_pregunta = $CanvasLayer/LabelPregunta
+@onready var pantalla_operacion = $CanvasLayer/PantallaOperacion
+@onready var label_pregunta = $CanvasLayer/PantallaOperacion/LabelPregunta
+@onready var audio_player = $AudioStreamPlayer
 @onready var timer_spawn: Timer = $CanvasLayer/Timer if has_node("CanvasLayer/Timer") else $Timer
 @onready var Fondo = $CanvasLayer
 @onready var contenedor_corazones = $CanvasLayer/ContenedorCorazones
 @onready var label_aciertos = $CanvasLayer/LabelAciertos
 
-# 💖 Texturas de corazones
 var textura_corazon_lleno = preload("res://assets/Minijuegos/corazon_lleno.png")
 var textura_corazon_vacio = preload("res://assets/Minijuegos/corazon_vacio.png")
 
@@ -20,7 +22,13 @@ var texturas_tableros = {
 	"espacio": preload("res://assets/Minijuegos/minijuego Explotar/asteroide_tablero2.png")
 }
 
-# --- ESTADO Y REGLAS DEL JUEGO ---
+var banco_respaldo = [
+	{"operacion": "5 por 5", "respuesta_correcta": "25"},
+	{"operacion": "4 por 9", "respuesta_correcta": "36"},
+	{"operacion": "15 mas 4", "respuesta_correcta": "19"},
+	{"operacion": "20 mas 7", "respuesta_correcta": "27"},
+]
+
 var tiempo_inicio_pregunta: float = 0.0
 var tema_actual: String
 var respuesta_correcta: int = 0
@@ -33,6 +41,7 @@ var META_ACIERTOS: int = 5
 var cola_preguntas: Array = []
 
 func _ready():
+	Fondo.visible = false
 	if get_tree().current_scene == self:
 		iniciar_minijuego("espacio")
 
@@ -42,18 +51,10 @@ func iniciar_minijuego(tema: String = "espacio"):
 	vidas_actuales = 3
 	aciertos_actuales = 0
 	
-	# 🎯 Cargar y filtrar preguntas directamente desde DatosUsuario
 	_recargar_cola_preguntas()
-	
 	_actualizar_interfaz_corazones()
 	_actualizar_ui_aciertos()
 	
-	if not timer_spawn:
-		timer_spawn = get_node_or_null("CanvasLayer/Timer") if has_node("CanvasLayer/Timer") else get_node_or_null("Timer")
-		
-	if not label_pregunta:
-		label_pregunta = $CanvasLayer/LabelPregunta
-
 	juego_activo = true
 	visible = true
 	
@@ -61,19 +62,34 @@ func iniciar_minijuego(tema: String = "espacio"):
 
 func _recargar_cola_preguntas():
 	cola_preguntas.clear()
-	var banco = DatosUsuario.banco_preguntas
+	var banco
+	if DatosUsuario.banco_preguntas.size() > 0:
+		banco = DatosUsuario.banco_preguntas
+	else:
+		banco = banco_respaldo
 	var dif = DatosUsuario.dificultad_actual
 	
-	# Filtramos por la dificultad actual del usuario
 	for preg in banco:
 		if int(preg.get("dificultad", 0)) == dif:
 			cola_preguntas.append(preg)
 			
-	# Si no hay preguntas de esa dificultad en RAM, usamos todo el banco
 	if cola_preguntas.size() == 0:
 		cola_preguntas = banco.duplicate()
 		
 	cola_preguntas.shuffle()
+
+func _formatear_operacion(texto_raw: String) -> String:
+	var texto_limpio = texto_raw.to_lower()
+	texto_limpio = texto_limpio.replace(" por ", " x ")
+	texto_limpio = texto_limpio.replace(" mas ", " + ")
+	texto_limpio = texto_limpio.replace(" más ", " + ")
+	texto_limpio = texto_limpio.replace(" menos ", " - ")
+	texto_limpio = texto_limpio.replace(" entre ", " ÷ ")
+	
+	if not texto_limpio.ends_with("="):
+		texto_limpio += " = ?"
+		
+	return texto_limpio.to_upper()
 
 func _cargar_siguiente_pregunta():
 	if cola_preguntas.size() == 0:
@@ -84,22 +100,50 @@ func _cargar_siguiente_pregunta():
 
 	_limpiar_asteroides_pantalla()
 
-	# Extraemos la pregunta actual (sin repetirla)
 	var datos_pregunta = cola_preguntas.pop_front()
-
-	var texto = datos_pregunta.get("operacion", datos_pregunta.get("pregunta", "2 más 2"))
-	if label_pregunta:
-		label_pregunta.text = str(texto)
-		
+	var texto_raw = datos_pregunta.get("operacion", datos_pregunta.get("pregunta", "2 mas 2"))
+	var texto_formateado = _formatear_operacion(texto_raw)
+	
 	var raw_respuesta = datos_pregunta.get("respuesta_correcta", 4)
 	respuesta_correcta = int(raw_respuesta)
 	
-	print("🎮 NUEVA PREGUNTA -> Operación: '", texto, "' | Respuesta: ", respuesta_correcta)
+	print("🎮 NUEVA PREGUNTA -> Operación: '", texto_formateado, "' | Respuesta: ", respuesta_correcta)
+	
+	# Ejecutamos la animación visual y sonora
+	animar_aparicion_operacion(texto_formateado)
 	
 	tiempo_inicio_pregunta = Time.get_ticks_msec()
 	
 	if timer_spawn:
 		timer_spawn.start()
+
+func animar_aparicion_operacion(texto_operacion: String):
+	label_pregunta.text = texto_operacion
+	label_pregunta.visible_characters = 0
+	
+	# Solo ocultamos la pantalla con transparencia (sin alterar escala ni posición)
+	pantalla_operacion.modulate.a = 0.0
+	
+	var tween = create_tween().set_parallel(false)
+	
+	# Paso 1: Aparecer suavemente con Fade In
+	tween.tween_property(pantalla_operacion, "modulate:a", 1.0, 0.25)
+	
+	# Paso 2: Escritura carácter por carácter con sonido
+	var total_caracteres = label_pregunta.get_total_character_count()
+	
+	for i in range(1, total_caracteres + 1):
+		tween.tween_property(label_pregunta, "visible_characters", i, 0.04)
+		tween.tween_callback(_reproducir_sonido_tecleo)
+
+func _reproducir_sonido_tecleo():
+	if audio_player:
+		if sonido_tecleo and audio_player.stream != sonido_tecleo:
+			audio_player.stream = sonido_tecleo
+		if audio_player.stream:
+			# Modulación ligera de pitch para varianza realista
+			audio_player.pitch_scale = randf_range(0.95, 1.05)
+			audio_player.play()
 
 func _on_timer_spawn_timeout():
 	if not juego_activo or not escena_objeto: return
@@ -135,26 +179,22 @@ func _on_objeto_tocado(valor_tocado: int):
 	
 	if valor_tocado == respuesta_correcta:
 		aciertos_actuales += 1
+		GestionAudio.reproducir_audio_local("Minijuegos/Minijuego_explotar/" + ["Correcto_1", "Correcto_2", "Correcto_3"].pick_random())
 		_actualizar_ui_aciertos()
 		
-		# 🧠 Evaluar desempeño en el Sistema Experto
 		var dif_anterior = DatosUsuario.dificultad_actual
 		var nueva_dif = SistemaExperto.evaluar_desempeno(dif_anterior, true, tiempo_tardado)
 		DatosUsuario.dificultad_actual = nueva_dif
 		
-		print("🎉 Acierto ", aciertos_actuales, "/", META_ACIERTOS, ". Tiempo: ", tiempo_tardado, "s | Dificultad actual: ", nueva_dif)
-		
 		if aciertos_actuales >= META_ACIERTOS:
 			_finalizar_juego(true)
 		else:
-			# Si el Sistema Experto cambió la dificultad, refrescamos la cola
 			if nueva_dif != dif_anterior:
 				_recargar_cola_preguntas()
 			_cargar_siguiente_pregunta()
-		
 	else:
-		print("❌ Tocó ", valor_tocado, " pero se esperaba ", respuesta_correcta)
 		vidas_actuales -= 1
+		GestionAudio.reproducir_audio_local("Minijuegos/Minijuego_explotar/" + ["Incorrecto_1", "Incorrecto_2", "Incorrecto_3"].pick_random())
 		_actualizar_interfaz_corazones()
 		
 		var nueva_dif = SistemaExperto.evaluar_desempeno(DatosUsuario.dificultad_actual, false, tiempo_tardado)
