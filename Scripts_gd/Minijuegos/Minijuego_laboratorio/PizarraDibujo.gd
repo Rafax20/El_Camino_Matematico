@@ -1,30 +1,20 @@
 extends Control
 
-# --- CONFIGURACIÓN DE PINTURA ---
 var trazados: Array = []
 var trazo_actual: Array = []
 var dibujando: bool = false
-var color_lapiz: Color = Color(0.1, 0.1, 0.1, 1.0) # Gris oscuro
-var grosor_lapiz: float = 5.0
-
-@onready var btn_borrar: Button = $"../BtnBorrar"
-@onready var btn_cerrar: Button = $"../BtnCerrar"
+var color_lapiz: Color = Color(0.15, 0.15, 0.2, 1.0)
+var grosor_lapiz: float = 4.0
 
 func _ready():
-	# Permitir que el Control detecte eventos de entrada directamente
+	clip_contents = true
 	mouse_filter = MOUSE_FILTER_STOP
-	
-	if btn_borrar and not btn_borrar.pressed.is_connected(limpiar_pizarra):
-		btn_borrar.pressed.connect(limpiar_pizarra)
-	if btn_cerrar and not btn_cerrar.pressed.is_connected(_cerrar_pizarra):
-		btn_cerrar.pressed.connect(_cerrar_pizarra)
 
 func _gui_input(event: InputEvent):
-	# Se activa solo cuando haces clic DENTRO del área delimitada por LienzoDibujo
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
 		if event.pressed:
 			dibujando = true
-			trazo_actual = [event.position]
+			trazo_actual = [_limitar_posicion(event.position)]
 			accept_event()
 		else:
 			if dibujando:
@@ -40,18 +30,18 @@ func _gui_input(event: InputEvent):
 				accept_event()
 
 	elif event is InputEventMouseMotion and dibujando:
-		trazo_actual.append(event.position)
+		trazo_actual.append(_limitar_posicion(event.position))
 		queue_redraw()
 		accept_event()
 
+func _limitar_posicion(pos: Vector2) -> Vector2:
+	return Vector2(clamp(pos.x, 0.0, size.x), clamp(pos.y, 0.0, size.y))
+
 func _draw():
-	# Dibujar trazos guardados
 	for linea in trazados:
-		var pts = linea["puntos"]
-		if pts.size() > 1:
-			draw_polyline(pts, linea["color"], linea["grosor"], true)
+		if linea["puntos"].size() > 1:
+			draw_polyline(linea["puntos"], linea["color"], linea["grosor"], true)
 			
-	# Dibujar trazo en tiempo real
 	if trazo_actual.size() > 1:
 		draw_polyline(trazo_actual, color_lapiz, grosor_lapiz, true)
 
@@ -59,10 +49,3 @@ func limpiar_pizarra():
 	trazados.clear()
 	trazo_actual.clear()
 	queue_redraw()
-
-func _cerrar_pizarra():
-	var padre = get_parent()
-	if padre is Control:
-		padre.hide()
-	else:
-		hide()

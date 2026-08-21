@@ -1,0 +1,79 @@
+[gd_scene format=3 uid="uid://cxen46cihdm8p"]
+
+[ext_resource type="Texture2D" uid="uid://do4xc2ec2is71" path="res://assets/Interfaz_Login/Boton_X.png" id="1_0x3qa"]
+[ext_resource type="Script" uid="uid://u8lqpncycdbh" path="res://PizarraBorrador.gd" id="1_1tbb1"]
+[ext_resource type="Texture2D" uid="uid://3p2biq4ud0vf" path="res://assets/Interfaz_Login/Boton_X_Presionado.png" id="2_1tbb1"]
+[ext_resource type="Script" uid="uid://cxjflfqxxcab8" path="res://Scripts_gd/Minijuegos/Minijuego_laboratorio/PizarraDibujo.gd" id="3_tyu7l"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_omqgw"]
+bg_color = Color(0.95686275, 0.94509804, 0.91764706, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+shadow_size = 10
+
+[node name="PizarraBorrador" type="Control" unique_id=1405660719]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_1tbb1")
+
+[node name="ColorRect" type="ColorRect" parent="." unique_id=1449683124]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.20392157)
+
+[node name="MarcoPizarra" type="PanelContainer" parent="." unique_id=848617974]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -400.0
+offset_top = -225.0
+offset_right = 400.0
+offset_bottom = 225.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="PanelFondo" type="Panel" parent="MarcoPizarra" unique_id=145890058]
+layout_mode = 2
+mouse_filter = 1
+theme_override_styles/panel = SubResource("StyleBoxFlat_omqgw")
+
+[node name="BtnBorrar" type="Button" parent="MarcoPizarra/PanelFondo" unique_id=845511455]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -59.0
+offset_bottom = 31.0
+grow_horizontal = 0
+text = "Borrar"
+
+[node name="BtnCerrar" type="TextureButton" parent="MarcoPizarra/PanelFondo" unique_id=1451060944]
+layout_mode = 0
+offset_right = 58.0
+offset_bottom = 31.0
+scale = Vector2(0.7, 0.7)
+texture_normal = ExtResource("1_0x3qa")
+texture_pressed = ExtResource("2_1tbb1")
+
+[node name="LienzoDibujo" type="Control" parent="MarcoPizarra/PanelFondo" unique_id=1823144105]
+clip_contents = true
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_top = 70.0
+offset_bottom = 440.0
+grow_horizontal = 2
+script = ExtResource("3_tyu7l")

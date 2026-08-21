@@ -8,6 +8,8 @@
 [ext_resource type="FontFile" uid="uid://lxqlntkqlcu3" path="res://Fuentes/Press_Start_2P/PressStart2P-Regular.ttf" id="5_4vabm"]
 [ext_resource type="Texture2D" uid="uid://c3q8xfbyv4y0e" path="res://assets/Minijuegos/minijuego Explotar/Panel_operacion.png" id="5_8a38x"]
 [ext_resource type="Texture2D" uid="uid://bto4byrrdaj78" path="res://assets/Minijuegos/corazon_lleno.png" id="5_bnn3a"]
+[ext_resource type="PackedScene" uid="uid://cxen46cihdm8p" path="res://Escenas/Minijuegos/PizarraBorrador.tscn" id="9_ik65c"]
+[ext_resource type="Texture2D" uid="uid://dky0pc1mfk1o4" path="res://assets/Minijuegos/minijuego Laboratorio/Cuaderno.png" id="10_bml6o"]
 
 [node name="MinijuegoAsteroides" type="Node2D" unique_id=1267125036]
 script = ExtResource("1_710gb")
@@ -79,6 +81,22 @@ texture = ExtResource("5_bnn3a")
 [node name="LabelAciertos" type="Label" parent="CanvasLayer" unique_id=1430017248]
 offset_right = 40.0
 offset_bottom = 23.0
+
+[node name="PizarraBorrador" parent="CanvasLayer" unique_id=1405660719 instance=ExtResource("9_ik65c")]
+
+[node name="BotonBorradorRaiz" type="TextureButton" parent="CanvasLayer" unique_id=1608155105]
+anchors_preset = 6
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -124.0
+offset_top = 46.0
+offset_right = -19.0
+offset_bottom = 153.0
+grow_horizontal = 0
+grow_vertical = 2
+texture_normal = ExtResource("10_bml6o")
 
 [node name="Timer" type="Timer" parent="." unique_id=1738231467]
 wait_time = 1.5

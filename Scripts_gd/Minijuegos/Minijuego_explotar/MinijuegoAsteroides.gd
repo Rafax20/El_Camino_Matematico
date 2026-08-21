@@ -13,6 +13,7 @@ signal minijuego_finalizado(es_correcto)
 @onready var Fondo = $CanvasLayer
 @onready var contenedor_corazones = $CanvasLayer/ContenedorCorazones
 @onready var label_aciertos = $CanvasLayer/LabelAciertos
+@onready var pizarra_borrador = $CanvasLayer/PizarraBorrador if has_node("CanvasLayer/PizarraBorrador") else null
 
 var textura_corazon_lleno = preload("res://assets/Minijuegos/corazon_lleno.png")
 var textura_corazon_vacio = preload("res://assets/Minijuegos/corazon_vacio.png")
@@ -84,7 +85,7 @@ func _formatear_operacion(texto_raw: String) -> String:
 	texto_limpio = texto_limpio.replace(" mas ", " + ")
 	texto_limpio = texto_limpio.replace(" más ", " + ")
 	texto_limpio = texto_limpio.replace(" menos ", " - ")
-	texto_limpio = texto_limpio.replace(" entre ", " ÷ ")
+	texto_limpio = texto_limpio.replace(" dividido en ", " ÷ ")
 	
 	if not texto_limpio.ends_with("="):
 		texto_limpio += " = ?"
@@ -231,7 +232,17 @@ func _finalizar_juego(es_exito: bool):
 	juego_activo = false
 	if timer_spawn: timer_spawn.stop()
 	_limpiar_asteroides_pantalla()
+	if pizarra_borrador and pizarra_borrador.has_method("ocultar_pizarra"):
+		pizarra_borrador.ocultar_pizarra()
 	visible = false
 	minijuego_finalizado.emit(es_exito)
 	await get_tree().create_timer(2.0).timeout
 	Fondo.visible = false
+	
+
+func AbrirCerrar_Pizarra():
+	if pizarra_borrador and pizarra_borrador.has_method("toggle_pizarra"):
+		#if esta_expandido:
+			#minimizar_panel()
+		pizarra_borrador.toggle_pizarra()
+		pizarra_borrador.z_index = 20

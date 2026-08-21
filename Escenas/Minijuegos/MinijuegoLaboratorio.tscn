@@ -4,20 +4,33 @@
 [ext_resource type="Texture2D" uid="uid://craiu6a1fshom" path="res://assets/Minijuegos/minijuego Laboratorio/Fondo_Mercado.png" id="2_67c37"]
 [ext_resource type="Texture2D" uid="uid://bto4byrrdaj78" path="res://assets/Minijuegos/corazon_lleno.png" id="3_67c37"]
 [ext_resource type="Texture2D" uid="uid://bu0451xaiue4q" path="res://assets/Minijuegos/minijuego Laboratorio/Mesa_Mercado.png" id="3_cb6m8"]
-[ext_resource type="Script" uid="uid://cxjflfqxxcab8" path="res://Scripts_gd/Minijuegos/Minijuego_laboratorio/PizarraDibujo.gd" id="5_h3hii"]
+[ext_resource type="Texture2D" uid="uid://bdrxawhcw6n7u" path="res://assets/Imagenes/Check_pequeno.png" id="5_3k070"]
+[ext_resource type="PackedScene" uid="uid://cxen46cihdm8p" path="res://Escenas/Minijuegos/PizarraBorrador.tscn" id="6_3k070"]
+[ext_resource type="Texture2D" uid="uid://dgooxjfmlr237" path="res://assets/Imagenes/Tubito.png" id="7_82cgg"]
+[ext_resource type="Texture2D" uid="uid://dky0pc1mfk1o4" path="res://assets/Minijuegos/minijuego Laboratorio/Cuaderno.png" id="7_s3hdy"]
+[ext_resource type="FontFile" uid="uid://cvwfc51hrkou3" path="res://Fuentes/Fredoka/static/Fredoka-Bold.ttf" id="8_lv7l5"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_h3hii"]
 content_margin_left = 16.0
 content_margin_top = 10.0
 content_margin_right = 16.0
 content_margin_bottom = 10.0
-corner_radius_top_left = 15
-corner_radius_top_right = 15
-corner_radius_bottom_right = 15
-corner_radius_bottom_left = 15
+bg_color = Color(0.6, 0.6, 0.6, 0.654902)
+corner_radius_top_left = 20
+corner_radius_top_right = 20
+corner_radius_bottom_right = 20
+corner_radius_bottom_left = 20
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_vxd3n"]
+bg_color = Color(0.6, 0.6, 0.6, 0.7647059)
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_h3hii"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_s3hdy"]
+bg_color = Color(0.6, 0.6, 0.6, 0.14117648)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_3k070"]
-bg_color = Color(0.79607844, 0.8509804, 0.8392157, 1)
+bg_color = Color(0.6, 0.6, 0.6, 0.15686275)
 
 [node name="MinijuegoLaboratorio" type="Control" unique_id=479700857]
 layout_mode = 3
@@ -37,8 +50,9 @@ texture = ExtResource("2_67c37")
 
 [node name="ClienteAlien" type="TextureRect" parent="." unique_id=1901642834]
 layout_mode = 0
-offset_right = 40.0
-offset_bottom = 40.0
+offset_left = 500.0
+offset_right = 768.0
+offset_bottom = 588.0
 
 [node name="Mesa" type="TextureRect" parent="." unique_id=1001070745]
 layout_mode = 0
@@ -67,7 +81,7 @@ autowrap_mode = 2
 
 [node name="UIHeader" type="CanvasLayer" parent="." unique_id=401165314]
 
-[node name="GemasLabel" type="Label" parent="UIHeader" unique_id=472818090]
+[node name="AciertosLabel" type="Label" parent="UIHeader" unique_id=472818090]
 offset_right = 40.0
 offset_bottom = 23.0
 
@@ -96,6 +110,7 @@ layout_mode = 2
 texture = ExtResource("3_67c37")
 
 [node name="PanelOperacion" type="Panel" parent="." unique_id=596744303]
+visible = false
 custom_minimum_size = Vector2(200, 120)
 layout_mode = 1
 anchors_preset = 8
@@ -103,137 +118,289 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = 142.0
+offset_left = 143.0
 offset_top = 93.0
-offset_right = 345.0
-offset_bottom = 217.0
+offset_right = 351.0
+offset_bottom = 216.0
 grow_horizontal = 2
 grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_vxd3n")
 
-[node name="Label" type="Label" parent="PanelOperacion" unique_id=2071968450]
-layout_mode = 0
-offset_right = 40.0
-offset_bottom = 23.0
-
-[node name="FilaBase" type="HBoxContainer" parent="PanelOperacion" unique_id=574405446]
-layout_mode = 0
-offset_right = 40.0
-offset_bottom = 40.0
-
-[node name="Label" type="Label" parent="PanelOperacion/FilaBase" unique_id=57448131]
-layout_mode = 2
-
-[node name="TextureRect" type="TextureRect" parent="PanelOperacion/FilaBase" unique_id=522990979]
-layout_mode = 2
-
-[node name="Label2" type="Label" parent="PanelOperacion/FilaBase" unique_id=1875063712]
-layout_mode = 2
-
-[node name="TextureRect3" type="TextureRect" parent="PanelOperacion/FilaBase" unique_id=1428135064]
-layout_mode = 2
-
-[node name="Label3" type="Label" parent="PanelOperacion/FilaBase" unique_id=411866933]
-layout_mode = 2
-
-[node name="TextureRect2" type="TextureRect" parent="PanelOperacion/FilaBase" unique_id=1221469339]
-layout_mode = 2
-
-[node name="Label4" type="Label" parent="PanelOperacion/FilaBase" unique_id=1303969141]
-layout_mode = 2
-
-[node name="FilaIncognita" type="HBoxContainer" parent="PanelOperacion" unique_id=1197187980]
-layout_mode = 0
-offset_right = 40.0
-offset_bottom = 40.0
-
-[node name="Label" type="Label" parent="PanelOperacion/FilaIncognita" unique_id=1509028326]
-layout_mode = 2
-
-[node name="TextureRect" type="TextureRect" parent="PanelOperacion/FilaIncognita" unique_id=29811000]
-layout_mode = 2
-
-[node name="Label2" type="Label" parent="PanelOperacion/FilaIncognita" unique_id=388645934]
-layout_mode = 2
-
-[node name="TextureRect3" type="TextureRect" parent="PanelOperacion/FilaIncognita" unique_id=373758832]
-layout_mode = 2
-
-[node name="ContenedorCasillas" type="HBoxContainer" parent="PanelOperacion/FilaIncognita" unique_id=2137936260]
-layout_mode = 2
-
-[node name="Label3" type="Label" parent="PanelOperacion/FilaIncognita" unique_id=211194844]
-layout_mode = 2
-
-[node name="Button" type="Button" parent="PanelOperacion" unique_id=1675415208]
-layout_mode = 0
-offset_right = 8.0
-offset_bottom = 8.0
-
-[node name="ContenedorFichas" type="GridContainer" parent="." unique_id=1015560972]
+[node name="BotonPantalla" type="Button" parent="PanelOperacion" unique_id=1675415208]
 layout_mode = 1
-anchors_preset = 12
-anchor_top = 1.0
+anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+offset_right = 2.0
 grow_horizontal = 2
-grow_vertical = 0
-columns = 4
+grow_vertical = 2
+theme_override_styles/normal = SubResource("StyleBoxEmpty_h3hii")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_s3hdy")
+theme_override_styles/hover = SubResource("StyleBoxFlat_3k070")
 
-[node name="PistasHelper" type="Control" parent="." unique_id=696091568]
-anchors_preset = 0
-offset_right = 40.0
-offset_bottom = 40.0
-
-[node name="PizarraBorrador" type="Control" parent="." unique_id=570132978]
+[node name="MarginContainer" type="MarginContainer" parent="PanelOperacion" unique_id=1536703078]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-mouse_filter = 1
+mouse_filter = 2
+theme_override_constants/margin_left = 5
+theme_override_constants/margin_right = 8
 
-[node name="PanelFondo" type="Panel" parent="PizarraBorrador" unique_id=2064927198]
+[node name="VBoxContainer" type="VBoxContainer" parent="PanelOperacion/MarginContainer" unique_id=1696696794]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 8
+
+[node name="Titulo" type="Label" parent="PanelOperacion/MarginContainer/VBoxContainer" unique_id=2071968450]
+layout_mode = 2
+horizontal_alignment = 1
+
+[node name="FilaBase" type="HBoxContainer" parent="PanelOperacion/MarginContainer/VBoxContainer" unique_id=574405446]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 2
+
+[node name="Icono Objeto A" type="TextureRect" parent="PanelOperacion/MarginContainer/VBoxContainer/FilaBase" unique_id=1428135064]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="Cantidad A1" type="Label" parent="PanelOperacion/MarginContainer/VBoxContainer/FilaBase" unique_id=1875063712]
+custom_minimum_size = Vector2(60, 0)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_font_sizes/font_size = 9
+text = "Cantidad A1"
+vertical_alignment = 1
+
+[node name="Texto ➜" type="Label" parent="PanelOperacion/MarginContainer/VBoxContainer/FilaBase" unique_id=411866933]
+custom_minimum_size = Vector2(12, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 9
+text = "➜"
+
+[node name="Icono Objeto B" type="TextureRect" parent="PanelOperacion/MarginContainer/VBoxContainer/FilaBase" unique_id=1221469339]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="Cantidad B1" type="Label" parent="PanelOperacion/MarginContainer/VBoxContainer/FilaBase" unique_id=1303969141]
+layout_mode = 2
+theme_override_font_sizes/font_size = 9
+text = "Cantidad B1"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="FilaIncognita" type="HBoxContainer" parent="PanelOperacion/MarginContainer/VBoxContainer" unique_id=1197187980]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 2
+
+[node name="TextureRect" type="TextureRect" parent="PanelOperacion/MarginContainer/VBoxContainer/FilaIncognita" unique_id=29811000]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="Cantidad A2" type="Label" parent="PanelOperacion/MarginContainer/VBoxContainer/FilaIncognita" unique_id=1509028326]
+custom_minimum_size = Vector2(60, 0)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_font_sizes/font_size = 9
+text = "Cantidad A2"
+vertical_alignment = 1
+autowrap_mode = 2
+
+[node name="Texto ➜" type="Label" parent="PanelOperacion/MarginContainer/VBoxContainer/FilaIncognita" unique_id=388645934]
+custom_minimum_size = Vector2(12, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 9
+text = "➜"
+
+[node name="ContenedorCasillas" type="HBoxContainer" parent="PanelOperacion/MarginContainer/VBoxContainer/FilaIncognita" unique_id=2137936260]
+layout_mode = 2
+size_flags_horizontal = 4
+mouse_filter = 0
+
+[node name="Nombre del Objeto B" type="Label" parent="PanelOperacion/MarginContainer/VBoxContainer/FilaIncognita" unique_id=211194844]
+custom_minimum_size = Vector2(70, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 9
+text = "Cantidad B2"
+autowrap_mode = 2
+
+[node name="ContenedorFichas" type="GridContainer" parent="." unique_id=1015560972]
+visible = false
+layout_mode = 0
+theme_override_constants/h_separation = 4
+theme_override_constants/v_separation = 4
+columns = 5
+
+[node name="BotonEnviarOK" type="Button" parent="." unique_id=209871745]
+layout_mode = 0
+offset_left = 895.0
+offset_top = 606.0
+offset_right = 949.0
+offset_bottom = 637.0
+text = "Ok"
+icon = ExtResource("5_3k070")
+
+[node name="PistasHelper" type="Control" parent="." unique_id=696091568]
+visible = false
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="PanelGrande" type="Panel" parent="." unique_id=1562295549]
+custom_minimum_size = Vector2(800, 400)
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -200.0
-offset_top = -150.0
-offset_right = 200.0
-offset_bottom = 150.0
+offset_left = -106.5
+offset_top = -61.5
+offset_right = 106.5
+offset_bottom = 61.5
 grow_horizontal = 2
 grow_vertical = 2
-mouse_filter = 1
-theme_override_styles/panel = SubResource("StyleBoxFlat_3k070")
+theme_override_styles/panel = SubResource("StyleBoxFlat_vxd3n")
 
-[node name="BtnBorrar" type="Button" parent="PizarraBorrador" unique_id=61690654]
-layout_mode = 0
-offset_right = 8.0
-offset_bottom = 8.0
-text = "Borrar"
-
-[node name="BtnCerrar" type="Button" parent="PizarraBorrador" unique_id=567408569]
-layout_mode = 0
-offset_right = 8.0
-offset_bottom = 8.0
-text = "Cerrar"
-
-[node name="LienzoDibujo" type="Control" parent="PizarraBorrador" unique_id=963923440]
+[node name="BotonPantalla" type="Button" parent="PanelGrande" unique_id=906378461]
 layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -200.0
-offset_top = -150.0
-offset_right = 200.0
-offset_bottom = 150.0
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = 2.0
 grow_horizontal = 2
 grow_vertical = 2
-script = ExtResource("5_h3hii")
+theme_override_styles/normal = SubResource("StyleBoxEmpty_h3hii")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_s3hdy")
+theme_override_styles/hover = SubResource("StyleBoxFlat_3k070")
+
+[node name="MarginContainer" type="MarginContainer" parent="PanelGrande" unique_id=457364847]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="VBoxContainer" type="VBoxContainer" parent="PanelGrande/MarginContainer" unique_id=1588392759]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 56
+
+[node name="Titulo_Icono" type="HBoxContainer" parent="PanelGrande/MarginContainer/VBoxContainer" unique_id=1600784960]
+layout_mode = 2
+theme_override_constants/separation = 20
+alignment = 1
+
+[node name="Icono" type="TextureRect" parent="PanelGrande/MarginContainer/VBoxContainer/Titulo_Icono" unique_id=10544145]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+texture = ExtResource("7_82cgg")
+expand_mode = 1
+
+[node name="Titulo" type="Label" parent="PanelGrande/MarginContainer/VBoxContainer/Titulo_Icono" unique_id=696829149]
+layout_mode = 2
+theme_override_constants/outline_size = 3
+theme_override_fonts/font = ExtResource("8_lv7l5")
+theme_override_font_sizes/font_size = 45
+text = "Mercado Intergaláctico "
+
+[node name="FilaBase" type="HBoxContainer" parent="PanelGrande/MarginContainer/VBoxContainer" unique_id=2062308622]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 6
+alignment = 1
+
+[node name="Cantidad A1" type="Label" parent="PanelGrande/MarginContainer/VBoxContainer/FilaBase" unique_id=1600102714]
+layout_mode = 2
+theme_override_constants/outline_size = 3
+theme_override_fonts/font = ExtResource("8_lv7l5")
+theme_override_font_sizes/font_size = 29
+text = "Cantidad A1"
+horizontal_alignment = 1
+
+[node name="Icono Objeto A" type="TextureRect" parent="PanelGrande/MarginContainer/VBoxContainer/FilaBase" unique_id=1174726496]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="Texto ➜" type="Label" parent="PanelGrande/MarginContainer/VBoxContainer/FilaBase" unique_id=1748339537]
+layout_mode = 2
+theme_override_constants/outline_size = 3
+theme_override_font_sizes/font_size = 29
+text = "➜"
+
+[node name="Icono Objeto B" type="TextureRect" parent="PanelGrande/MarginContainer/VBoxContainer/FilaBase" unique_id=1235359327]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="Cantidad B1" type="Label" parent="PanelGrande/MarginContainer/VBoxContainer/FilaBase" unique_id=738952484]
+layout_mode = 2
+theme_override_constants/outline_size = 3
+theme_override_fonts/font = ExtResource("8_lv7l5")
+theme_override_font_sizes/font_size = 30
+text = "Cantidad B1"
+
+[node name="FilaIncognita" type="HBoxContainer" parent="PanelGrande/MarginContainer/VBoxContainer" unique_id=610619304]
+layout_mode = 2
+theme_override_constants/separation = 6
+alignment = 1
+
+[node name="Cantidad A2" type="Label" parent="PanelGrande/MarginContainer/VBoxContainer/FilaIncognita" unique_id=1946245783]
+layout_mode = 2
+theme_override_constants/outline_size = 3
+theme_override_fonts/font = ExtResource("8_lv7l5")
+theme_override_font_sizes/font_size = 30
+text = "Cantidad A2"
+
+[node name="TextureRect" type="TextureRect" parent="PanelGrande/MarginContainer/VBoxContainer/FilaIncognita" unique_id=1319438133]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="Texto ➜" type="Label" parent="PanelGrande/MarginContainer/VBoxContainer/FilaIncognita" unique_id=1638057034]
+layout_mode = 2
+theme_override_constants/outline_size = 3
+theme_override_font_sizes/font_size = 29
+text = "➜"
+
+[node name="ContenedorCasillas" type="HBoxContainer" parent="PanelGrande/MarginContainer/VBoxContainer/FilaIncognita" unique_id=794574097]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="Nombre del Objeto B" type="Label" parent="PanelGrande/MarginContainer/VBoxContainer/FilaIncognita" unique_id=244742114]
+layout_mode = 2
+theme_override_constants/outline_size = 3
+theme_override_fonts/font = ExtResource("8_lv7l5")
+theme_override_font_sizes/font_size = 30
+text = "Cantidad B2"
+
+[node name="PizarraBorrador" parent="." unique_id=1405660719 instance=ExtResource("6_3k070")]
+visible = false
+layout_mode = 1
+
+[node name="BotonBorradorRaiz" type="TextureButton" parent="." unique_id=1614043530]
+layout_mode = 1
+anchors_preset = 6
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -124.0
+offset_top = 46.0
+offset_right = -19.0
+offset_bottom = 153.0
+grow_horizontal = 0
+grow_vertical = 2
+texture_normal = ExtResource("7_s3hdy")
 
 [node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="." unique_id=299627950]
+
+[connection signal="pressed" from="BotonBorradorRaiz" to="." method="AbrirCerrar_Pizarra"]
