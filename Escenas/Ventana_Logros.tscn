@@ -1,0 +1,82 @@
+[gd_scene format=3 uid="uid://cr2yiblxmppsi"]
+
+[ext_resource type="FontFile" uid="uid://cvwfc51hrkou3" path="res://Fuentes/Fredoka/static/Fredoka-Bold.ttf" id="1_cpqny"]
+[ext_resource type="Script" uid="uid://m6omux1geev8" path="res://Scripts_gd/VentanaLogros.gd" id="1_vvm1k"]
+[ext_resource type="Texture2D" uid="uid://ccoy18qd75klo" path="res://assets/Interfaz_Logros/Ver_Logros.png" id="3_vvm1k"]
+[ext_resource type="Texture2D" uid="uid://423g6orqhcoy" path="res://assets/Interfaz_Logros/Ver_Logros_Presionado.png" id="4_b16q3"]
+[ext_resource type="Texture2D" uid="uid://dkliv5iw7tk3a" path="res://assets/Interfaz_Logros/Ver_Album.png" id="5_8xi0n"]
+[ext_resource type="Texture2D" uid="uid://do4xc2ec2is71" path="res://assets/Interfaz_Login/Boton_X.png" id="6_jp6bv"]
+[ext_resource type="Texture2D" uid="uid://ouch7n3h1sy6" path="res://assets/Interfaz_Logros/Ver_Album_Presionado.png" id="6_lpfcy"]
+[ext_resource type="Texture2D" uid="uid://3p2biq4ud0vf" path="res://assets/Interfaz_Login/Boton_X_Presionado.png" id="7_vcjru"]
+
+[node name="Ventana_Logros" type="Control" unique_id=964414660]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_vvm1k")
+
+[node name="ColorRect" type="ColorRect" parent="." unique_id=1745793030]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.58431375)
+
+[node name="PanelMarco" type="PanelContainer" parent="." unique_id=874037180]
+custom_minimum_size = Vector2(800, 500)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -400.0
+offset_top = -250.0
+offset_right = 400.0
+offset_bottom = 250.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="PanelMarco" unique_id=162355138]
+layout_mode = 2
+
+[node name="Titulo" type="Label" parent="PanelMarco/VBoxContainer" unique_id=1908824311]
+layout_mode = 2
+theme_override_constants/outline_size = 5
+theme_override_fonts/font = ExtResource("1_cpqny")
+theme_override_font_sizes/font_size = 30
+text = "¿QUE DESEAS VER?"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="HSeparator" type="HSeparator" parent="PanelMarco/VBoxContainer" unique_id=776933045]
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="PanelMarco/VBoxContainer" unique_id=577886216]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="BtnLogrosTablero" type="TextureButton" parent="PanelMarco/VBoxContainer/HBoxContainer" unique_id=491321722]
+custom_minimum_size = Vector2(220, 120)
+layout_mode = 2
+texture_normal = ExtResource("3_vvm1k")
+texture_pressed = ExtResource("4_b16q3")
+
+[node name="BtnAlbum" type="TextureButton" parent="PanelMarco/VBoxContainer/HBoxContainer" unique_id=1489919714]
+custom_minimum_size = Vector2(220, 120)
+layout_mode = 2
+size_flags_horizontal = 10
+texture_normal = ExtResource("5_8xi0n")
+texture_pressed = ExtResource("6_lpfcy")
+
+[node name="BtnCerrar" type="TextureButton" parent="." unique_id=442102589]
+layout_mode = 0
+offset_right = 100.0
+offset_bottom = 100.0
+texture_normal = ExtResource("6_jp6bv")
+texture_pressed = ExtResource("7_vcjru")

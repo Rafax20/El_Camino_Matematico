@@ -13,6 +13,8 @@
 [ext_resource type="Texture2D" uid="uid://bgldlwytwfean" path="res://assets/Interfaz_Menu/Boton_Instrucciones.png" id="9_bcw8w"]
 [ext_resource type="Texture2D" uid="uid://db6fk04h4y028" path="res://assets/Interfaz_Menu/Logros_Hover.png" id="9_ik8kc"]
 [ext_resource type="Texture2D" uid="uid://b5egvgrk63pp3" path="res://assets/Interfaz_Menu/Boton_Instrucciones_Presionado.png" id="11_27k2t"]
+[ext_resource type="PackedScene" uid="uid://boi5qwn0bht71" path="res://Escenas/Ventana_Como_Jugar.tscn" id="14_27k2t"]
+[ext_resource type="PackedScene" uid="uid://cr2yiblxmppsi" path="res://Escenas/Ventana_Logros.tscn" id="15_5c8jm"]
 
 [node name="Node2D" type="Node2D" unique_id=1460850462]
 script = ExtResource("1_o2l53")
@@ -147,6 +149,19 @@ offset_left = -1293.2961
 offset_top = -335.25693
 offset_right = -66.31622
 offset_bottom = -449.38705
+
+[node name="VentanaComoJugar" parent="CanvasLayer/Menu" unique_id=1066670103 instance=ExtResource("14_27k2t")]
+visible = false
+offset_left = -687.9999
+offset_top = -383.99994
+offset_right = -687.9999
+offset_bottom = -383.99994
+
+[node name="Ventana_Logros" parent="CanvasLayer/Menu" unique_id=964414660 instance=ExtResource("15_5c8jm")]
+offset_left = -687.9999
+offset_top = -383.99994
+offset_right = -688.0
+offset_bottom = -384.00012
 
 [node name="HTTPRequest" type="HTTPRequest" parent="." unique_id=983556898]
 

@@ -12,7 +12,7 @@ extends Node2D
 @onready var minijuego_buscador = $MinijuegoBuscador
 @onready var minijuego_laboratorio = $CapaMinijuegos/MinijuegoLaboratorio
 
-var total_casillas = 30
+var total_casillas = 29
 var casilla_actual = 0
 var casilla_anterior = 0
 
@@ -24,36 +24,35 @@ var pregunta_actual: Dictionary = {}
 
 # Valor: Diccionario con su ratio del Path2D y el tipo de evento
 var mapa_casillas: Dictionary = {
-	1:  {"ratio": 0.037, "tipo": "asteroides"},
+	1:  {"ratio": 0.039, "tipo": "asteroides"},
 	2:  {"ratio": 0.078, "tipo": "buscador_cajas"},
-	3:  {"ratio": 0.106, "tipo": "laboratorio"},
-	4:  {"ratio": 0.132, "tipo": "asteroides"},
-	5:  {"ratio": 0.164, "tipo": "buscador_cajas"},
-	6:  {"ratio": 0.194, "tipo": "laboratorio"},
-	7:  {"ratio": 0.232, "tipo": "asteroides"},
-	8:  {"ratio": 0.276, "tipo": "buscador_cajas"},
-	9:  {"ratio": 0.314, "tipo": "laboratorio"},
-	10: {"ratio": 0.345, "tipo": "asteroides"},
-	11: {"ratio": 0.376, "tipo": "buscador_cajas"},
-	12: {"ratio": 0.406, "tipo": "laboratorio"},
-	13: {"ratio": 0.445, "tipo": "asteroides"},
-	14: {"ratio": 0.475, "tipo": "buscador_cajas"},
-	15: {"ratio": 0.510, "tipo": "laboratorio"},
-	16: {"ratio": 0.551, "tipo": "asteroides"},
-	17: {"ratio": 0.594, "tipo": "buscador_cajas"},
-	18: {"ratio": 0.634, "tipo": "laboratorio"},
-	19: {"ratio": 0.660, "tipo": "asteroides"},
-	20: {"ratio": 0.692, "tipo": "buscador_cajas"},
-	21: {"ratio": 0.726, "tipo": "laboratorio"},
-	22: {"ratio": 0.757, "tipo": "asteroides"},
-	23: {"ratio": 0.789, "tipo": "buscador_cajas"},
-	24: {"ratio": 0.825, "tipo": "laboratorio"},
-	25: {"ratio": 0.860, "tipo": "asteroides"},
-	26: {"ratio": 0.894, "tipo": "buscador_cajas"},
-	27: {"ratio": 0.917, "tipo": "laboratorio"},
-	28: {"ratio": 0.944, "tipo": "asteroides"},
-	29: {"ratio": 0.972, "tipo": "buscador_cajas"},
-	30: {"ratio": 1.000, "tipo": "examen"} # Meta final
+	3:  {"ratio": 0.109, "tipo": "laboratorio"},
+	4:  {"ratio": 0.137, "tipo": "asteroides"},
+	5:  {"ratio": 0.174, "tipo": "buscador_cajas"},
+	6:  {"ratio": 0.205, "tipo": "laboratorio"},
+	7:  {"ratio": 0.245, "tipo": "asteroides"},
+	8:  {"ratio": 0.284, "tipo": "buscador_cajas"},
+	9:  {"ratio": 0.325, "tipo": "laboratorio"},
+	10: {"ratio": 0.364, "tipo": "asteroides"},
+	11: {"ratio": 0.395, "tipo": "buscador_cajas"},
+	12: {"ratio": 0.426, "tipo": "laboratorio"},
+	13: {"ratio": 0.465, "tipo": "asteroides"},
+	14: {"ratio": 0.504, "tipo": "buscador_cajas"},
+	15: {"ratio": 0.535, "tipo": "laboratorio"},
+	16: {"ratio": 0.58, "tipo": "asteroides"},
+	17: {"ratio": 0.624, "tipo": "buscador_cajas"},
+	18: {"ratio": 0.657, "tipo": "laboratorio"},
+	19: {"ratio": 0.688, "tipo": "asteroides"},
+	20: {"ratio": 0.719, "tipo": "buscador_cajas"},
+	21: {"ratio": 0.758, "tipo": "laboratorio"},
+	22: {"ratio": 0.789, "tipo": "asteroides"},
+	23: {"ratio": 0.828, "tipo": "buscador_cajas"},
+	24: {"ratio": 0.865, "tipo": "laboratorio"},
+	25: {"ratio": 0.89, "tipo": "asteroides"},
+	26: {"ratio": 0.917, "tipo": "buscador_cajas"},
+	27: {"ratio": 0.943, "tipo": "laboratorio"},
+	28: {"ratio": 0.974, "tipo": "asteroides"},
+	29: {"ratio": 1.000, "tipo": "examen"} # Meta final
 }
 
 

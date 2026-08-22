@@ -1,0 +1,82 @@
+[gd_scene format=3 uid="uid://boi5qwn0bht71"]
+
+[ext_resource type="Script" uid="uid://2ohdyqr0i3fy" path="res://Scripts_gd/VentanaComoJugar.gd" id="1_m1j33"]
+[ext_resource type="Texture2D" uid="uid://do4xc2ec2is71" path="res://assets/Interfaz_Login/Boton_X.png" id="2_8m0r2"]
+[ext_resource type="FontFile" uid="uid://cvwfc51hrkou3" path="res://Fuentes/Fredoka/static/Fredoka-Bold.ttf" id="2_qfa5y"]
+[ext_resource type="Texture2D" uid="uid://3p2biq4ud0vf" path="res://assets/Interfaz_Login/Boton_X_Presionado.png" id="3_echjq"]
+[ext_resource type="Texture2D" uid="uid://rc7grr3egmod" path="res://assets/Interfaz_Como_Jugar/Ver_Tutoriales.png" id="3_njfc0"]
+[ext_resource type="Texture2D" uid="uid://uid0yji57t8k" path="res://assets/Interfaz_Como_Jugar/Ver_Tutoriales_Presionado.png" id="4_jvy6y"]
+[ext_resource type="Texture2D" uid="uid://cd6e3phv1v32q" path="res://assets/Interfaz_Como_Jugar/ChatBox.png" id="5_vmr0c"]
+[ext_resource type="Texture2D" uid="uid://djxl7ehfihkyc" path="res://assets/Interfaz_Como_Jugar/ChatBox_Presionado.png" id="6_ahmnm"]
+
+[node name="VentanaComoJugar" type="Control" unique_id=1066670103]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_m1j33")
+
+[node name="ColorRect" type="ColorRect" parent="." unique_id=1068986527]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.58431375)
+
+[node name="PanelMarco" type="PanelContainer" parent="." unique_id=1223764361]
+custom_minimum_size = Vector2(800, 500)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -400.0
+offset_top = -250.0
+offset_right = 400.0
+offset_bottom = 250.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="PanelMarco" unique_id=2020982391]
+layout_mode = 2
+
+[node name="Titulo" type="Label" parent="PanelMarco/VBoxContainer" unique_id=1833341662]
+layout_mode = 2
+theme_override_constants/outline_size = 5
+theme_override_fonts/font = ExtResource("2_qfa5y")
+theme_override_font_sizes/font_size = 30
+text = "¿COMO QUIERES APRENDER?"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="HSeparator" type="HSeparator" parent="PanelMarco/VBoxContainer" unique_id=2066950343]
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="PanelMarco/VBoxContainer" unique_id=1487698883]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="BtnTutoriales" type="TextureButton" parent="PanelMarco/VBoxContainer/HBoxContainer" unique_id=998698309]
+custom_minimum_size = Vector2(220, 120)
+layout_mode = 2
+texture_normal = ExtResource("3_njfc0")
+texture_pressed = ExtResource("4_jvy6y")
+
+[node name="BtnChatbot" type="TextureButton" parent="PanelMarco/VBoxContainer/HBoxContainer" unique_id=279768437]
+custom_minimum_size = Vector2(220, 120)
+layout_mode = 2
+size_flags_horizontal = 10
+texture_normal = ExtResource("5_vmr0c")
+texture_pressed = ExtResource("6_ahmnm")
+
+[node name="BtnCerrar" type="TextureButton" parent="." unique_id=126383276]
+layout_mode = 1
+offset_right = 100.0
+offset_bottom = 100.0
+texture_normal = ExtResource("2_8m0r2")
+texture_pressed = ExtResource("3_echjq")

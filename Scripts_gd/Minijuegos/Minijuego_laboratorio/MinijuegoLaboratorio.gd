@@ -3,24 +3,27 @@ extends Control
 # --- CONFIGURACIÓN Y NODOS UI ---
 @export var OFFSET_Y_GLOBAL: float = 60.0
 
-@onready var cliente_alien: TextureRect = $ClienteAlien
-@onready var globo_dialogo: PanelContainer = $GloboDialogo
-@onready var texto_dialogo: Label = $GloboDialogo/TextoDialogo
+@onready var cliente_alien: TextureRect = $MinijuegoCompleto/ClienteAlien
+@onready var globo_dialogo: PanelContainer = $MinijuegoCompleto/GloboDialogo
+@onready var texto_dialogo: Label = $MinijuegoCompleto/GloboDialogo/TextoDialogo
 
 # Nodos de los dos paneles nativos de la escena
-@onready var panel_operacion: Panel = $PanelOperacion
-@onready var panel_grande: Panel = $PanelGrande
+@onready var panel_operacion: Panel = $MinijuegoCompleto/PanelOperacion
+@onready var panel_grande: Panel = $MinijuegoCompleto/PanelGrande
 
-@onready var contenedor_fichas = $ContenedorFichas
-@onready var gemas_label = $UIHeader/AciertosLabel
-@onready var vidas_container = $UIHeader/VidasContainer
-@onready var pizarra_borrador = $PizarraBorrador
-@onready var audio_player: AudioStreamPlayer = $AudioPlayer 
+@onready var contenedor_fichas = $MinijuegoCompleto/ContenedorFichas
+@onready var gemas_label = $MinijuegoCompleto/UIHeader/AciertosLabel
+@onready var vidas_container = $MinijuegoCompleto/UIHeader/VidasContainer
+@onready var pizarra_borrador = $MinijuegoCompleto/PizarraBorrador
+@onready var audio_player: AudioStreamPlayer = $MinijuegoCompleto/AudioPlayer 
+@onready var UI = $MinijuegoCompleto/UIHeader
 
 # Sprites y Texturas
 var textura_corazon_lleno = preload("res://assets/Minijuegos/corazon_lleno.png")
 var textura_corazon_vacio = preload("res://assets/Minijuegos/corazon_vacio.png")
 var Check_Morado = preload("res://assets/Imagenes/Check_pequeno.png")
+var Digito = preload("res://assets/Minijuegos/minijuego Laboratorio/Digito.png")
+var Digito_Presionado = preload("res://assets/Minijuegos/minijuego Laboratorio/Digito_Presionado.png")
 
 var texturas_aliens: Array = [
 	preload("res://assets/Minijuegos/minijuego Laboratorio/Alien1.png"),
@@ -52,13 +55,14 @@ var banco_preguntas: Array = [
 var datos_pregunta_actual: Dictionary = {}
 
 func _ready():
+	$MinijuegoCompleto.visible = false
 	panel_operacion.visible = false
 	if panel_grande:
 		panel_grande.visible = false
 		panel_grande.modulate.a = 0.0
 		
 	globo_dialogo.visible = false
-	$UIHeader.visible = false
+	UI.visible = false
 	
 	# Asegurar que el Botón OK no tape las casillas del panel pequeño
 	if panel_operacion.has_node("BotonPantalla"):
@@ -126,6 +130,7 @@ func _unhandled_input(event: InputEvent):
 
 # --- CARGA Y ACTUALIZACIÓN DE DATOS EN LA ESCENA ---
 func _cargar_nueva_mision(datos: Dictionary):
+	UI.visible = true
 	var a1 = datos.get("cantidad_a1", 2)
 	var b1 = datos.get("cantidad_b1", 8)
 	var a2 = datos.get("cantidad_a2", 5)
@@ -201,16 +206,16 @@ func _sincronizar_casillas():
 
 # --- MÉTODOS COMPLEMENTARIOS Y LÓGICA DE JUEGO ---
 func iniciar_minijuego(tema: String = "espacio"):
+	$MinijuegoCompleto.visible = true
 	visible = true
-	$UIHeader.visible = true
+	UI.visible = true
 	panel_operacion.visible = true
 	panel_operacion.modulate.a = 1.0
 	contenedor_fichas.visible = true
-	if has_node("PistasHelper"):
-		$PistasHelper.visible = true
+	#if has_node("PistasHelper"):
+		#$PistasHelper.visible = true
 	
 	await get_tree().process_frame
-	_posicionar_contenedor_fichas()
 	
 	vidas = 3
 	aciertos = 0
@@ -318,21 +323,53 @@ func alien_atendido_con_exito() -> void:
 	tween_salida.finished.connect(obtener_siguiente_pregunta)
 	tween_salida.finished.connect(iniciar_secuencia_alien)
 
-func _posicionar_contenedor_fichas():
-	if contenedor_fichas:
-		if contenedor_fichas is GridContainer:
-			contenedor_fichas.columns = 5
-		contenedor_fichas.position = Vector2(720, 555)
 
 func _generar_fichas_digitos_combinadas(_respuestas: Array):
 	for child in contenedor_fichas.get_children():
 		child.queue_free()
+	
+	var style_empty = StyleBoxEmpty.new()
+	var offset_arriba: float = -3.0 # Pixeles a subir el Label cuando el botón está suelto
 		
 	for digito in ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]:
-		var btn_ficha = Button.new()
-		btn_ficha.text = digito
-		btn_ficha.custom_minimum_size = Vector2(28, 28)
-		btn_ficha.add_theme_font_size_override("font_size", 12)
+		var btn_ficha = TextureButton.new()
+		btn_ficha.texture_normal = Digito
+		btn_ficha.texture_pressed = Digito_Presionado
+		
+		# --- ESCALADO DE LA TEXTURA ---
+		btn_ficha.custom_minimum_size = Vector2(33, 33)
+		btn_ficha.ignore_texture_size = true
+		btn_ficha.stretch_mode = TextureButton.STRETCH_SCALE
+		
+		# --- CREACIÓN Y CENTRADO DEL LABEL HIJO ---
+		var lbl_digito = Label.new()
+		lbl_digito.text = digito
+		lbl_digito.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		lbl_digito.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+		lbl_digito.add_theme_stylebox_override("normal", style_empty)
+		lbl_digito.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		lbl_digito.set_anchors_preset(Control.PRESET_FULL_RECT)
+		lbl_digito.add_theme_font_size_override("font_size", 14)
+		
+		# Posición inicial: desplazado ligeramente hacia arriba
+		lbl_digito.position.y = offset_arriba
+		
+		# --- EFECTO DE HUNDIMIENTO Y RESTAURACIÓN ---
+		# Función helper para restaurar el estado elevado
+		var restaurar_label = func():
+			lbl_digito.position.y = offset_arriba
+
+		btn_ficha.button_down.connect(func():
+			lbl_digito.position.y = 0.0 # Al presionar, baja al centro perfecto
+		)
+		
+		# Restaura si se suelta el clic o si el cursor sale del botón
+		btn_ficha.button_up.connect(restaurar_label)
+		btn_ficha.mouse_exited.connect(restaurar_label)
+		
+		btn_ficha.add_child(lbl_digito)
+		
+		# --- EVENTO DEL BOTÓN ---
 		var d_val = digito
 		btn_ficha.pressed.connect(func(): _insertar_digito_en_casilla_vacia(d_val))
 		contenedor_fichas.add_child(btn_ficha)

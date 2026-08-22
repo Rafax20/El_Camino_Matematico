@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://cxen46cihdm8p"]
 
 [ext_resource type="Texture2D" uid="uid://do4xc2ec2is71" path="res://assets/Interfaz_Login/Boton_X.png" id="1_0x3qa"]
-[ext_resource type="Script" uid="uid://u8lqpncycdbh" path="res://PizarraBorrador.gd" id="1_1tbb1"]
+[ext_resource type="Script" uid="uid://u8lqpncycdbh" path="res://Scripts_gd/PizarraBorrador.gd" id="1_1tbb1"]
 [ext_resource type="Texture2D" uid="uid://3p2biq4ud0vf" path="res://assets/Interfaz_Login/Boton_X_Presionado.png" id="2_1tbb1"]
 [ext_resource type="Script" uid="uid://cxjflfqxxcab8" path="res://Scripts_gd/Minijuegos/Minijuego_laboratorio/PizarraDibujo.gd" id="3_tyu7l"]
 
@@ -29,7 +29,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0, 0, 0, 0.20392157)
+color = Color(0, 0, 0, 0.25882354)
 
 [node name="MarcoPizarra" type="PanelContainer" parent="." unique_id=848617974]
 layout_mode = 1

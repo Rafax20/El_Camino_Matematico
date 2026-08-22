@@ -2,32 +2,49 @@
 
 [ext_resource type="Script" uid="uid://du4w05cwku584" path="res://Scripts_gd/Minijuegos/Minijuego_oscuras/CajaMatematica.gd" id="1_vhevj"]
 [ext_resource type="Texture2D" uid="uid://hkxpyw8xmqw" path="res://assets/Imagenes/Caja_Fuerte.png" id="2_muno8"]
+[ext_resource type="FontFile" uid="uid://lxqlntkqlcu3" path="res://Fuentes/Press_Start_2P/PressStart2P-Regular.ttf" id="3_i7imc"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_i7imc"]
+size = Vector2(570.2407, 168.96494)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_muno8"]
 size = Vector2(54, 41)
 
 [node name="CajaMatematica" type="Area2D" unique_id=409990104]
+y_sort_enabled = true
 scale = Vector2(2, 2)
 script = ExtResource("1_vhevj")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=385197606]
-position = Vector2(1.66893e-06, -5.499998)
+y_sort_enabled = true
+position = Vector2(0, 15)
 scale = Vector2(0.09294321, 0.06605223)
 texture = ExtResource("2_muno8")
+offset = Vector2(0, -300)
 
 [node name="IndicadorTecla" type="Label" parent="Sprite2D" unique_id=423682819]
+z_index = 2
 anchors_preset = 5
 anchor_left = 0.5
 anchor_right = 0.5
-offset_left = -322.7778
-offset_top = -469.3256
-offset_right = -266.7778
-offset_bottom = -332.3256
+offset_left = -318.5
+offset_top = -845.5
+offset_right = -262.5
+offset_bottom = -708.5
 grow_horizontal = 2
-theme_override_font_sizes/font_size = 100
+theme_override_fonts/font = ExtResource("3_i7imc")
+theme_override_font_sizes/font_size = 130
 text = "E"
 horizontal_alignment = 1
 
+[node name="StaticBody2D" type="StaticBody2D" parent="Sprite2D" unique_id=896657709]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Sprite2D/StaticBody2D" unique_id=374904561]
+position = Vector2(0, -271.29657)
+scale = Vector2(1, 1.0000005)
+shape = SubResource("RectangleShape2D_i7imc")
+
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=183859858]
+visible = false
 position = Vector2(0, -6.5)
 shape = SubResource("RectangleShape2D_muno8")

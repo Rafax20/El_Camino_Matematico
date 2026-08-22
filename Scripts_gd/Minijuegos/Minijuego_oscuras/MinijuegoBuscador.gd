@@ -16,6 +16,8 @@ signal minijuego_finalizado(es_correcto)
 @onready var linea_resta_suma = $HUD/InterfazPregunta/VBoxContainer/PanelOperacion/LineaRestaSuma
 @onready var panel_operacion = $HUD/InterfazPregunta/VBoxContainer/PanelOperacion/TextureRect
 @onready var contenedor_fichas = $HUD/InterfazPregunta/VBoxContainer/ContenedorFichas
+@onready var pizarra_borrador = $HUD/InterfazPregunta/PizarraBorrador
+@onready var controles_tactiles = $ControlesTactiles
 
 @onready var label_gemas = $HUD/LabelGemas
 @onready var contenedor_corazones = $HUD/ContenedorCorazones
@@ -24,7 +26,7 @@ signal minijuego_finalizado(es_correcto)
 @export var escena_caja: PackedScene
 @export var escena_ficha: PackedScene
 @export var escena_casilla_destino: PackedScene
-@export var cantidad_cajas_a_generar: int = 4
+@export var cantidad_cajas_a_generar: int = 5
 
 @onready var puntos_spawn = $Nivel/PuntosSpawn
 @onready var contenedor_cajas = $Nivel/ContenedorCajas
@@ -75,7 +77,8 @@ var OFFSET_Y_GLOBAL: float = 100.0
 const POSICION_INICIAL: Vector2 = Vector2(376, 249)
 
 func _ready():
-	# Si ejecutas la escena del minijuego sola directamente (F6), la iniciamos manualmente
+	_configurar_controles_tactiles()
+	
 	if get_tree().current_scene == self:
 		iniciar_minijuego("espacio")
 
@@ -111,6 +114,8 @@ func iniciar_minijuego(_tema: String = "espacio"):
 	
 	if luz_iluminacion_global:
 		luz_iluminacion_global.color = Color(0.08, 0.08, 0.15, 1.0)
+	
+	_configurar_controles_tactiles()
 
 # Guardamos el tiempo exacto en el que se abre la caja
 var tiempo_inicio_caja: float = 0.0
@@ -783,26 +788,12 @@ func _instanciar_casillas(cant: int, x_base: float, sep_x: float, pos_y: float, 
 		arreglo_casillas.append(nueva_casilla)
 	return arreglo_casillas
 
-func _generar_fichas_digitos_combinadas(respuestas_array: Array):
+func _generar_fichas_digitos_combinadas(_respuestas_array: Array):
 	for child in contenedor_fichas.get_children():
 		child.queue_free()
 		
-	var opciones: Array = []
-	
-	# 1. Insertar obligatoriamente todos los dígitos necesarios para responder
-	for resp in respuestas_array:
-		for ch in str(resp):
-			opciones.append(int(ch))
-			
-	# 2. Rellenar con dígitos aleatorios hasta completar al menos 8 fichas
-	while opciones.size() < 8:
-		opciones.append(randi_range(0, 9))
-			
-	# 3. Mezclar el arreglo
-	opciones.shuffle()
-	
-	# 4. Instanciar en la UI
-	for valor in opciones:
+	# Generar exactamente los números del 0 al 9 en orden constante
+	for valor in range(10):
 		if escena_ficha:
 			var nueva_ficha = escena_ficha.instantiate()
 			contenedor_fichas.add_child(nueva_ficha)
@@ -1048,16 +1039,55 @@ func _crear_digit_prestamo(digito_char: String, pos: Vector2, col_idx: int) -> C
 	return cont
 	
 func generar_cajas_aleatorias():
-	for caja in contenedor_cajas.get_children(): caja.queue_free()
-	var posiciones_disponibles = puntos_spawn.get_children()
-	if posiciones_disponibles.size() == 0 or not escena_caja: return
-	posiciones_disponibles.shuffle()
-	var total_a_crear = mini(cantidad_cajas_a_generar, posiciones_disponibles.size())
+	# 1. Limpiar cajas existentes
+	for caja in contenedor_cajas.get_children():
+		caja.queue_free()
+		
+	if not puntos_spawn or not escena_caja:
+		return
+
+	# 2. Obtener solo los nodos de salas que tengan al menos un Marker2D
+	var salas_disponibles: Array = []
+	for nodo_sala in puntos_spawn.get_children():
+		# Verificar si la sala tiene marcadores válidos adentro
+		var tiene_marcadores = false
+		for hijo in nodo_sala.get_children():
+			if hijo is Marker2D:
+				tiene_marcadores = true
+				break
+		
+		if tiene_marcadores:
+			salas_disponibles.append(nodo_sala)
+
+	if salas_disponibles.is_empty():
+		return
+
+	# 3. Mezclar la lista de salas para asegurar aleatoriedad sin repetir sala
+	salas_disponibles.shuffle()
+
+	# 4. Determinar cuántas cajas se crearán (sin exceder el total de salas disponibles)
+	var total_a_crear = mini(cantidad_cajas_a_generar, salas_disponibles.size())
+
+	# 5. Generar solo 1 caja por cada sala elegida
 	for i in range(total_a_crear):
+		var sala_seleccionada = salas_disponibles[i]
+		
+		# Filtrar los Marker2D dentro de la sala elegida
+		var marcadores_sala: Array = []
+		for hijo in sala_seleccionada.get_children():
+			if hijo is Marker2D:
+				marcadores_sala.append(hijo)
+				
+		# Seleccionar un punto aleatorio dentro de esa sala
+		var marcador_elegido: Marker2D = marcadores_sala.pick_random()
+
+		# Instanciar e insertar en la jerarquía PRIMERO
 		var nueva_caja = escena_caja.instantiate()
-		nueva_caja.position = posiciones_disponibles[i].position
-		nueva_caja.solicitar_operacion.connect(_on_caja_solicitar_operacion)
 		contenedor_cajas.add_child(nueva_caja)
+
+		# Asignar la posición global DESPUÉS de que está en el árbol
+		nueva_caja.global_position = marcador_elegido.global_position
+		nueva_caja.solicitar_operacion.connect(_on_caja_solicitar_operacion)
 
 func _obtener_ancho_panel() -> float:
 	if panel_operacion and panel_operacion.size.x > 50:
@@ -1103,3 +1133,22 @@ func _secuencia_restaurar_energia():
 		label_mensaje.visible = false
 		
 	_finalizar_juego(true)
+
+func AbrirCerrar_Pizarra():
+	if pizarra_borrador and pizarra_borrador.has_method("toggle_pizarra"):
+		#if esta_expandido:
+			#minimizar_panel()
+		pizarra_borrador.toggle_pizarra()
+		pizarra_borrador.z_index = 20
+		
+func _configurar_controles_tactiles():
+	if not controles_tactiles:
+		return
+		
+	# 1. Verificar si el sistema operativo es Android o iOS exclusivamente
+	var es_sistema_movil = OS.get_name() in ["Android", "iOS"]
+	
+	# 2. Alternativa recomendada: Usar una variable global si la tienes en DatosUsuario
+	# var es_sistema_movil = DatosUsuario.modo_tactil # O una opción de configuración
+	
+	controles_tactiles.visible = es_sistema_movil

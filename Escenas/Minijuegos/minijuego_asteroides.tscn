@@ -18,6 +18,7 @@ sonido_tecleo = ExtResource("3_yntrb")
 
 [node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1779273060]
 layer = 5
+visible = false
 
 [node name="Fondo" type="Sprite2D" parent="CanvasLayer" unique_id=1451089409]
 position = Vector2(0.9999981, 2.3841858e-07)
