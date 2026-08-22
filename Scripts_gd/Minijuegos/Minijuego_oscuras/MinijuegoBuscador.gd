@@ -78,7 +78,6 @@ const POSICION_INICIAL: Vector2 = Vector2(376, 249)
 
 func _ready():
 	controles_tactiles.visible = false
-	_configurar_controles_tactiles()
 	
 	if get_tree().current_scene == self:
 		iniciar_minijuego("espacio")

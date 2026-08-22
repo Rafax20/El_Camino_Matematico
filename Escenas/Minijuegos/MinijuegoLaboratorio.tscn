@@ -430,3 +430,6 @@ grow_vertical = 2
 texture_normal = ExtResource("7_s3hdy")
 
 [node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="MinijuegoCompleto" unique_id=295830055]
+
+[connection signal="pressed" from="MinijuegoCompleto/BotonEnviarOK" to="." method="_validar_respuesta"]
+[connection signal="pressed" from="MinijuegoCompleto/BotonBorradorRaiz" to="." method="AbrirCerrar_Pizarra"]
