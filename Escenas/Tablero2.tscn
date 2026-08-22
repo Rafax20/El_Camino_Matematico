@@ -797,6 +797,7 @@ layer = 10
 
 [node name="MinijuegoLaboratorio" parent="CapaMinijuegos" unique_id=479700857 instance=ExtResource("98_2l76i")]
 visible = false
+mouse_filter = 2
 
 [node name="MinijuegoAsteroides" parent="CapaMinijuegos" unique_id=1267125036 instance=ExtResource("73_it4fw")]
 visible = false

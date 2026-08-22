@@ -1145,10 +1145,17 @@ func _configurar_controles_tactiles():
 	if not controles_tactiles:
 		return
 		
-	# 1. Verificar si el sistema operativo es Android o iOS exclusivamente
-	var es_sistema_movil = OS.get_name() in ["Android", "iOS"]
+	var nombre_os = OS.get_name()
+	var es_movil_nativo = nombre_os in ["Android", "iOS"]
 	
-	# 2. Alternativa recomendada: Usar una variable global si la tienes en DatosUsuario
-	# var es_sistema_movil = DatosUsuario.modo_tactil # O una opción de configuración
-	
-	controles_tactiles.visible = es_sistema_movil
+	# Detectar si es exportación Web ejecutada desde pantalla táctil o móvil
+	var es_web_movil = false
+	if nombre_os == "Web" or OS.has_feature("web"):
+		# Usamos la constante del enum DisplayServer.FEATURE_TOUCHSCREEN o la resolución del viewport
+		var tiene_tactil = DisplayServer.has_feature(DisplayServer.FEATURE_TOUCHSCREEN) or DisplayServer.is_touchscreen_available()
+		var es_pantalla_pequena = get_viewport_rect().size.x < 768
+		
+		if tiene_tactil or es_pantalla_pequena:
+			es_web_movil = true
+
+	controles_tactiles.visible = es_movil_nativo or es_web_movil
