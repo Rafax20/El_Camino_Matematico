@@ -99,4 +99,4 @@ func _reiniciar_video():
 		if btn_play_pausa: btn_play_pausa.text = "Pausa"
 
 func _volver_al_menu():
-	NavegacionGlobal.cambiar_escena_con_carga("res://Escenas/menu.tscn")
+	NavegacionGlobal.cambiar_escena_con_carga("res://Escenas/Menu.tscn")

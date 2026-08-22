@@ -77,6 +77,7 @@ var OFFSET_Y_GLOBAL: float = 100.0
 const POSICION_INICIAL: Vector2 = Vector2(376, 249)
 
 func _ready():
+	controles_tactiles.visible = false
 	_configurar_controles_tactiles()
 	
 	if get_tree().current_scene == self:
@@ -796,7 +797,13 @@ func _generar_fichas_digitos_combinadas(_respuestas_array: Array):
 	for valor in range(10):
 		if escena_ficha:
 			var nueva_ficha = escena_ficha.instantiate()
+			
+			# 🎯 Asegurar captura de touch/click en botones instanciados dinámicamente
+			nueva_ficha.mouse_filter = Control.MOUSE_FILTER_STOP
+			nueva_ficha.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+			
 			contenedor_fichas.add_child(nueva_ficha)
+			
 			if nueva_ficha.has_method("configurar"):
 				nueva_ficha.configurar(valor)
 
@@ -1148,14 +1155,15 @@ func _configurar_controles_tactiles():
 	var nombre_os = OS.get_name()
 	var es_movil_nativo = nombre_os in ["Android", "iOS"]
 	
-	# Detectar si es exportación Web ejecutada desde pantalla táctil o móvil
+	# Detectar si el User-Agent del navegador web pertenece a un dispositivo móvil
 	var es_web_movil = false
 	if nombre_os == "Web" or OS.has_feature("web"):
-		# Usamos la constante del enum DisplayServer.FEATURE_TOUCHSCREEN o la resolución del viewport
-		var tiene_tactil = DisplayServer.has_feature(DisplayServer.FEATURE_TOUCHSCREEN) or DisplayServer.is_touchscreen_available()
-		var es_pantalla_pequena = get_viewport_rect().size.x < 768
-		
-		if tiene_tactil or es_pantalla_pequena:
-			es_web_movil = true
+		if JavaScriptBridge:
+			var user_agent = JavaScriptBridge.eval("navigator.userAgent", true)
+			if user_agent != null:
+				var ua_lower = str(user_agent).to_lower()
+				if "android" in ua_lower or "iphone" in ua_lower or "ipad" in ua_lower or "mobile" in ua_lower:
+					es_web_movil = true
+					controles_tactiles.visible = true
 
 	controles_tactiles.visible = es_movil_nativo or es_web_movil
