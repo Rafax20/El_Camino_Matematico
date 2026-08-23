@@ -1154,7 +1154,6 @@ func _configurar_controles_tactiles():
 	var nombre_os = OS.get_name()
 	var es_movil_nativo = nombre_os in ["Android", "iOS"]
 	
-	# Detectar si el User-Agent del navegador web pertenece a un dispositivo móvil
 	var es_web_movil = false
 	if nombre_os == "Web" or OS.has_feature("web"):
 		if JavaScriptBridge:
@@ -1163,6 +1162,11 @@ func _configurar_controles_tactiles():
 				var ua_lower = str(user_agent).to_lower()
 				if "android" in ua_lower or "iphone" in ua_lower or "ipad" in ua_lower or "mobile" in ua_lower:
 					es_web_movil = true
-					controles_tactiles.visible = true
 
-	controles_tactiles.visible = es_movil_nativo or es_web_movil
+	var debe_mostrar_tactil = es_movil_nativo or es_web_movil or DisplayServer.is_touchscreen_available()
+	controles_tactiles.visible = debe_mostrar_tactil
+	
+	# 🔒 Ocultar explícitamente el botón de interacción al arrancar el minijuego
+	var hud_touch = get_tree().get_nodes_in_group("boton_interactuar_touch")
+	if not hud_touch.is_empty():
+		hud_touch[0].visible = false

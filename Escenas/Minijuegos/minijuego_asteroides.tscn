@@ -106,4 +106,5 @@ wait_time = 1.5
 
 [node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="." unique_id=1196542878]
 
+[connection signal="pressed" from="CanvasLayer/BotonBorradorRaiz" to="." method="AbrirCerrar_Pizarra"]
 [connection signal="timeout" from="Timer" to="." method="_on_timer_spawn_timeout"]

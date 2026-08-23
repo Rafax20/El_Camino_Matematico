@@ -6,7 +6,7 @@
 [ext_resource type="Texture2D" uid="uid://koi0nw6y63j6" path="res://assets/Interfaz_Menu/Boton_Jugar.png" id="3_m10g6"]
 [ext_resource type="Texture2D" uid="uid://crdvwp45mjaud" path="res://assets/Interfaz_Menu/Libro.png" id="4_2ahv8"]
 [ext_resource type="Texture2D" uid="uid://c4nlp8upwa24n" path="res://assets/Interfaz_Menu/Libro_Hover.png" id="5_8shpa"]
-[ext_resource type="FontFile" uid="uid://btqpguoupa7eh" path="res://Fredoka-VariableFont_wdth,wght.ttf" id="7_arsku"]
+[ext_resource type="FontFile" uid="uid://btqpguoupa7eh" path="res://Fuentes/Fredoka-VariableFont_wdth,wght.ttf" id="7_arsku"]
 [ext_resource type="FontFile" uid="uid://cvwfc51hrkou3" path="res://Fuentes/Fredoka/static/Fredoka-Bold.ttf" id="8_bcw8w"]
 [ext_resource type="Texture2D" uid="uid://tngpiue2scxd" path="res://assets/Interfaz_Menu/Logros.png" id="8_y57nq"]
 [ext_resource type="Texture2D" uid="uid://bgieuvs7x1834" path="res://assets/Interfaz_Menu/Boton_Jugar_Presionado.png" id="9_27k2t"]

@@ -28,7 +28,7 @@ const VIDEOS_TUTORIALES = {
 @onready var btn_reiniciar: Button = $ReproductorCanvas/ModalVideo/BarraControles/BtnReiniciar
 
 # Botones de la interfaz principal
-@onready var btn_volver: Button = $MarginContainer/VBoxContainerPrincipal/Encabezado/BtnVolver
+@onready var btn_volver: TextureButton = $FondoEscolar/BtnVolver
 @onready var btn_suma: Button = $MarginContainer/VBoxContainerPrincipal/ContenidoDividido/PanelCategorias/BtnSuma
 @onready var btn_resta: Button = $MarginContainer/VBoxContainerPrincipal/ContenidoDividido/PanelCategorias/BtnResta
 @onready var btn_multi: Button = $MarginContainer/VBoxContainerPrincipal/ContenidoDividido/PanelCategorias/BtnMulti

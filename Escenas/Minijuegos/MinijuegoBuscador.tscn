@@ -18715,6 +18715,7 @@ horizontal_alignment = 1
 
 [node name="ControlesTactiles" type="CanvasLayer" parent="." unique_id=5459259]
 layer = 4
+visible = false
 
 [node name="DPad" type="Control" parent="ControlesTactiles" unique_id=1463246004]
 custom_minimum_size = Vector2(0, 90)
@@ -18726,29 +18727,30 @@ anchor_bottom = 1.0
 offset_top = -109.0
 grow_horizontal = 2
 grow_vertical = 0
+mouse_filter = 2
 
 [node name="BtnArriba" type="TouchScreenButton" parent="ControlesTactiles/DPad" unique_id=1318578691]
-position = Vector2(50, 0)
+position = Vector2(70, 0)
 scale = Vector2(0.07, 0.07)
 texture_normal = ExtResource("38_4humt")
 texture_pressed = ExtResource("39_cjkih")
 action = "mover_arriba"
 
 [node name="BtnIzquierda" type="TouchScreenButton" parent="ControlesTactiles/DPad" unique_id=924155521]
-position = Vector2(7, 40)
+position = Vector2(20, 50)
 scale = Vector2(0.07, 0.07)
 texture_normal = ExtResource("38_4humt")
 action = "mover_izquierda"
 
 [node name="BtnAbajo" type="TouchScreenButton" parent="ControlesTactiles/DPad" unique_id=728354194]
-position = Vector2(50, 40)
+position = Vector2(70, 50)
 scale = Vector2(0.07, 0.07)
 texture_normal = ExtResource("38_4humt")
 texture_pressed = ExtResource("39_cjkih")
 action = "mover_abajo"
 
 [node name="BtnDerecha" type="TouchScreenButton" parent="ControlesTactiles/DPad" unique_id=1086068087]
-position = Vector2(93, 40)
+position = Vector2(120, 50)
 scale = Vector2(0.07, 0.07)
 texture_normal = ExtResource("38_4humt")
 texture_pressed = ExtResource("39_cjkih")

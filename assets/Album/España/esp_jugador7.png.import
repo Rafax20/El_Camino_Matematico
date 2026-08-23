@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dtlj45duvsxi7"
-path="res://.godot/imported/Gemini_Generated_Image_3n1e463n1e463n1e.jpg-955b6d436cf3096c373f9c3c0ef53a2b.ctex"
+uid="uid://p460gukx4w1w"
+path="res://.godot/imported/esp_jugador7.png-7c1d878cad65cdc41298f4aee7421894.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/Interfaz_Logros/Gemini_Generated_Image_3n1e463n1e463n1e.jpg"
-dest_files=["res://.godot/imported/Gemini_Generated_Image_3n1e463n1e463n1e.jpg-955b6d436cf3096c373f9c3c0ef53a2b.ctex"]
+source_file="res://assets/Album/España/esp_jugador7.png"
+dest_files=["res://.godot/imported/esp_jugador7.png-7c1d878cad65cdc41298f4aee7421894.ctex"]
 
 [params]
 

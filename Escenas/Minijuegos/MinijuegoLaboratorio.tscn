@@ -84,6 +84,7 @@ autowrap_mode = 2
 
 [node name="UIHeader" type="CanvasLayer" parent="MinijuegoCompleto" unique_id=1933720633]
 layer = 2
+visible = false
 
 [node name="AciertosLabel" type="Label" parent="MinijuegoCompleto/UIHeader" unique_id=179617343]
 offset_right = 40.0
@@ -197,7 +198,7 @@ layout_mode = 2
 theme_override_constants/outline_size = 2
 theme_override_font_sizes/font_size = 9
 theme_override_styles/normal = SubResource("StyleBoxEmpty_lv7l5")
-text = "➜"
+text = "-->"
 
 [node name="Icono Objeto B" type="TextureRect" parent="MinijuegoCompleto/PanelOperacion/MarginContainer/VBoxContainer/FilaBase" unique_id=819486893]
 layout_mode = 2
@@ -237,7 +238,7 @@ custom_minimum_size = Vector2(12, 0)
 layout_mode = 2
 theme_override_constants/outline_size = 2
 theme_override_font_sizes/font_size = 9
-text = "➜"
+text = "-->"
 
 [node name="ContenedorCasillas" type="HBoxContainer" parent="MinijuegoCompleto/PanelOperacion/MarginContainer/VBoxContainer/FilaIncognita" unique_id=1876901248]
 layout_mode = 2
@@ -366,7 +367,7 @@ mouse_filter = 2
 layout_mode = 2
 theme_override_constants/outline_size = 5
 theme_override_font_sizes/font_size = 33
-text = "➜"
+text = "-->"
 
 [node name="Icono Objeto B" type="TextureRect" parent="MinijuegoCompleto/PanelGrande/MarginContainer/VBoxContainer/FilaBase" unique_id=431491584]
 layout_mode = 2
@@ -399,7 +400,7 @@ mouse_filter = 2
 layout_mode = 2
 theme_override_constants/outline_size = 5
 theme_override_font_sizes/font_size = 29
-text = "➜"
+text = "-->"
 
 [node name="ContenedorCasillas" type="HBoxContainer" parent="MinijuegoCompleto/PanelGrande/MarginContainer/VBoxContainer/FilaIncognita" unique_id=1169593762]
 layout_mode = 2

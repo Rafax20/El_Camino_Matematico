@@ -10,22 +10,20 @@ var jugador_cerca: bool = false
 @onready var sprite = $Sprite2D
 @onready var indicador_tecla = $Sprite2D/IndicadorTecla
 
-# Referencia al botón táctil en el HUD global o minijuego
 var btn_interactuar_touch: TouchScreenButton = null
 
 func _ready():
 	body_entered.connect(_on_body_entered)
 	body_exited.connect(_on_body_exited)
+	
 	if indicador_tecla: 
 		indicador_tecla.visible = false
 		
-	# Buscar el botón de interacción en la escena
 	var hud_touch = get_tree().get_nodes_in_group("boton_interactuar_touch")
 	if not hud_touch.is_empty():
 		btn_interactuar_touch = hud_touch[0]
-		if btn_interactuar_touch.is_connected("pressed", _on_boton_touch_presionado):
-			btn_interactuar_touch.disconnect("pressed", _on_boton_touch_presionado)
-		btn_interactuar_touch.pressed.connect(_on_boton_touch_presionado)
+		# 🔒 Forzar a que inicie oculto al instanciar la caja
+		btn_interactuar_touch.visible = false
 
 func _unhandled_input(event):
 	if jugador_cerca and not ya_abierta:
@@ -38,20 +36,29 @@ func _on_body_entered(body):
 	if body.is_in_group("jugador") and not ya_abierta:
 		jugador_cerca = true
 		
-		# Mostrar la tecla si existe el nodo
+		# Conectar dinámicamente el botón a la caja actual
+		if btn_interactuar_touch:
+			if btn_interactuar_touch.is_connected("pressed", _on_boton_touch_presionado):
+				btn_interactuar_touch.disconnect("pressed", _on_boton_touch_presionado)
+			btn_interactuar_touch.pressed.connect(_on_boton_touch_presionado)
+			
+			# MOSTRAR SOLO CUANDO ENTRA AL AREA
+			btn_interactuar_touch.visible = true
+			
 		if indicador_tecla: 
 			indicador_tecla.visible = true
-			
-		# Activar el botón móvil de manera independiente si la plataforma lo requiere
-		if (OS.has_feature("mobile") or DisplayServer.is_touchscreen_available()) and btn_interactuar_touch:
-			btn_interactuar_touch.visible = true
 
 func _on_body_exited(body):
 	if body.is_in_group("jugador"):
 		jugador_cerca = false
+		
 		if indicador_tecla: 
 			indicador_tecla.visible = false
+			
+		# OCULTAR AL SALIR DEL AREA
 		if btn_interactuar_touch:
+			if btn_interactuar_touch.is_connected("pressed", _on_boton_touch_presionado):
+				btn_interactuar_touch.disconnect("pressed", _on_boton_touch_presionado)
 			btn_interactuar_touch.visible = false
 
 func _on_boton_touch_presionado():

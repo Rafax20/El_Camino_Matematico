@@ -1,7 +1,6 @@
 # res://Escenas/LogrosTablero.gd
 extends Control
 
-# Capacidad máxima de elementos que caben visualmente en tu GridLaminas por página
 const LOGROS_POR_PAGINA: int = 18
 
 @onready var grid_laminas = $GridLaminas
@@ -9,11 +8,8 @@ const LOGROS_POR_PAGINA: int = 18
 @onready var boton_anterior = $BotonAnterior
 @onready var boton_siguiente = $BotonSiguiente
 
-# 📌 Arreglo único y plano de logros. Simplemente agregas los IDs que quieras aquí.
-var lista_total_logros: Array = [
-	101, 102, 103, 104, 105, 106, 107, 108, 109, 110,
-	111, 112, 113, 114, 115, 116, 117, 118, 119, 120 # 20 logros = 2 páginas automáticas
-]
+# 📌 Arreglo dinámico (se llenará solo con los logros registrados)
+var lista_total_logros: Array = []
 
 var pagina_actual_indice: int = 0
 var total_paginas: int = 1
@@ -25,6 +21,9 @@ func _ready():
 	pagina_actual_indice = 0
 	posicion_original_y = grid_laminas.position.y
 	posicion_original_x = grid_laminas.position.x
+	
+	# ⚡ Cargar dinámicamente los IDs desde DatosUsuario.CATALOGO_LOGROS
+	lista_total_logros = DatosUsuario.CATALOGO_LOGROS.keys()
 	
 	if ConexionSupabase.has_method("cargar_album_nube"):
 		await ConexionSupabase.cargar_album_nube()
@@ -75,8 +74,9 @@ func _mostrar_pagina(indice: int, direccion: String):
 		grid_laminas.add_child(nueva_ranura)
 		nueva_ranura.id_lamina = id_logro
 		
-		if DatosUsuario.CATALOGO_LAMINAS.has(id_logro):
-			nueva_ranura.textura_jugador = DatosUsuario.CATALOGO_LAMINAS[id_logro]
+		# 🔄 CAMBIO AQUÍ: Usar CATALOGO_LOGROS en lugar de CATALOGO_LAMINAS
+		if DatosUsuario.CATALOGO_LOGROS.has(id_logro):
+			nueva_ranura.textura_jugador = DatosUsuario.CATALOGO_LOGROS[id_logro]
 		else:
 			nueva_ranura.textura_jugador = null
 			

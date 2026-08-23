@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dm863oqfcbnyv"
-path="res://.godot/imported/Gemini_Generated_Image_2bj4lr2bj4lr2bj4.jpg-70b9f6876799fd9dcbc5a7e85d2313b4.ctex"
+uid="uid://cqvbyvdi2lu5g"
+path="res://.godot/imported/por_jugador2.png-a1af0207f25711f1ccf15af1d0125e28.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/Interfaz_Logros/Gemini_Generated_Image_2bj4lr2bj4lr2bj4.jpg"
-dest_files=["res://.godot/imported/Gemini_Generated_Image_2bj4lr2bj4lr2bj4.jpg-70b9f6876799fd9dcbc5a7e85d2313b4.ctex"]
+source_file="res://assets/Album/Portugal/por_jugador2.png"
+dest_files=["res://.godot/imported/por_jugador2.png-a1af0207f25711f1ccf15af1d0125e28.ctex"]
 
 [params]
 
