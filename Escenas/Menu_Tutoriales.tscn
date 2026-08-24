@@ -81,7 +81,6 @@ layout_mode = 2
 text = "4. División"
 
 [node name="ReproductorCanvas" type="CanvasLayer" parent="." unique_id=487783155]
-visible = false
 
 [node name="ModalVideo" type="Control" parent="ReproductorCanvas" unique_id=233805965]
 layout_mode = 3
