@@ -1153,9 +1153,12 @@ func _configurar_controles_tactiles():
 		
 	var nombre_os = OS.get_name()
 	var es_movil_nativo = nombre_os in ["Android", "iOS"]
+	print("Sistema Operativo: ", nombre_os)
+	print("Es movil:", es_movil_nativo)
 	
 	var es_web_movil = false
 	if nombre_os == "Web" or OS.has_feature("web"):
+		print("ENTRO?", OS.has_feature("web"))
 		if JavaScriptBridge:
 			var user_agent = JavaScriptBridge.eval("navigator.userAgent", true)
 			if user_agent != null:

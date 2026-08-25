@@ -37,6 +37,7 @@ signal minijuego_finalizado(es_correcto: bool)
 var vidas: int = 3
 var aciertos: int = 0
 var resultado_final_str: String = ""
+var bloqueado: bool = false
 
 var casillas_paso_1: Array = []
 var valores_paso_1: Array = []
@@ -212,13 +213,12 @@ func iniciar_minijuego(tema: String = "espacio"):
 	panel_operacion.visible = true
 	panel_operacion.modulate.a = 1.0
 	contenedor_fichas.visible = true
-	#if has_node("PistasHelper"):
-		#$PistasHelper.visible = true
 	
 	await get_tree().process_frame
 	
 	vidas = 3
 	aciertos = 0
+	bloqueado = false # REINICIAMOS EL CANDADO
 	_actualizar_ui_header()
 	obtener_siguiente_pregunta()
 	iniciar_secuencia_alien()
@@ -237,6 +237,9 @@ func _sacudir_panel():
 	tween.tween_property(panel_activo, "position:x", pos_base, 0.05)
 
 func _validar_respuesta():
+	if bloqueado: return # Si el candado está activo, ignora los clics
+	bloqueado = true     # Cierra el candado inmediatamente al presionar el botón
+	
 	var respuesta_ingresada = ""
 	for val in valores_paso_1:
 		respuesta_ingresada += val
@@ -274,6 +277,8 @@ func _al_fallar():
 		await get_tree().create_timer(1.2).timeout
 		aciertos = 0
 		_finalizar_minijuego(false)
+	else:
+		bloqueado = false # DESBLOQUEA para que pueda intentar de nuevo
 
 func _reproducir_voz(ruta_stream: String):
 	if audio_player and ResourceLoader.exists(ruta_stream):
@@ -311,7 +316,10 @@ func _mostrar_peticion_alien() -> void:
 	
 	var tween_texto = create_tween()
 	tween_texto.tween_property(texto_dialogo, "visible_ratio", 1.0, 1.2)
-	tween_texto.finished.connect(func(): panel_operacion.visible = true)
+	tween_texto.finished.connect(func(): 
+		panel_operacion.visible = true
+		bloqueado = false # DESBLOQUEA el input cuando termina de hablar
+	)
 
 func alien_atendido_con_exito() -> void:
 	panel_operacion.visible = false
@@ -382,14 +390,19 @@ func _insertar_digito_en_casilla_vacia(digito: String):
 			break
 
 func _finalizar_minijuego(es_exito: bool):
+	bloqueado = true # Asegura que nada se pueda presionar
 	visible = false
-	if $UIHeader: $UIHeader.visible = false
+	$MinijuegoCompleto.visible = false # ESTO FALTABA PARA OCULTAR TODO EL CONTENEDOR
+	
+	if UI: UI.visible = false 
 	if panel_operacion: panel_operacion.visible = false
 	if panel_grande: panel_grande.visible = false
 	if globo_dialogo: globo_dialogo.visible = false
 	if contenedor_fichas: contenedor_fichas.visible = false
 	if pizarra_borrador: pizarra_borrador.visible = false
+	
 	if has_node("PistasHelper"): $PistasHelper.visible = false
+	
 	minijuego_finalizado.emit(es_exito)
 
 func AbrirCerrar_Pizarra():
