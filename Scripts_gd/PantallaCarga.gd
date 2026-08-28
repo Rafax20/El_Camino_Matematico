@@ -3,39 +3,60 @@ extends Control
 
 var ruta_destino: String = ""
 var lista_progreso: Array = []
-@onready var barra_progreso = $BarraProgreso # Si tienes una ProgressBar o TextureProgressBar (opcional)
+@onready var barra_progreso: TextureProgressBar = $BarraProgreso
+@onready var label_estado: Label = $Label
+
+var progreso_visual: float = 0.0
 
 func _ready():
 	ruta_destino = NavegacionGlobal.escena_destino
 	
-	# ⏳ PASO CRÍTICO PARA WEB/ITCH.IO:
-	# Forzamos una espera de 2 cuadros para asegurar que el navegador 
-	# haya dibujado completamente la interfaz de la pantalla de carga.
+	if barra_progreso:
+		barra_progreso.value = 0
+		
+	if label_estado:
+		label_estado.text = "CARGANDO... 0%\nCONECTANDO CON EL MÓDULO DEL COMPAÑERO...\nESPERANDO PREGUNTAS DEL ESPACIO..."
+	
+	# ⏳ Espera de 2 cuadros para asegurar renderizado en pantalla
 	await get_tree().process_frame
 	await get_tree().process_frame
 
-	# 2. AHORA SÍ pedimos la carga en segundo plano (ya con la pantalla de carga visible)
+	# Iniciar carga en segundo plano
 	if ruta_destino != "":
 		ResourceLoader.load_threaded_request(ruta_destino)
-		
-func _process(_delta):
+
+func _process(delta):
 	if ruta_destino == "": return
 	
-	# Monitoreamos el estado de la carga en segundo plano
+	# Monitoreamos el estado de carga en segundo plano
 	var estado = ResourceLoader.load_threaded_get_status(ruta_destino, lista_progreso)
+	var progreso_real = 0.0
+	if lista_progreso.size() > 0:
+		progreso_real = lista_progreso[0] * 100.0
 	
-	# Opcional: Si tienes una barra de progreso, actualízala aquí
-	if barra_progreso and lista_progreso.size() > 0:
-		barra_progreso.value = lista_progreso[0] * 100
+	# Interpolación suave para que los asteroides se vayan pintando progresivamente
+	progreso_visual = move_toward(progreso_visual, progreso_real, delta * 80.0)
 	
-	# Cuando el estado indica que la escena está 100% cargada en RAM:
-	if estado == ResourceLoader.THREAD_LOAD_LOADED:
-		set_process(false) # Desactivamos el _process para evitar llamadas dobles
+	if barra_progreso:
+		barra_progreso.value = progreso_visual
 		
-		# ⏳ Tiempo mínimo de cortesía (0.5 segundos) para que la pantalla 
-		# no desaparezca de golpe si la carga fue ultra rápida
-		await get_tree().create_timer(0.5).timeout
-		
-		# Cambiamos a la escena destino empaquetada
+	if label_estado:
+		var p_int = int(progreso_visual)
+		var fase_texto = "CONECTANDO CON EL MÓDULO DEL COMPAÑERO..."
+		if p_int > 30 and p_int <= 70:
+			fase_texto = "CALIBRANDO RUTAS Y GALAXIAS..."
+		elif p_int > 70:
+			fase_texto = "¡PREPARANDO SISTEMAS DE NAVEGACIÓN!"
+			
+		label_estado.text = "CARGANDO... %d%%\n%s\nESPERANDO PREGUNTAS DEL ESPACIO..." % [p_int, fase_texto]
+	
+	# Cuando la escena esté 100% lista y el progreso visual haya llegado a la meta
+	if estado == ResourceLoader.THREAD_LOAD_LOADED and progreso_visual >= 95.0:
+		set_process(false)
+		if barra_progreso: barra_progreso.value = 100
+		if label_estado:
+			label_estado.text = "CARGANDO... 100%\n¡MISIÓN LISTA PARA EL DESPEGUE!\nESPERANDO PREGUNTAS DEL ESPACIO..."
+			
+		await get_tree().create_timer(0.4).timeout
 		var escena_cargada = ResourceLoader.load_threaded_get(ruta_destino)
 		get_tree().change_scene_to_packed(escena_cargada)

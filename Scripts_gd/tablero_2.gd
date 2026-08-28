@@ -11,6 +11,9 @@ extends Node2D
 @onready var minijuego_asteroides = $CapaMinijuegos/MinijuegoAsteroides
 @onready var minijuego_buscador = $MinijuegoBuscador
 @onready var minijuego_laboratorio = $CapaMinijuegos/MinijuegoLaboratorio
+@onready var minijuego_balanza = $CapaMinijuegos/MinijuegoBalanza
+@onready var minijuego_clasificador = $CapaMinijuegos/MinijuegoClasificador
+@onready var minijuego_circuitos = $CapaMinijuegos/MinijuegoCircuitos
 
 var total_casillas = 29
 var casilla_actual = 0
@@ -27,31 +30,31 @@ var mapa_casillas: Dictionary = {
 	1:  {"ratio": 0.039, "tipo": "asteroides"},
 	2:  {"ratio": 0.078, "tipo": "buscador_cajas"},
 	3:  {"ratio": 0.109, "tipo": "laboratorio"},
-	4:  {"ratio": 0.137, "tipo": "asteroides"},
-	5:  {"ratio": 0.174, "tipo": "buscador_cajas"},
-	6:  {"ratio": 0.205, "tipo": "laboratorio"},
+	4:  {"ratio": 0.137, "tipo": "balanza"},
+	5:  {"ratio": 0.174, "tipo": "clasificador"},
+	6:  {"ratio": 0.205, "tipo": "circuitos"},
 	7:  {"ratio": 0.245, "tipo": "asteroides"},
 	8:  {"ratio": 0.284, "tipo": "buscador_cajas"},
 	9:  {"ratio": 0.325, "tipo": "laboratorio"},
-	10: {"ratio": 0.364, "tipo": "asteroides"},
-	11: {"ratio": 0.395, "tipo": "buscador_cajas"},
-	12: {"ratio": 0.426, "tipo": "laboratorio"},
+	10: {"ratio": 0.364, "tipo": "balanza"},
+	11: {"ratio": 0.395, "tipo": "clasificador"},
+	12: {"ratio": 0.426, "tipo": "circuitos"},
 	13: {"ratio": 0.465, "tipo": "asteroides"},
 	14: {"ratio": 0.504, "tipo": "buscador_cajas"},
 	15: {"ratio": 0.535, "tipo": "laboratorio"},
-	16: {"ratio": 0.58, "tipo": "asteroides"},
-	17: {"ratio": 0.624, "tipo": "buscador_cajas"},
-	18: {"ratio": 0.657, "tipo": "laboratorio"},
+	16: {"ratio": 0.58,  "tipo": "balanza"},
+	17: {"ratio": 0.624, "tipo": "clasificador"},
+	18: {"ratio": 0.657, "tipo": "circuitos"},
 	19: {"ratio": 0.688, "tipo": "asteroides"},
 	20: {"ratio": 0.719, "tipo": "buscador_cajas"},
 	21: {"ratio": 0.758, "tipo": "laboratorio"},
-	22: {"ratio": 0.789, "tipo": "asteroides"},
-	23: {"ratio": 0.828, "tipo": "buscador_cajas"},
-	24: {"ratio": 0.865, "tipo": "laboratorio"},
-	25: {"ratio": 0.89, "tipo": "asteroides"},
+	22: {"ratio": 0.789, "tipo": "balanza"},
+	23: {"ratio": 0.828, "tipo": "clasificador"},
+	24: {"ratio": 0.865, "tipo": "circuitos"},
+	25: {"ratio": 0.89,  "tipo": "asteroides"},
 	26: {"ratio": 0.917, "tipo": "buscador_cajas"},
 	27: {"ratio": 0.943, "tipo": "laboratorio"},
-	28: {"ratio": 0.974, "tipo": "asteroides"},
+	28: {"ratio": 0.974, "tipo": "balanza"},
 	29: {"ratio": 1.000, "tipo": "examen"} # Meta final
 }
 
@@ -72,6 +75,7 @@ func _ready():
 	casilla_anterior = casilla_actual
 	
 	# Teletransportamos la ficha de golpe a donde le corresponde estar
+	print("CASILLA CARGADA DONDE DEBERA ESTAR: ", casilla_actual)
 	_mover_ficha_visualmente(casilla_actual, true)
 	
 	# Conectamos la descarga de preguntas en background
@@ -88,8 +92,13 @@ func _on_preguntas_cargadas(lista):
 	servidor_listo = true
 	
 	if DatosUsuario.pregunta_pendiente_db:
-		print("🚨 El usuario tenía una pregunta pendiente. Abriendo interfaz...")
-		mostrar_pregunta_en_pantalla()
+		print("🚨 El usuario tenía un minijuego o pregunta pendiente en casilla: ", casilla_actual)
+		boton_dado.disabled = true
+		boton_chat.disabled = true
+		if casilla_actual == total_casillas or DatosUsuario.en_examen_final:
+			mostrar_pregunta_en_pantalla()
+		else:
+			lanzar_minijuego_casilla()
 	else:
 		print("✅ Camino libre. ¡Desbloqueando botón del dado!")
 		boton_dado.disabled = false
@@ -382,8 +391,32 @@ func _finalizar_examen(superado: bool):
 	DatosUsuario.pregunta_pendiente_db = false # 👈 Limpiar aquí antes de evaluar
 
 	if superado:
-		ConexionSupabase.actualizar_progreso_en_nube(casilla_actual, false)
-		# 🏆 ¡AQUÍ DESPLEGAS EL DIPLOMA O PANTALLA DE VICTORIA!
+		# 🛑 Bloqueo total e inmediato de controles para evitar re-pulsaciones
+		boton_dado.disabled = true
+		boton_chat.disabled = true
+		Menu_Volver.disabled = true
+		
+		# 🪙 OTORGAR 20 MONEDAS POR COMPLETAR EL TABLERO
+		DatosUsuario.monedas += 20
+		print("🪙 ¡+20 Monedas ganadas! Total actual: ", DatosUsuario.monedas)
+		
+		# 🏆 Verificar si es la primera vez que obtiene el logro 1
+		var es_nuevo_logro: bool = not DatosUsuario.logros_poseidos.has(1)
+		if es_nuevo_logro:
+			ConexionSupabase.registrar_logro_ganado(1) # 🏆 Logro 1: Tablero Completado
+			
+		# 🔄 RESET TOTAL DE CASILLA A 0 (Local, Global y en Base de Datos)
+		casilla_actual = 0
+		casilla_anterior = 0
+		DatosUsuario.casilla_actual_db = 0
+		DatosUsuario.pregunta_pendiente_db = false
+		ConexionSupabase.actualizar_progreso_en_nube(0, false)
+		
+		# 🏆 Reproducir voz/elogio de victoria
+		GestionAudio.reproducir_audio_local("Elogios/" + ["elogio1", "elogio2", "elogio3"].pick_random())
+		
+		# 🌟 Desplegar pantalla de felicitaciones centrada durante 6 segundos y volver al menú
+		await _mostrar_pantalla_felicitaciones_victoria(es_nuevo_logro)
 	else:
 		# Retrocede a la casilla anterior por no aprobar las 5
 		casilla_actual = casilla_anterior
@@ -394,6 +427,106 @@ func _finalizar_examen(superado: bool):
 		
 		boton_dado.disabled = false
 		Menu_Volver.disabled = false
+
+func _mostrar_pantalla_felicitaciones_victoria(es_nuevo_logro: bool = true):
+	var capa_victoria = CanvasLayer.new()
+	capa_victoria.name = "CapaVictoriaFinal"
+	capa_victoria.layer = 100
+	add_child(capa_victoria)
+	
+	# Fondo oscuro
+	var fondo_oscuro = ColorRect.new()
+	fondo_oscuro.set_anchors_preset(Control.PRESET_FULL_RECT)
+	fondo_oscuro.color = Color(0.02, 0.04, 0.08, 0.92)
+	capa_victoria.add_child(fondo_oscuro)
+	
+	# Tarjeta central perfectamente centrada
+	var tarjeta = Panel.new()
+	tarjeta.set_anchors_preset(Control.PRESET_CENTER)
+	tarjeta.anchor_left = 0.5
+	tarjeta.anchor_top = 0.5
+	tarjeta.anchor_right = 0.5
+	tarjeta.anchor_bottom = 0.5
+	tarjeta.offset_left = -390
+	tarjeta.offset_top = -250
+	tarjeta.offset_right = 390
+	tarjeta.offset_bottom = 250
+	tarjeta.pivot_offset = Vector2(390, 250)
+	
+	var st_tarjeta = StyleBoxFlat.new()
+	st_tarjeta.bg_color = Color("#0f172a") # Azul noche profundo
+	st_tarjeta.border_color = Color("#f59e0b") # Borde dorado
+	st_tarjeta.set_border_width_all(5)
+	st_tarjeta.set_corner_radius_all(24)
+	st_tarjeta.shadow_color = Color(0.96, 0.62, 0.04, 0.5)
+	st_tarjeta.shadow_size = 20
+	tarjeta.add_theme_stylebox_override("panel", st_tarjeta)
+	capa_victoria.add_child(tarjeta)
+	
+	var vbox = VBoxContainer.new()
+	vbox.set_anchors_preset(Control.PRESET_FULL_RECT)
+	vbox.alignment = BoxContainer.ALIGNMENT_CENTER
+	vbox.add_theme_constant_override("separation", 12)
+	tarjeta.add_child(vbox)
+	
+	var lbl_titulo = Label.new()
+	lbl_titulo.text = "¡MISIÓN CUMPLIDA, ASTRONAUTA!"
+	lbl_titulo.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	lbl_titulo.add_theme_font_size_override("font_size", 32)
+	lbl_titulo.add_theme_color_override("font_color", Color("#fde047"))
+	lbl_titulo.add_theme_color_override("font_outline_color", Color("#78350f"))
+	lbl_titulo.add_theme_constant_override("outline_size", 4)
+	vbox.add_child(lbl_titulo)
+	
+	# Mostrar icono del logro solo si es recién ganado
+	if es_nuevo_logro:
+		var icono_logro = TextureRect.new()
+		icono_logro.custom_minimum_size = Vector2(100, 100)
+		icono_logro.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		icono_logro.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		if ResourceLoader.exists("res://assets/Logros/Tablero_Completado.png"):
+			icono_logro.texture = load("res://assets/Logros/Tablero_Completado.png")
+		vbox.add_child(icono_logro)
+	
+	var lbl_desc = Label.new()
+	if es_nuevo_logro:
+		lbl_desc.text = "¡Has completado con éxito todo el tablero espacial y aprobado el examen final!\n🏆 ¡Nuevo Logro Desbloqueado: Tablero Completado!"
+	else:
+		lbl_desc.text = "¡Has completado nuevamente con éxito todo el tablero espacial y aprobado el examen final!"
+	lbl_desc.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	lbl_desc.add_theme_font_size_override("font_size", 18)
+	lbl_desc.add_theme_color_override("font_color", Color("#e2e8f0"))
+	vbox.add_child(lbl_desc)
+	
+	# 🪙 Banner de Recompensa de Monedas
+	var lbl_monedas = Label.new()
+	lbl_monedas.text = "🪙 ¡Has ganado +20 Monedas Espaciales! (Total: %d monedas)" % DatosUsuario.monedas
+	lbl_monedas.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	lbl_monedas.add_theme_font_size_override("font_size", 18)
+	lbl_monedas.add_theme_color_override("font_color", Color("#fbbf24")) # Dorado radiante
+	vbox.add_child(lbl_monedas)
+	
+	var lbl_contador = Label.new()
+	lbl_contador.text = "Regresando a la base espacial en 6 segundos..."
+	lbl_contador.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	lbl_contador.add_theme_font_size_override("font_size", 16)
+	lbl_contador.add_theme_color_override("font_color", Color("#38bdf8"))
+	vbox.add_child(lbl_contador)
+	
+	# Animación pop-up
+	tarjeta.scale = Vector2(0.5, 0.5)
+	var tw = create_tween().set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	tw.tween_property(tarjeta, "scale", Vector2.ONE, 0.4)
+	
+	# Cuenta regresiva de 6 segundos
+	for s in range(6, 0, -1):
+		lbl_contador.text = "Regresando a la base espacial en %d segundos..." % s
+		await get_tree().create_timer(1.0).timeout
+		
+	lbl_contador.text = "¡Despegando hacia el menú principal!"
+	await get_tree().create_timer(0.4).timeout
+	
+	NavegacionGlobal.cambiar_escena_con_carga("res://Escenas/Menu.tscn")
 
 
 # ------------------------------------------
@@ -460,6 +593,15 @@ func lanzar_minijuego_casilla():
 		"laboratorio":
 			lanzar_minijuego_laboratorio()
 
+		"balanza":
+			lanzar_minijuego_balanza()
+
+		"clasificador":
+			lanzar_minijuego_clasificador()
+
+		"circuitos":
+			lanzar_minijuego_circuitos()
+
 
 func _obtener_pregunta_actual() -> Dictionary:
 	if lista_preguntas.size() == 0:
@@ -477,9 +619,12 @@ func _obtener_pregunta_actual() -> Dictionary:
 
 func _on_minijuego_resuelto(es_correcto: bool):
 	$CapaMinijuegos.visible = false
-	minijuego_asteroides.visible = false
-	minijuego_buscador.visible = false
-	minijuego_laboratorio.visible = false
+	if minijuego_asteroides: minijuego_asteroides.visible = false
+	if minijuego_buscador: minijuego_buscador.visible = false
+	if minijuego_laboratorio: minijuego_laboratorio.visible = false
+	if minijuego_balanza: minijuego_balanza.visible = false
+	if minijuego_clasificador: minijuego_clasificador.visible = false
+	if minijuego_circuitos: minijuego_circuitos.visible = false
 
 	# 🎥 RESTAURAR CÁMARA DEL TABLERO
 	$CamaraTablero.enabled = true
@@ -492,6 +637,23 @@ func _on_minijuego_resuelto(es_correcto: bool):
 		print("🎉 ¡Minijuego superado exitosamente!")
 		DatosUsuario.pregunta_pendiente_db = false
 		ConexionSupabase.actualizar_progreso_en_nube(casilla_actual, false)
+		
+		# 🏆 Otorgar logro según el tipo de minijuego superado (solo si es nuevo)
+		var datos_casilla = mapa_casillas.get(casilla_actual, {})
+		var tipo_minijuego = datos_casilla.get("tipo", "")
+		var id_logro = 0
+		match tipo_minijuego:
+			"asteroides": id_logro = 2
+			"buscador_cajas": id_logro = 3
+			"laboratorio": id_logro = 4
+			"balanza": id_logro = 5
+			"clasificador": id_logro = 6
+			"circuitos": id_logro = 7
+			
+		if id_logro > 0 and not DatosUsuario.logros_poseidos.has(id_logro):
+			ConexionSupabase.registrar_logro_ganado(id_logro)
+			await _mostrar_popup_nuevo_logro(id_logro)
+				
 		boton_dado.disabled = false
 		Menu_Volver.disabled = false
 	else:
@@ -513,6 +675,18 @@ func _on_minijuego_resuelto(es_correcto: bool):
 
 	boton_chat.disabled = false
 	visible = true
+
+func _mostrar_popup_nuevo_logro(id_logro: int):
+	if not has_node("CapaLogro"): return
+	if DatosUsuario.CATALOGO_LOGROS.has(id_logro):
+		$CapaLogro/Control/TextureRect.texture = DatosUsuario.CATALOGO_LOGROS[id_logro]
+		$CapaLogro/Control/TextureRect/Label.text = "🏆 ¡Nuevo Logro Desbloqueado!"
+		$CapaLogro.visible = true
+		$CapaLogro/Control.scale = Vector2.ZERO
+		var tween = create_tween().set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+		tween.tween_property($CapaLogro/Control, "scale", Vector2.ONE, 0.4)
+		await get_tree().create_timer(3.0).timeout
+		$CapaLogro.visible = false
 		
 func enviar_puntuacion(nombre_jugador: String, puntos: int):
 	var datos = {
@@ -565,3 +739,24 @@ func lanzar_minijuego_laboratorio():
 	# Ejecutamos la lógica del minijuego (esta función interna ya se encarga 
 	# de encender sus subpaneles y esperar el frame para calcular las dimensiones)
 	minijuego_laboratorio.iniciar_minijuego("espacio")
+	
+func lanzar_minijuego_balanza():
+	if not minijuego_balanza.minijuego_finalizado.is_connected(_on_minijuego_resuelto):
+		minijuego_balanza.minijuego_finalizado.connect(_on_minijuego_resuelto)
+	$CapaMinijuegos.visible = true
+	minijuego_balanza.visible = true
+	minijuego_balanza.iniciar_minijuego("espacio")
+	
+func lanzar_minijuego_clasificador():
+	if not minijuego_clasificador.minijuego_finalizado.is_connected(_on_minijuego_resuelto):
+		minijuego_clasificador.minijuego_finalizado.connect(_on_minijuego_resuelto)
+	$CapaMinijuegos.visible = true
+	minijuego_clasificador.visible = true
+	minijuego_clasificador.iniciar_minijuego("espacio")
+	
+func lanzar_minijuego_circuitos():
+	if not minijuego_circuitos.minijuego_finalizado.is_connected(_on_minijuego_resuelto):
+		minijuego_circuitos.minijuego_finalizado.connect(_on_minijuego_resuelto)
+	$CapaMinijuegos.visible = true
+	minijuego_circuitos.visible = true
+	minijuego_circuitos.iniciar_minijuego("espacio")

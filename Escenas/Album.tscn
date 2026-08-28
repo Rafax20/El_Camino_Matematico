@@ -9,6 +9,7 @@
 [ext_resource type="Texture2D" uid="uid://ct2hr5p26u7ib" path="res://assets/Boton_Izquierda_Presionado.png" id="7_e5kml"]
 [ext_resource type="Texture2D" uid="uid://v6ip1apqfjel" path="res://assets/Boton_Derecha.png" id="8_dk6qc"]
 [ext_resource type="Texture2D" uid="uid://dw31my30emi3f" path="res://assets/Boton_Derecha_Presionado.png" id="9_mya4v"]
+[ext_resource type="Texture2D" uid="uid://b7tiendaicon" path="res://assets/Boton_Tienda.png" id="10_tienda"]
 
 [node name="Album" type="Control" unique_id=1846142326]
 layout_mode = 3
@@ -94,6 +95,47 @@ scale = Vector2(0.15, 0.15)
 texture_normal = ExtResource("8_dk6qc")
 texture_pressed = ExtResource("9_mya4v")
 
+[node name="ContenedorMonedas" type="PanelContainer" parent="." unique_id=987123456]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -220.0
+offset_top = 15.0
+offset_right = -20.0
+offset_bottom = 58.0
+grow_horizontal = 0
+
+[node name="LabelMonedas" type="Label" parent="ContenedorMonedas" unique_id=987123457]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.98, 0.75, 0.14, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.8)
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 2
+theme_override_font_sizes/font_size = 20
+text = "🪙 Monedas: 0"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="BotonTienda" type="TextureButton" parent="." unique_id=987123458]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -110.0
+offset_top = -100.0
+offset_right = -15.0
+offset_bottom = -10.0
+grow_horizontal = 0
+grow_vertical = 0
+mouse_default_cursor_shape = 2
+texture_normal = ExtResource("10_tienda")
+ignore_texture_size = true
+stretch_mode = 5
+
 [connection signal="pressed" from="Volver_Menu" to="Volver_Menu" method="_on_boton_volver_pressed"]
 [connection signal="pressed" from="BotonAnterior" to="." method="_on_boton_anterior_pressed"]
 [connection signal="pressed" from="BotonSiguiente" to="." method="_on_boton_siguiente_pressed"]
+[connection signal="pressed" from="BotonTienda" to="." method="_on_boton_tienda_pressed"]

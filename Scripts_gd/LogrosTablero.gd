@@ -1,7 +1,7 @@
 # res://Escenas/LogrosTablero.gd
 extends Control
 
-const LOGROS_POR_PAGINA: int = 18
+const LOGROS_POR_PAGINA: int = 15
 
 @onready var grid_laminas = $GridLaminas
 @onready var label_titulo_pais = $Titulo_pais
@@ -73,8 +73,9 @@ func _mostrar_pagina(indice: int, direccion: String):
 		var nueva_ranura = escena_ranura.instantiate()
 		grid_laminas.add_child(nueva_ranura)
 		nueva_ranura.id_lamina = id_logro
+		nueva_ranura.es_logro = true
 		
-		# 🔄 CAMBIO AQUÍ: Usar CATALOGO_LOGROS en lugar de CATALOGO_LAMINAS
+		# 🔄 Usar CATALOGO_LOGROS
 		if DatosUsuario.CATALOGO_LOGROS.has(id_logro):
 			nueva_ranura.textura_jugador = DatosUsuario.CATALOGO_LOGROS[id_logro]
 		else:

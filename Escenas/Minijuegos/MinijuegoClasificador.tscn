@@ -1,0 +1,12 @@
+[gd_scene format=3 uid="uid://4j5s7qwitx28"]
+
+[ext_resource type="Script" uid="uid://cal4me2r1dr8" path="res://Scripts_gd/Minijuegos/Minijuego_clasificador/MinijuegoClasificador.gd" id="1_du2yb"]
+
+[node name="MinijuegoClasificador" type="Control" unique_id=735124467]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_du2yb")

@@ -95,8 +95,11 @@
 [ext_resource type="Texture2D" uid="uid://5mtmva50cl6" path="res://assets/Interfaz_Tablero2/Gemini_Generated_Image_c4xybqc4xybqc4xy.png" id="72_x60ep"]
 [ext_resource type="PackedScene" uid="uid://sfpevw8md85y" path="res://Escenas/Minijuegos/minijuego_asteroides.tscn" id="73_it4fw"]
 [ext_resource type="Texture2D" uid="uid://d0polrk8qah13" path="res://assets/Interfaz_Tablero2/Sprite_Sheet_Dado.png" id="79_ipnda"]
+[ext_resource type="PackedScene" uid="uid://4j5s7qwitx28" path="res://Escenas/Minijuegos/MinijuegoClasificador.tscn" id="97_8ffun"]
 [ext_resource type="PackedScene" uid="uid://dqr8wuvj26u46" path="res://Escenas/Minijuegos/MinijuegoBuscador.tscn" id="97_08y31"]
 [ext_resource type="PackedScene" uid="uid://dfbugve5tujxm" path="res://Escenas/Minijuegos/MinijuegoLaboratorio.tscn" id="98_2l76i"]
+[ext_resource type="PackedScene" uid="uid://c3jxmpani0i5q" path="res://Escenas/Minijuegos/MinijuegoCircuitos.tscn" id="98_ym5il"]
+[ext_resource type="PackedScene" uid="uid://rvsxco6dm85n" path="res://Escenas/Minijuegos/MinijuegoBalanza.tscn" id="99_e35ft"]
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_ipnda"]
 animations = [{
@@ -725,9 +728,8 @@ position = Vector2(575, 324)
 curve = SubResource("Curve2D_85yh5")
 
 [node name="PathFollow2D" type="PathFollow2D" parent="Path2D" unique_id=292056439]
-position = Vector2(849.8974, 290.3807)
+position = Vector2(478, 641)
 rotation = 0.06297966
-progress = 2026.8492
 rotates = false
 
 [node name="Animacion" type="AnimatedSprite2D" parent="Path2D/PathFollow2D" unique_id=698203263]
@@ -800,6 +802,15 @@ visible = false
 mouse_filter = 2
 
 [node name="MinijuegoAsteroides" parent="CapaMinijuegos" unique_id=1267125036 instance=ExtResource("73_it4fw")]
+visible = false
+
+[node name="MinijuegoClasificador" parent="CapaMinijuegos" unique_id=735124467 instance=ExtResource("97_8ffun")]
+visible = false
+
+[node name="MinijuegoCircuitos" parent="CapaMinijuegos" unique_id=1781205056 instance=ExtResource("98_ym5il")]
+visible = false
+
+[node name="MinijuegoBalanza" parent="CapaMinijuegos" unique_id=194785104 instance=ExtResource("99_e35ft")]
 visible = false
 
 [node name="ContenedorDado" type="CanvasLayer" parent="." unique_id=632679077]

@@ -107,6 +107,7 @@ func actualizar_progreso_en_nube(casilla: int, pendiente: bool):
 		"casilla_actual": casilla,
 		"pregunta_pendiente": pendiente,
 		"dificultad": DatosUsuario.dificultad_actual,
+		"monedas": DatosUsuario.monedas,
 		"en_examen_final": DatosUsuario.en_examen_final,
 		"examen_correctas": DatosUsuario.examen_correctas,
 		"examen_preguntas_respondidas": DatosUsuario.examen_preguntas_respondidas
@@ -160,7 +161,7 @@ func registrar_en_historial(categoria: String, es_correcta: bool, tiempo: float)
 
 func cargar_album_nube():
 	if not DatosUsuario.esta_conectado_a_la_nube or DatosUsuario.usuario_uuid in ["", "0"]:
-		print("ℹ️ [Invitado] Cargando álbum local desde la RAM.")
+		print("ℹ️ [Invitado] Cargando álbum y logros locales desde la RAM.")
 		return
 		
 	var http_get_album = HTTPRequest.new()
@@ -173,16 +174,64 @@ func cargar_album_nube():
 			if json.parse(body.get_string_from_utf8()) == OK:
 				var datos = json.data
 				if datos is Array and datos.size() > 0:
+					# ⚽ 1. Láminas de la nube
 					var lista_remota = datos[0].get("laminas_poseidas", [])
-					var laminas_enteras: Array = []
-					for x in lista_remota:
-						if x != null: laminas_enteras.append(int(x))
-					DatosUsuario.laminas_poseidas = laminas_enteras
-					print("⚽ Álbum cargado con éxito.")
+					var laminas_nube: Array = []
+					if lista_remota != null and lista_remota is Array:
+						for x in lista_remota:
+							if x != null: laminas_nube.append(int(x))
+					
+					# 🏆 2. Logros de la nube
+					var lista_logros = datos[0].get("logros_poseidos", [])
+					var logros_nube: Array = []
+					if lista_logros != null and lista_logros is Array:
+						for y in lista_logros:
+							if y != null: logros_nube.append(int(y))
+					
+					# 🔄 3. FUSIÓN INTELIGENTE (Invitado -> Cuenta de Usuario)
+					# Si el niño consiguió láminas o logros antes de iniciar sesión:
+					var hubo_nuevas_laminas: bool = false
+					var hubo_nuevos_logros: bool = false
+					
+					for lam_local in DatosUsuario.laminas_poseidas:
+						var id_i = int(lam_local)
+						if not laminas_nube.has(id_i):
+							laminas_nube.append(id_i)
+							hubo_nuevas_laminas = true
+							
+					for log_local in DatosUsuario.logros_poseidos:
+						var id_log = int(log_local)
+						if not logros_nube.has(id_log):
+							logros_nube.append(id_log)
+							hubo_nuevos_logros = true
+					
+					laminas_nube.sort()
+					logros_nube.sort()
+					
+					DatosUsuario.laminas_poseidas = laminas_nube
+					DatosUsuario.logros_poseidos = logros_nube
+					
+					# Si había láminas/logros de invitado, los guardamos en Supabase
+					if hubo_nuevas_laminas or hubo_nuevos_logros:
+						print("🚀 [Fusión] Guardando láminas y logros de invitado en Supabase...")
+						var http_patch = HTTPRequest.new()
+						add_child(http_patch)
+						http_patch.accept_gzip = false
+						http_patch.request_completed.connect(func(r, rc, h, b): http_patch.queue_free())
+						var url_final_patch = SUPABASE_URL + "progreso_album?user_id=eq." + DatosUsuario.usuario_uuid
+						var hdrs = _obtener_cabeceras(true)
+						hdrs.append("Prefer: return=minimal")
+						var payload = {
+							"laminas_poseidas": laminas_nube,
+							"logros_poseidos": logros_nube
+						}
+						http_patch.request(url_final_patch, hdrs, HTTPClient.METHOD_PATCH, JSON.stringify(payload))
+					
+					print("⚽ Álbum y 🏆 Logros cargados y sincronizados con éxito.")
 				else:
 					crear_fila_album_inicial(DatosUsuario.usuario_uuid)
 		else:
-			print("❌ Error al verificar álbum en la nube: ", response_code)
+			print("❌ Error al verificar álbum y logros en la nube: ", response_code)
 		http_get_album.queue_free()
 	)
 	
@@ -197,9 +246,9 @@ func crear_fila_album_inicial(uuid_usuario: String):
 	
 	http_crear.request_completed.connect(func(r, rc, h, b):
 		if rc in [200, 201]:
-			print("✅ [Supabase] Fila de álbum creada exitosamente.")
+			print("✅ [Supabase] Fila de álbum y logros creada exitosamente.")
 		else:
-			print("❌ [Supabase] Falló la auto-creación del álbum: ", rc)
+			print("❌ [Supabase] Falló la auto-creación del álbum y logros: ", rc)
 		http_crear.queue_free()
 	)
 	
@@ -210,7 +259,8 @@ func crear_fila_album_inicial(uuid_usuario: String):
 	
 	var datos = {
 		"user_id": uuid_usuario,
-		"laminas_poseidas": DatosUsuario.laminas_poseidas
+		"laminas_poseidas": DatosUsuario.laminas_poseidas,
+		"logros_poseidos": DatosUsuario.logros_poseidos
 	}
 	http_crear.request(url_final, headers, HTTPClient.METHOD_POST, JSON.stringify(datos))
 
@@ -252,3 +302,58 @@ func registrar_lamina_ganada(id_lamina: int):
 	
 	var datos_actualizados = { "laminas_poseidas": laminas_limpias }
 	http_update_album.request(url_final, headers, HTTPClient.METHOD_PATCH, JSON.stringify(datos_actualizados))
+
+func registrar_logro_ganado(id_logro: int):
+	var id_entero = int(id_logro)
+	
+	# 1. Agregamos a la lista de logros si no existe
+	if not DatosUsuario.logros_poseidos.has(id_entero):
+		DatosUsuario.logros_poseidos.append(id_entero)
+		
+	DatosUsuario.logros_poseidos.sort()
+	print("🏆 Logro desbloqueado: ", id_entero, " | Total Logros: ", DatosUsuario.logros_poseidos)
+	
+	if not DatosUsuario.esta_conectado_a_la_nube or DatosUsuario.usuario_uuid in ["", "0"]:
+		return
+		
+	var http_update_logro = HTTPRequest.new()
+	add_child(http_update_logro)
+	http_update_logro.accept_gzip = false
+	
+	http_update_logro.request_completed.connect(func(result, response_code, headers, body):
+		if response_code in [200, 204]:
+			print("🏆 ¡Supabase sincronizado! Logros guardados en la nube.")
+		else:
+			print("❌ Error al actualizar logros en Supabase: ", body.get_string_from_utf8())
+		http_update_logro.queue_free()
+	)
+	
+	var url_final = SUPABASE_URL + "progreso_album?user_id=eq." + DatosUsuario.usuario_uuid
+	var headers = _obtener_cabeceras(true)
+	headers.append("Prefer: return=minimal")
+	
+	var logros_limpios: Array = []
+	for x in DatosUsuario.logros_poseidos:
+		logros_limpios.append(int(x))
+		
+	var datos_actualizados = { "logros_poseidos": logros_limpios }
+	http_update_logro.request(url_final, headers, HTTPClient.METHOD_PATCH, JSON.stringify(datos_actualizados))
+
+func actualizar_monedas_en_nube(nuevas_monedas: int):
+	DatosUsuario.monedas = int(nuevas_monedas)
+	if not DatosUsuario.esta_conectado_a_la_nube or DatosUsuario.usuario_id_db <= 0:
+		return
+		
+	var http_monedas = HTTPRequest.new()
+	add_child(http_monedas)
+	http_monedas.accept_gzip = false
+	http_monedas.request_completed.connect(func(r, rc, h, b): http_monedas.queue_free())
+	
+	var datos_a_guardar = {
+		"monedas": DatosUsuario.monedas
+	}
+	var url_final = SUPABASE_URL + "progreso?usuario_id=eq." + str(DatosUsuario.usuario_id_db)
+	var headers = _obtener_cabeceras(true)
+	headers.append("Prefer: return=minimal")
+	
+	http_monedas.request(url_final, headers, HTTPClient.METHOD_PATCH, JSON.stringify(datos_a_guardar))

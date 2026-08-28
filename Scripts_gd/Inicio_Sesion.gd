@@ -179,8 +179,8 @@ func _on_request_completed(result, response_code, headers, body):
 			DatosUsuario.pregunta_pendiente_db = bool(progreso_data.get("pregunta_pendiente", false))
 			DatosUsuario.casilla_actual_db = int(progreso_data.get("casilla_actual", 0))
 			DatosUsuario.dificultad_actual = int(progreso_data.get("dificultad", 0))
+			DatosUsuario.monedas = int(progreso_data.get("monedas", 0))
 			
-			# 📝 AGREGAR ESTAS 3 LÍNEAS AQUÍ:
 			DatosUsuario.en_examen_final = bool(progreso_data.get("en_examen_final", false))
 			DatosUsuario.examen_correctas = int(progreso_data.get("examen_correctas", 0))
 			DatosUsuario.examen_preguntas_respondidas = int(progreso_data.get("examen_preguntas_respondidas", 0))

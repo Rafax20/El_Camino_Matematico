@@ -28,7 +28,15 @@ var Digito_Presionado = preload("res://assets/Minijuegos/minijuego Laboratorio/D
 var texturas_aliens: Array = [
 	preload("res://assets/Minijuegos/minijuego Laboratorio/Alien1.png"),
 	preload("res://assets/Minijuegos/minijuego Laboratorio/Alien2.png"),
-	preload("res://assets/Minijuegos/minijuego Laboratorio/Alien3.png")
+	preload("res://assets/Minijuegos/minijuego Laboratorio/Alien3.png"),
+]
+
+# Aliens 4-7 se cargan dinámicamente porque pueden no existir aún
+var _rutas_aliens_extra: Array[String] = [
+	"res://assets/Minijuegos/minijuego Laboratorio/Alien4.jpg",
+	"res://assets/Minijuegos/minijuego Laboratorio/Alien5.jpg",
+	"res://assets/Minijuegos/minijuego Laboratorio/Alien6.jpg",
+	"res://assets/Minijuegos/minijuego Laboratorio/Alien7.jpg",
 ]
 
 signal minijuego_finalizado(es_correcto: bool)
@@ -45,17 +53,32 @@ var valores_paso_1: Array = []
 var esta_expandido: bool = false
 var tween_panel: Tween
 
-# --- BANCO DE PREGUNTAS ---
+# --- BANCO DE PREGUNTAS (16 preguntas de regla de tres para 4to grado) ---
 var banco_preguntas: Array = [
+	# --- ORIGINALES ---
 	{ "cantidad_a1": 2, "objeto_a": "motores", "cantidad_b1": 8, "objeto_b": "tanques de gas", "cantidad_a2": 5 },
 	{ "cantidad_a1": 3, "objeto_a": "pócimas", "cantidad_b1": 12, "objeto_b": "cristales de hiperviaje", "cantidad_a2": 4 },
 	{ "cantidad_a1": 4, "objeto_a": "propulsores", "cantidad_b1": 20, "objeto_b": "baterías de plasma", "cantidad_a2": 6 },
-	{ "cantidad_a1": 5, "objeto_a": "sondas", "cantidad_b1": 15, "objeto_b": "celdas de energía", "cantidad_a2": 8 }
+	{ "cantidad_a1": 5, "objeto_a": "sondas", "cantidad_b1": 15, "objeto_b": "celdas de energía", "cantidad_a2": 8 },
+	# --- NUEVAS ---
+	{ "cantidad_a1": 2, "objeto_a": "naves", "cantidad_b1": 10, "objeto_b": "misiles de protón", "cantidad_a2": 3 },
+	{ "cantidad_a1": 3, "objeto_a": "escudos", "cantidad_b1": 9, "objeto_b": "generadores de fuerza", "cantidad_a2": 5 },
+	{ "cantidad_a1": 4, "objeto_a": "robots", "cantidad_b1": 12, "objeto_b": "chips de memoria", "cantidad_a2": 7 },
+	{ "cantidad_a1": 6, "objeto_a": "trajes espaciales", "cantidad_b1": 18, "objeto_b": "tanques de oxígeno", "cantidad_a2": 4 },
+	{ "cantidad_a1": 2, "objeto_a": "telescopios", "cantidad_b1": 6, "objeto_b": "lentes de cuarzo", "cantidad_a2": 5 },
+	{ "cantidad_a1": 5, "objeto_a": "drones", "cantidad_b1": 20, "objeto_b": "baterías solares", "cantidad_a2": 3 },
+	{ "cantidad_a1": 3, "objeto_a": "estaciones", "cantidad_b1": 15, "objeto_b": "módulos de habitar", "cantidad_a2": 6 },
+	{ "cantidad_a1": 4, "objeto_a": "cruceros", "cantidad_b1": 24, "objeto_b": "cápsulas de combustible", "cantidad_a2": 5 },
+	{ "cantidad_a1": 2, "objeto_a": "satélites", "cantidad_b1": 14, "objeto_b": "antenas de señal", "cantidad_a2": 3 },
+	{ "cantidad_a1": 5, "objeto_a": "rovers", "cantidad_b1": 10, "objeto_b": "ruedas todo terreno", "cantidad_a2": 8 },
+	{ "cantidad_a1": 3, "objeto_a": "cañones", "cantidad_b1": 6, "objeto_b": "núcleos de energía", "cantidad_a2": 7 },
+	{ "cantidad_a1": 4, "objeto_a": "contenedores", "cantidad_b1": 16, "objeto_b": "cristales de argón", "cantidad_a2": 6 },
 ]
 
 var datos_pregunta_actual: Dictionary = {}
 
 func _ready():
+	_cargar_aliens_disponibles()
 	$MinijuegoCompleto.visible = false
 	panel_operacion.visible = false
 	if panel_grande:
@@ -64,6 +87,14 @@ func _ready():
 		
 	globo_dialogo.visible = false
 	UI.visible = false
+
+func _cargar_aliens_disponibles():
+	for ruta in _rutas_aliens_extra:
+		var r_png = ruta.replace(".jpg", ".png")
+		if ResourceLoader.exists(ruta):
+			texturas_aliens.append(load(ruta))
+		elif ResourceLoader.exists(r_png):
+			texturas_aliens.append(load(r_png))
 	
 	# Asegurar que el Botón OK no tape las casillas del panel pequeño
 	if panel_operacion.has_node("BotonPantalla"):

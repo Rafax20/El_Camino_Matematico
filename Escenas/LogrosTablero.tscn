@@ -50,7 +50,7 @@ grow_horizontal = 2
 grow_vertical = 2
 theme_override_constants/h_separation = 15
 theme_override_constants/v_separation = 15
-columns = 6
+columns = 5
 
 [node name="Titulo_pais" type="RichTextLabel" parent="." unique_id=681561729]
 layout_mode = 1

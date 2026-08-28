@@ -19,6 +19,10 @@ var examen_preguntas_respondidas: int = 0
 var historial_examen: Array = []
 # ⚽ Guardará los IDs de las láminas que posee el niño (ej: [1, 5, 11])
 var laminas_poseidas: Array = []
+# 🏆 Guardará los IDs de los logros que posee el niño (ej: [1, 2, 5])
+var logros_poseidos: Array = []
+# 🪙 Monedas del jugador para comprar sobres en la tienda
+var monedas: int = 0
 
 # ⚡ CATALOGO_LAMINAS OPTIMIZADO: Almacena directamente la textura en RAM
 var CATALOGO_LAMINAS: Dictionary = {
@@ -115,10 +119,13 @@ var CATALOGO_LAMINAS: Dictionary = {
 }
 
 var CATALOGO_LOGROS: Dictionary = {
-	101: load("res://assets/Logros/Tablero_Completado.png"),
-	#102: load("res://assets/Logros/logro_102.png"),
-	#103: load("res://assets/Logros/logro_103.png"),
-	# 104: load("res://assets/Logros/logro_104.png"),
+	1: load("res://assets/Logros/Tablero_Completado.png"),
+	2: load("res://assets/Logros/Logro_Asteroides.png"),
+	3: load("res://assets/Logros/Logro_Buscador.png"),
+	4: load("res://assets/Logros/Logro_Laboratorio.png"),
+	5: load("res://assets/Logros/Logro_Balanza.png"),
+	6: load("res://assets/Logros/Logro_Clasificador.png"),
+	7: load("res://assets/Logros/Logro_Circuitos.png")
 }
 
 # Método para resetear la sesión si el niño sale al menú principal
@@ -127,3 +134,6 @@ func cerrar_sesion():
 	usuario_id_db = 0
 	usuario_uuid = ""
 	nombre_usuario = ""
+	monedas = 0
+	laminas_poseidas.clear()
+	logros_poseidos.clear()

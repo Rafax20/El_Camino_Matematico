@@ -29,6 +29,7 @@ offset_bottom = -0.5
 grow_horizontal = 2
 grow_vertical = 2
 scale = Vector2(2, 2)
+mouse_filter = 2
 
 [node name="Recuadro" type="Sprite2D" parent="Panel" unique_id=1854573220]
 position = Vector2(196.24997, 126.875)
@@ -41,6 +42,7 @@ offset_left = 81.5
 offset_top = 57.5
 offset_right = 305.5
 offset_bottom = 116.0
+mouse_filter = 2
 theme_override_fonts/normal_font = ExtResource("3_wtw7n")
 theme_override_font_sizes/normal_font_size = 20
 bbcode_enabled = true
@@ -64,25 +66,22 @@ offset_right = 110.75
 offset_bottom = 99.25
 grow_horizontal = 2
 grow_vertical = 2
+mouse_filter = 2
 theme_override_constants/h_separation = 20
 theme_override_constants/v_separation = 20
 columns = 2
 
 [node name="Boton1" type="TextureButton" parent="Panel/GridContainer" unique_id=1236292316]
 layout_mode = 2
+mouse_default_cursor_shape = 2
 texture_normal = ExtResource("2_fhsys")
 texture_pressed = ExtResource("3_t11l8")
 
 [node name="Resultado1" type="Label" parent="Panel/GridContainer/Boton1" unique_id=2097513495]
 layout_mode = 1
-anchors_preset = 14
-anchor_top = 0.5
+anchors_preset = 15
 anchor_right = 1.0
-anchor_bottom = 0.5
-offset_left = 10.375
-offset_top = -19.0
-offset_right = -10.125
-offset_bottom = 19.0
+anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_font_sizes/font_size = 24
@@ -91,19 +90,15 @@ vertical_alignment = 1
 
 [node name="Boton2" type="TextureButton" parent="Panel/GridContainer" unique_id=1985074000]
 layout_mode = 2
+mouse_default_cursor_shape = 2
 texture_normal = ExtResource("3_nthj1")
 texture_pressed = ExtResource("5_1q2be")
 
 [node name="Resultado2" type="Label" parent="Panel/GridContainer/Boton2" unique_id=585176323]
 layout_mode = 1
-anchors_preset = 14
-anchor_top = 0.5
+anchors_preset = 15
 anchor_right = 1.0
-anchor_bottom = 0.5
-offset_left = 9.875
-offset_top = -19.0
-offset_right = -10.625
-offset_bottom = 19.0
+anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_font_sizes/font_size = 24
@@ -112,19 +107,15 @@ vertical_alignment = 1
 
 [node name="Boton3" type="TextureButton" parent="Panel/GridContainer" unique_id=2048303282]
 layout_mode = 2
+mouse_default_cursor_shape = 2
 texture_normal = ExtResource("4_4rab8")
 texture_pressed = ExtResource("7_a7k8j")
 
 [node name="Resultado3" type="Label" parent="Panel/GridContainer/Boton3" unique_id=677147049]
 layout_mode = 1
-anchors_preset = 14
-anchor_top = 0.5
+anchors_preset = 15
 anchor_right = 1.0
-anchor_bottom = 0.5
-offset_left = 9.875
-offset_top = -18.5
-offset_right = -10.625
-offset_bottom = 19.5
+anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_font_sizes/font_size = 24
@@ -133,19 +124,15 @@ vertical_alignment = 1
 
 [node name="Boton4" type="TextureButton" parent="Panel/GridContainer" unique_id=403359146]
 layout_mode = 2
+mouse_default_cursor_shape = 2
 texture_normal = ExtResource("5_aj4mp")
 texture_pressed = ExtResource("6_4rab8")
 
 [node name="Resultado4" type="Label" parent="Panel/GridContainer/Boton4" unique_id=434336525]
 layout_mode = 1
-anchors_preset = 14
-anchor_top = 0.5
+anchors_preset = 15
 anchor_right = 1.0
-anchor_bottom = 0.5
-offset_left = 9.875
-offset_top = -18.0
-offset_right = -10.625
-offset_bottom = 20.0
+anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_font_sizes/font_size = 24
