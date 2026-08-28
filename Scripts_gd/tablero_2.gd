@@ -418,12 +418,12 @@ func _finalizar_examen(superado: bool):
 		# 🌟 Desplegar pantalla de felicitaciones centrada durante 6 segundos y volver al menú
 		await _mostrar_pantalla_felicitaciones_victoria(es_nuevo_logro)
 	else:
-		# Retrocede a la casilla anterior por no aprobar las 5
+		# Retrocede a la casilla anterior directamente por no aprobar las 5
 		casilla_actual = casilla_anterior
 		DatosUsuario.casilla_actual_db = casilla_actual
 		
 		ConexionSupabase.actualizar_progreso_en_nube(casilla_actual, false)
-		await _mover_ficha_visualmente(casilla_actual, false)
+		_mover_ficha_visualmente(casilla_actual, true)
 		
 		boton_dado.disabled = false
 		Menu_Volver.disabled = false
@@ -574,7 +574,7 @@ func _procesar_respuesta_casilla_normal(es_correcta: bool, tiempo_tardado: float
 		DatosUsuario.casilla_actual_db = casilla_actual
 		
 		ConexionSupabase.actualizar_progreso_en_nube(casilla_actual, false)
-		await _mover_ficha_visualmente(casilla_actual, false)
+		_mover_ficha_visualmente(casilla_actual, true)
 		
 		boton_dado.disabled = false
 		Menu_Volver.disabled = false
@@ -668,7 +668,7 @@ func _on_minijuego_resuelto(es_correcto: bool):
 		DatosUsuario.casilla_actual_db = casilla_actual
 		
 		ConexionSupabase.actualizar_progreso_en_nube(casilla_actual, false)
-		await _mover_ficha_visualmente(casilla_actual, false)
+		_mover_ficha_visualmente(casilla_actual, true)
 		
 		boton_dado.disabled = false
 		Menu_Volver.disabled = false

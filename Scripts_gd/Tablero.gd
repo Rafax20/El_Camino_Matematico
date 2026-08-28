@@ -218,12 +218,12 @@ func _on_interfaz_respuesta_completada(es_correcta: bool, tiempo_tardado: float)
 		# 📺 Cerramos la ventana de la pregunta
 		$Interfaz.visible = false
 		
-		# Ajustamos coordenadas de la memoria y hacemos el movimiento de retroceso visual
+		# Ajustamos coordenadas de la memoria y hacemos el movimiento de retroceso directo
 		casilla_actual = casilla_anterior
 		DatosUsuario.casilla_actual_db = casilla_actual
 		
 		ConexionSupabase.actualizar_progreso_en_nube(casilla_actual, false)
-		await _mover_ficha_visualmente(casilla_actual, false)
+		_mover_ficha_visualmente(casilla_actual, true)
 		
 		# Desbloqueamos el tablero para el siguiente turno
 		boton_dado.disabled = false
