@@ -29,6 +29,11 @@ NavegacionGlobal="*uid://cns78cu5jcm43"
 
 window/stretch/mode="canvas_items"
 
+[input_devices]
+
+pointing/emulate_touch_from_mouse=true
+pointing/emulate_mouse_from_touch=true
+
 [editor_plugins]
 
 enabled=PackedStringArray("res://addons/supabase/plugin.cfg")

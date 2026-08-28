@@ -9,6 +9,25 @@
 [ext_resource type="Texture2D" uid="uid://ct2hr5p26u7ib" path="res://assets/Boton_Izquierda_Presionado.png" id="7_f2d5c"]
 [ext_resource type="Texture2D" uid="uid://v6ip1apqfjel" path="res://assets/Boton_Derecha.png" id="8_rh870"]
 [ext_resource type="Texture2D" uid="uid://dw31my30emi3f" path="res://assets/Boton_Derecha_Presionado.png" id="9_fduvr"]
+[ext_resource type="FontFile" uid="uid://cvwfc51hrkou3" path="res://Fuentes/Fredoka/static/Fredoka-Bold.ttf" id="10_fredoka"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_desc"]
+bg_color = Color(0.06, 0.07, 0.14, 0.88)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.35, 0.65, 0.95, 0.7)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+shadow_color = Color(0, 0, 0, 0.4)
+shadow_size = 4
+content_margin_left = 16.0
+content_margin_top = 6.0
+content_margin_right = 16.0
+content_margin_bottom = 6.0
 
 [node name="LogrosTablero" type="Control" unique_id=510407467]
 layout_mode = 3
@@ -43,9 +62,9 @@ anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 offset_left = -419.0
-offset_top = -242.0
+offset_top = -250.0
 offset_right = 438.0
-offset_bottom = 271.0
+offset_bottom = 230.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_constants/h_separation = 15
@@ -57,11 +76,48 @@ layout_mode = 1
 anchors_preset = 5
 anchor_left = 0.5
 anchor_right = 0.5
-offset_left = -161.5
-offset_right = 161.5
-offset_bottom = 40.0
+offset_left = -200.0
+offset_top = 8.0
+offset_right = 200.0
+offset_bottom = 45.0
 grow_horizontal = 2
+theme_override_fonts/normal_font = ExtResource("10_fredoka")
+theme_override_font_sizes/normal_font_size = 22
+theme_override_constants/outline_size = 4
+theme_override_colors/font_outline_color = Color(0.05, 0.05, 0.1, 1)
+bbcode_enabled = true
+fit_content = true
 horizontal_alignment = 1
+
+[node name="PanelDescripcion" type="PanelContainer" parent="." unique_id=987654321]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -460.0
+offset_top = -54.0
+offset_right = 460.0
+offset_bottom = -10.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_styles/panel = SubResource("StyleBoxFlat_desc")
+
+[node name="LabelDescripcion" type="RichTextLabel" parent="PanelDescripcion" unique_id=123456789]
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_fonts/normal_font = ExtResource("10_fredoka")
+theme_override_fonts/bold_font = ExtResource("10_fredoka")
+theme_override_font_sizes/normal_font_size = 17
+theme_override_font_sizes/bold_font_size = 17
+theme_override_colors/default_color = Color(1, 0.96, 0.85, 1)
+theme_override_constants/outline_size = 3
+theme_override_colors/font_outline_color = Color(0.06, 0.06, 0.1, 1)
+bbcode_enabled = true
+fit_content = true
+autowrap_mode = 0
+text = "[center]✨ Toca o pasa el ratón sobre un logro para ver cómo conseguirlo ✨[/center]"
 
 [node name="BotonAnterior" type="TextureButton" parent="." unique_id=1712088753]
 layout_mode = 1
