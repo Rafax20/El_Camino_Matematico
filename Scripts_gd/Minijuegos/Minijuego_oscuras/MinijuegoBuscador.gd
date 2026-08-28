@@ -946,6 +946,12 @@ func _actualizar_interfaz_corazones():
 				if textura_corazon_vacio: corazones[i].texture = textura_corazon_vacio
 				else: corazones[i].modulate = Color(0.2, 0.2, 0.2, 0.4)
 
+func _notification(what):
+	if what == NOTIFICATION_VISIBILITY_CHANGED:
+		if not visible:
+			if HUD: HUD.visible = false
+			if controles_tactiles: controles_tactiles.visible = false
+
 func _finalizar_juego(es_exito: bool):
 	if jugador and jugador.has_method("desactivar_movimiento"):
 		jugador.desactivar_movimiento()
@@ -957,7 +963,10 @@ func _finalizar_juego(es_exito: bool):
 		
 	juego_activo = false
 	visible = false
-	HUD.visible = false
+	if HUD:
+		HUD.visible = false
+	if controles_tactiles:
+		controles_tactiles.visible = false
 	minijuego_finalizado.emit(es_exito)
 
 func _obtener_datos_operacion() -> Dictionary:
