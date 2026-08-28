@@ -136,6 +136,8 @@ func _on_caja_solicitar_operacion(caja_ref):
 	if interfaz_pregunta:
 		interfaz_pregunta.visible = true
 		pregunta_abierta = true
+		if controles_tactiles:
+			controles_tactiles.visible = false
 
 func _limpiar_elementos_operacion():
 	for node in elementos_dinamicos:
@@ -720,6 +722,7 @@ func _procesar_acierto():
 	caja_actual_interactuando.abrir_caja()
 	interfaz_pregunta.visible = false
 	pregunta_abierta = false
+	_configurar_controles_tactiles()
 	
 	# ⚡ En lugar de terminar el juego, activamos la mesa del generador dinámicamente
 	if gemas_obtenidas >= gemas_requeridas:

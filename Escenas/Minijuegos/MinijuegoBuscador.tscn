@@ -18522,6 +18522,7 @@ shape = SubResource("RectangleShape2D_ax5tx")
 disabled = true
 
 [node name="HUD" type="CanvasLayer" parent="." unique_id=758163755]
+layer = 10
 visible = false
 
 [node name="InterfazPregunta" type="Control" parent="HUD" unique_id=559209466]
