@@ -31,7 +31,7 @@ func _inicializar_configuracion():
 				match llave:
 					"GEMINI_API_KEY":
 						GEMINI_API_KEY = valor
-						GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=" + GEMINI_API_KEY
+						GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=" + GEMINI_API_KEY
 					"SUPABASE_URL":
 						SUPABASE_URL = valor
 					"SUPABASE_ANON_KEY":
