@@ -15,7 +15,7 @@ extends Control
 @onready var gemas_label = $MinijuegoCompleto/UIHeader/AciertosLabel
 @onready var vidas_container = $MinijuegoCompleto/UIHeader/VidasContainer
 @onready var pizarra_borrador = $MinijuegoCompleto/PizarraBorrador
-@onready var audio_player: AudioStreamPlayer = $MinijuegoCompleto/AudioPlayer 
+@onready var audio_player: AudioStreamPlayer = get_node_or_null("MinijuegoCompleto/AudioPlayer") as AudioStreamPlayer
 @onready var UI = $MinijuegoCompleto/UIHeader
 
 # Sprites y Texturas

@@ -8,7 +8,20 @@ extends Control
 signal minijuego_finalizado(es_correcto: bool)
 
 # --- TEXTURAS ---
-var Fondo_Tex: Texture2D = null
+var Fondo_Tex: Texture2D = preload("res://assets/Minijuegos/minijuego Clasificador/Fondo_Clasificador.jpg")
+
+var tex_azul_n: Texture2D = preload("res://assets/Minijuegos/minijuego Clasificador/Boton_Azul_Normal.png")
+var tex_azul_p: Texture2D = preload("res://assets/Minijuegos/minijuego Clasificador/Boton_Azul_Presionado.png")
+
+var tex_verde_n: Texture2D = preload("res://assets/Minijuegos/minijuego Clasificador/Boton_Verde_Normal.png")
+var tex_verde_p: Texture2D = preload("res://assets/Minijuegos/minijuego Clasificador/Boton_Verde_Presionado.png")
+
+var tex_amarillo_n: Texture2D = preload("res://assets/Minijuegos/minijuego Clasificador/Boton_Amarillo_Normal.png")
+var tex_amarillo_p: Texture2D = preload("res://assets/Minijuegos/minijuego Clasificador/Boton_Amarillo_Presionado.png")
+
+var tex_rojo_n: Texture2D = preload("res://assets/Minijuegos/minijuego Clasificador/Boton_Rojo_Normal.png")
+var tex_rojo_p: Texture2D = preload("res://assets/Minijuegos/minijuego Clasificador/Boton_Rojo_Presionado.png")
+
 var Botones_Normal: Array[Texture2D] = []
 var Botones_Presionado: Array[Texture2D] = []
 
@@ -83,51 +96,12 @@ var contenedor_clasificadores: HBoxContainer
 var cinta_grafica: Panel
 
 func _ready():
-	_precargar_texturas_botones()
+	Botones_Normal = [tex_azul_n, tex_verde_n, tex_amarillo_n, tex_rojo_n]
+	Botones_Presionado = [tex_azul_p, tex_verde_p, tex_amarillo_p, tex_rojo_p]
 	visible = false
 	_construir_interfaz()
 	if get_tree().current_scene == self:
 		iniciar_minijuego("espacio")
-
-func _obtener_recurso_textura(ruta_base: String) -> Texture2D:
-	var extensiones = [".png", ".jpg", ".jpeg", ".webp"]
-	for ext in extensiones:
-		var ruta = ruta_base + ext
-		if ResourceLoader.exists(ruta):
-			var res = load(ruta)
-			if res is Texture2D:
-				return res
-		
-		# Carga directa mediante Image (inmune a retrasos de importación)
-		var ruta_global = ProjectSettings.globalize_path(ruta)
-		var ruta_a_usar = ""
-		if FileAccess.file_exists(ruta):
-			ruta_a_usar = ruta
-		elif FileAccess.file_exists(ruta_global):
-			ruta_a_usar = ruta_global
-			
-		if ruta_a_usar != "":
-			var img = Image.load_from_file(ruta_a_usar)
-			if img and not img.is_empty():
-				return ImageTexture.create_from_image(img)
-	return null
-
-func _precargar_texturas_botones():
-	if Fondo_Tex == null:
-		Fondo_Tex = _obtener_recurso_textura("res://assets/Minijuegos/minijuego Clasificador/Fondo_Clasificador")
-		
-	Botones_Normal.clear()
-	Botones_Presionado.clear()
-	for color_name in colores_escotilla:
-		var ruta_base_n = "res://assets/Minijuegos/minijuego Clasificador/Boton_" + color_name + "_Normal"
-		var ruta_base_p = "res://assets/Minijuegos/minijuego Clasificador/Boton_" + color_name + "_Presionado"
-		var tex_n = _obtener_recurso_textura(ruta_base_n)
-		var tex_p = _obtener_recurso_textura(ruta_base_p)
-		if tex_p == null and tex_n != null:
-			tex_p = tex_n
-		Botones_Normal.append(tex_n)
-		Botones_Presionado.append(tex_p)
-		print("📦 [Clasificador] Textura botón ", color_name, " cargada: ", tex_n != null)
 
 func _construir_interfaz():
 	if panel_contenedor == null:

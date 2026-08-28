@@ -32,8 +32,8 @@ signal minijuego_finalizado(es_correcto)
 @onready var contenedor_cajas = $Nivel/ContenedorCajas
 @onready var mesa_generador: Area2D = $Nivel/MesaGenerador # Ajusta la ruta a tu nodo Area2D
 @onready var collision_mesa: CollisionShape2D = $Nivel/MesaGenerador/CollisionShape2D
-@onready var label_mensaje: Label = $HUD/LabelMensaje # Opcional: Label para el mensaje final
-@onready var animador: AnimationPlayer = $AnimationPlayer # O AnimatedSprite2D según utilices
+@onready var label_mensaje: Label = get_node_or_null("HUD/LabelMensaje") as Label
+@onready var animador: AnimationPlayer = get_node_or_null("AnimationPlayer") as AnimationPlayer
 
 var textura_corazon_lleno = preload("res://assets/Minijuegos/corazon_lleno.png")
 var textura_corazon_vacio = preload("res://assets/Minijuegos/corazon_vacio.png")
