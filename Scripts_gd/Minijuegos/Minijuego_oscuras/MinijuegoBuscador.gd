@@ -1166,7 +1166,8 @@ func _configurar_controles_tactiles():
 				if "android" in ua_lower or "iphone" in ua_lower or "ipad" in ua_lower or "mobile" in ua_lower:
 					es_web_movil = true
 
-	var debe_mostrar_tactil = es_movil_nativo or es_web_movil or DisplayServer.is_touchscreen_available()
+	# 📱 Mostrar controles táctiles solo si es móvil nativo o navegador móvil (teléfono/tablet)
+	var debe_mostrar_tactil = es_movil_nativo or es_web_movil
 	controles_tactiles.visible = debe_mostrar_tactil
 	
 	# 🔒 Ocultar explícitamente el botón de interacción al arrancar el minijuego
