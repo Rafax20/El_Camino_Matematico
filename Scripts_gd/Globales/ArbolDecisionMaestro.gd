@@ -13,7 +13,7 @@ func procesar_diagnostico_global(aciertos: int, fallas: int, tiempo_promedio: fl
 			"nivel": "neutral",
 			"diagnostico": "El estudiante aún no registra intentos en el tablero o minijuegos.",
 			"recomendacion": "Motivar al estudiante a ingresar a los minijuegos espaciales para comenzar a recopilar métricas.",
-			"icono": "ℹ️"
+			"icono": ""
 		}
 		
 	var porcentaje_exito = (float(aciertos) / float(total_preguntas)) * 100.0
@@ -30,13 +30,13 @@ func procesar_diagnostico_global(aciertos: int, fallas: int, tiempo_promedio: fl
 		if tiempo_promedio <= 6.0:
 			res["titulo"] = "Dominio Sobresaliente y Fluido"
 			res["nivel"] = "excelente"
-			res["icono"] = "🌟"
+			res["icono"] = ""
 			res["diagnostico"] = "El estudiante demuestra automatización cognitiva y excelente velocidad mental. Resuelve operaciones con alta seguridad y precisión matemática."
 			res["recomendacion"] = "El alumno está listo para desafíos de mayor dificultad y operaciones combinadas avanzadas."
 		else:
 			res["titulo"] = "Alta Precisión con Cálculo Pausado"
 			res["nivel"] = "bueno"
-			res["icono"] = "⏳"
+			res["icono"] = ""
 			res["diagnostico"] = "Comprende los conceptos correctamente y acierta casi siempre, pero requiere un tiempo elevado de cálculo mental (superior al promedio)."
 			res["recomendacion"] = "Incentivar actividades lúdicas de agilidad mental (ej. minijuego de asteroides) para desarrollar fluidez sin perder precisión."
 			
@@ -45,13 +45,13 @@ func procesar_diagnostico_global(aciertos: int, fallas: int, tiempo_promedio: fl
 		if tiempo_promedio <= 5.0:
 			res["titulo"] = "Patrón de Impulsividad"
 			res["nivel"] = "atencion"
-			res["icono"] = "⚡"
+			res["icono"] = ""
 			res["diagnostico"] = "El estudiante responde con mucha prisa pero comete errores evitables. Su velocidad rápida con fallas sugiere respuestas intuitivas sin verificación previa."
 			res["recomendacion"] = "Trabajar en la pausa reflexiva: pedirle que verifique mentalmente antes de pulsar la opción."
 		else:
 			res["titulo"] = "Consolidación en Proceso"
 			res["nivel"] = "regular"
-			res["icono"] = "📘"
+			res["icono"] = ""
 			res["diagnostico"] = "El estudiante comprende parte de las operaciones pero muestra dudas en procedimientos específicos."
 			res["recomendacion"] = "Revisar la categoría con menor porcentaje de acierto para reforzar las bases operativas."
 			
@@ -60,21 +60,21 @@ func procesar_diagnostico_global(aciertos: int, fallas: int, tiempo_promedio: fl
 		if tiempo_promedio >= 15.0:
 			res["titulo"] = "Alerta de Rezago Cognitivo"
 			res["nivel"] = "critico"
-			res["icono"] = "🚨"
+			res["icono"] = ""
 			res["diagnostico"] = "El estudiante tarda mucho tiempo en contestar y la mayoría de sus respuestas son erróneas. Presenta frustración o bloqueo ante los problemas planteados."
 			res["recomendacion"] = "Intervención pedagógica personalizada urgente: regresar a representaciones visuales concretas y nivel básico de dificultad."
 		elif tiempo_promedio <= 4.0:
 			res["titulo"] = "Respuestas al Azar / Desconexión"
 			res["nivel"] = "critico"
-			res["icono"] = "⚠️"
+			res["icono"] = ""
 			res["diagnostico"] = "Respuestas sumamente rápidas e incorrectas. Indica que el alumno está pulsando opciones al azar sin leer la pregunta."
-			res["recomendacion"] = "Acompañamiento docente presencial para reenganchar al niño con el objetivo del juego."
+			res["recomendacion"] = "Establecer metas guiadas y supervisar la lectura comprensiva de cada enunciado."
 		else:
 			res["titulo"] = "Dificultad Operativa General"
-			res["nivel"] = "atencion"
-			res["icono"] = "🔍"
-			res["diagnostico"] = "Presenta dificultades en los algoritmos de cálculo estándar a ritmo normal."
-			res["recomendacion"] = "Reforzar las tablas numéricas y el valor posicional con ejercicios paso a paso."
+			res["nivel"] = "bajo"
+			res["icono"] = ""
+			res["diagnostico"] = "El estudiante muestra bajo índice de acierto a ritmo regular. Requiere afianzar algoritmos aritméticos fundamentales."
+			res["recomendacion"] = "Priorizar minijuegos de operaciones simples (ej. Balanza) antes de avanzar a problemas combinados."
 			
 	# Evaluación complementaria por categorías específicas
 	if datos_categorias.size() > 0:

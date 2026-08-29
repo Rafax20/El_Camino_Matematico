@@ -2,6 +2,18 @@
 
 [ext_resource type="Script" uid="uid://ctpmaestro01" path="res://Scripts_gd/PanelMaestro.gd" id="1_maestro"]
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn"]
+bg_color = Color(0.15, 0.23, 0.38, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.22, 0.74, 0.97, 0.6)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_card"]
 bg_color = Color(0.08, 0.12, 0.2, 0.85)
 border_width_left = 2
@@ -15,18 +27,6 @@ corner_radius_bottom_right = 12
 corner_radius_bottom_left = 12
 shadow_color = Color(0, 0, 0, 0.3)
 shadow_size = 6
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn"]
-bg_color = Color(0.15, 0.23, 0.38, 1)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.22, 0.74, 0.97, 0.6)
-corner_radius_top_left = 8
-corner_radius_top_right = 8
-corner_radius_bottom_right = 8
-corner_radius_bottom_left = 8
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_diag"]
 bg_color = Color(0.06, 0.1, 0.18, 0.95)
@@ -85,14 +85,14 @@ theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.8)
 theme_override_constants/shadow_offset_x = 2
 theme_override_constants/shadow_offset_y = 2
 theme_override_font_sizes/font_size = 22
-text = "📊 PANEL PEDAGÓGICO DEL MAESTRO - Desempeño Matemático"
+text = "PANEL PEDAGÓGICO DEL MAESTRO - Desempeño Matemático"
 vertical_alignment = 1
 
 [node name="LabelMaestro" type="Label" parent="VBoxPrincipal/BarraSuperior" unique_id=1455383689]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.22, 0.74, 0.97, 1)
 theme_override_font_sizes/font_size = 16
-text = "👤 Maestro: Docente"
+text = "Docente: Maestro"
 vertical_alignment = 1
 
 [node name="BtnSalir" type="Button" parent="VBoxPrincipal/BarraSuperior" unique_id=1455383690]
@@ -100,7 +100,7 @@ custom_minimum_size = Vector2(140, 36)
 layout_mode = 2
 mouse_default_cursor_shape = 2
 theme_override_styles/normal = SubResource("StyleBoxFlat_btn")
-text = "🚪 Salir al Menú"
+text = "Salir al Menú"
 
 [node name="BarraFiltros" type="HBoxContainer" parent="VBoxPrincipal" unique_id=1455383691]
 layout_mode = 2
@@ -118,7 +118,7 @@ layout_mode = 2
 mouse_default_cursor_shape = 2
 selected = 0
 item_count = 1
-popup/item_0/text = "👥 Todos los Estudiantes (Aula Completa)"
+popup/item_0/text = "Todos los Estudiantes (Aula Completa)"
 popup/item_0/id = 0
 
 [node name="LabelCategoria" type="Label" parent="VBoxPrincipal/BarraFiltros" unique_id=1455383694]
@@ -135,13 +135,13 @@ selected = 0
 item_count = 5
 popup/item_0/text = "Todas las Operaciones"
 popup/item_0/id = 0
-popup/item_1/text = "➕ Suma"
+popup/item_1/text = "Suma"
 popup/item_1/id = 1
-popup/item_2/text = "➖ Resta"
+popup/item_2/text = "Resta"
 popup/item_2/id = 2
-popup/item_3/text = "✖️ Multiplicación"
+popup/item_3/text = "Multiplicación"
 popup/item_3/id = 3
-popup/item_4/text = "➗ División"
+popup/item_4/text = "División"
 popup/item_4/id = 4
 
 [node name="BtnActualizar" type="Button" parent="VBoxPrincipal/BarraFiltros" unique_id=1455383696]
@@ -149,7 +149,7 @@ custom_minimum_size = Vector2(150, 36)
 layout_mode = 2
 mouse_default_cursor_shape = 2
 theme_override_styles/normal = SubResource("StyleBoxFlat_btn")
-text = "🔄 Actualizar Datos"
+text = "Actualizar Datos"
 
 [node name="ContenedorKPIs" type="HBoxContainer" parent="VBoxPrincipal" unique_id=1455383697]
 custom_minimum_size = Vector2(0, 75)
@@ -271,13 +271,13 @@ layout_mode = 2
 size_flags_horizontal = 3
 theme_override_colors/font_color = Color(0.9, 0.95, 1, 1)
 theme_override_font_sizes/font_size = 14
-text = "📈 FLUJO DE PRECISIÓN Y VELOCIDAD POR OPERACIÓN"
+text = "FLUJO DE PRECISIÓN Y VELOCIDAD POR OPERACIÓN"
 
 [node name="Leyenda" type="Label" parent="VBoxPrincipal/ContenedorCuerpo/PanelGrafico/VBox/HBoxHeaderGrafico" unique_id=1455383719]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.7, 0.8, 0.9, 1)
 theme_override_font_sizes/font_size = 11
-text = "🟩 Aciertos  🟥 Errores  🔵 Tiempo (s)"
+text = "Aciertos (Verde)  |  Errores (Rojo)  |  Tiempo (Azul)"
 
 [node name="LienzoGrafico" type="Control" parent="VBoxPrincipal/ContenedorCuerpo/PanelGrafico/VBox" unique_id=1455383720]
 layout_mode = 2
@@ -297,7 +297,7 @@ theme_override_constants/separation = 8
 layout_mode = 2
 theme_override_colors/font_color = Color(0.9, 0.95, 1, 1)
 theme_override_font_sizes/font_size = 14
-text = "📋 HISTORIAL RECIENTE DE INTENTOS"
+text = "HISTORIAL RECIENTE DE INTENTOS"
 
 [node name="Scroll" type="ScrollContainer" parent="VBoxPrincipal/ContenedorCuerpo/PanelHistorial/VBox" unique_id=1455383724]
 layout_mode = 2
@@ -329,11 +329,6 @@ theme_override_constants/separation = 4
 layout_mode = 2
 theme_override_constants/separation = 8
 
-[node name="LabelIcono" type="Label" parent="VBoxPrincipal/PanelDiagnostico/VBox/HBoxTit" unique_id=1455383730]
-layout_mode = 2
-theme_override_font_sizes/font_size = 18
-text = "🌟"
-
 [node name="LabelTitulo" type="Label" parent="VBoxPrincipal/PanelDiagnostico/VBox/HBoxTit" unique_id=1455383731]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.992, 0.878, 0.278, 1)
@@ -351,5 +346,5 @@ autowrap_mode = 3
 layout_mode = 2
 theme_override_colors/font_color = Color(0.22, 0.74, 0.97, 1)
 theme_override_font_sizes/font_size = 13
-text = "💡 Consejo Docente: -"
+text = "Consejo Docente: -"
 autowrap_mode = 3
