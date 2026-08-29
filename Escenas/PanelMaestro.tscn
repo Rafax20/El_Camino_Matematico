@@ -1,6 +1,355 @@
 [gd_scene format=3 uid="uid://bf7h20y00hoqw"]
 
-[ext_resource type="Script" uid="uid://ca4hucargkapm" path="res://Scripts_gd/Globales/ArbolDecisionMaestro.gd" id="1_bhrul"]
+[ext_resource type="Script" uid="uid://ctpmaestro01" path="res://Scripts_gd/PanelMaestro.gd" id="1_maestro"]
 
-[node name="PanelMaestro" type="Node" unique_id=1455383684]
-script = ExtResource("1_bhrul")
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_card"]
+bg_color = Color(0.08, 0.12, 0.2, 0.85)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.2, 0.3, 0.45, 0.6)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+shadow_color = Color(0, 0, 0, 0.3)
+shadow_size = 6
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn"]
+bg_color = Color(0.15, 0.23, 0.38, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.22, 0.74, 0.97, 0.6)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_diag"]
+bg_color = Color(0.06, 0.1, 0.18, 0.95)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.98, 0.75, 0.14, 0.7)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+shadow_color = Color(0.98, 0.75, 0.14, 0.15)
+shadow_size = 10
+
+[node name="PanelMaestro" type="Control" unique_id=1455383684]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_maestro")
+
+[node name="Fondo" type="ColorRect" parent="." unique_id=1455383685]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.043, 0.059, 0.098, 1)
+
+[node name="VBoxPrincipal" type="VBoxContainer" parent="." unique_id=1455383686]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 20.0
+offset_top = 15.0
+offset_right = -20.0
+offset_bottom = -15.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 12
+
+[node name="BarraSuperior" type="HBoxContainer" parent="VBoxPrincipal" unique_id=1455383687]
+layout_mode = 2
+theme_override_constants/separation = 15
+
+[node name="Titulo" type="Label" parent="VBoxPrincipal/BarraSuperior" unique_id=1455383688]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.992, 0.878, 0.278, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.8)
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 2
+theme_override_font_sizes/font_size = 22
+text = "📊 PANEL PEDAGÓGICO DEL MAESTRO - Desempeño Matemático"
+vertical_alignment = 1
+
+[node name="LabelMaestro" type="Label" parent="VBoxPrincipal/BarraSuperior" unique_id=1455383689]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.22, 0.74, 0.97, 1)
+theme_override_font_sizes/font_size = 16
+text = "👤 Maestro: Docente"
+vertical_alignment = 1
+
+[node name="BtnSalir" type="Button" parent="VBoxPrincipal/BarraSuperior" unique_id=1455383690]
+custom_minimum_size = Vector2(140, 36)
+layout_mode = 2
+mouse_default_cursor_shape = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_btn")
+text = "🚪 Salir al Menú"
+
+[node name="BarraFiltros" type="HBoxContainer" parent="VBoxPrincipal" unique_id=1455383691]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="LabelEstudiante" type="Label" parent="VBoxPrincipal/BarraFiltros" unique_id=1455383692]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9, 0.9, 0.9, 1)
+theme_override_font_sizes/font_size = 14
+text = "Estudiante:"
+
+[node name="SelectorEstudiante" type="OptionButton" parent="VBoxPrincipal/BarraFiltros" unique_id=1455383693]
+custom_minimum_size = Vector2(290, 36)
+layout_mode = 2
+mouse_default_cursor_shape = 2
+selected = 0
+item_count = 1
+popup/item_0/text = "👥 Todos los Estudiantes (Aula Completa)"
+popup/item_0/id = 0
+
+[node name="LabelCategoria" type="Label" parent="VBoxPrincipal/BarraFiltros" unique_id=1455383694]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9, 0.9, 0.9, 1)
+theme_override_font_sizes/font_size = 14
+text = "Operación:"
+
+[node name="SelectorCategoria" type="OptionButton" parent="VBoxPrincipal/BarraFiltros" unique_id=1455383695]
+custom_minimum_size = Vector2(200, 36)
+layout_mode = 2
+mouse_default_cursor_shape = 2
+selected = 0
+item_count = 5
+popup/item_0/text = "Todas las Operaciones"
+popup/item_0/id = 0
+popup/item_1/text = "➕ Suma"
+popup/item_1/id = 1
+popup/item_2/text = "➖ Resta"
+popup/item_2/id = 2
+popup/item_3/text = "✖️ Multiplicación"
+popup/item_3/id = 3
+popup/item_4/text = "➗ División"
+popup/item_4/id = 4
+
+[node name="BtnActualizar" type="Button" parent="VBoxPrincipal/BarraFiltros" unique_id=1455383696]
+custom_minimum_size = Vector2(150, 36)
+layout_mode = 2
+mouse_default_cursor_shape = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_btn")
+text = "🔄 Actualizar Datos"
+
+[node name="ContenedorKPIs" type="HBoxContainer" parent="VBoxPrincipal" unique_id=1455383697]
+custom_minimum_size = Vector2(0, 75)
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="TarjetaTotal" type="PanelContainer" parent="VBoxPrincipal/ContenedorKPIs" unique_id=1455383698]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_card")
+
+[node name="VBox" type="VBoxContainer" parent="VBoxPrincipal/ContenedorKPIs/TarjetaTotal" unique_id=1455383699]
+layout_mode = 2
+alignment = 1
+
+[node name="Titulo" type="Label" parent="VBoxPrincipal/ContenedorKPIs/TarjetaTotal/VBox" unique_id=1455383700]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.6, 0.7, 0.85, 1)
+theme_override_font_sizes/font_size = 12
+text = "PREGUNTAS TOTALES"
+horizontal_alignment = 1
+
+[node name="Valor" type="Label" parent="VBoxPrincipal/ContenedorKPIs/TarjetaTotal/VBox" unique_id=1455383701]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 22
+text = "0"
+horizontal_alignment = 1
+
+[node name="TarjetaPrecision" type="PanelContainer" parent="VBoxPrincipal/ContenedorKPIs" unique_id=1455383702]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_card")
+
+[node name="VBox" type="VBoxContainer" parent="VBoxPrincipal/ContenedorKPIs/TarjetaPrecision" unique_id=1455383703]
+layout_mode = 2
+alignment = 1
+
+[node name="Titulo" type="Label" parent="VBoxPrincipal/ContenedorKPIs/TarjetaPrecision/VBox" unique_id=1455383704]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.6, 0.7, 0.85, 1)
+theme_override_font_sizes/font_size = 12
+text = "PRECISIÓN GLOBAL"
+horizontal_alignment = 1
+
+[node name="Valor" type="Label" parent="VBoxPrincipal/ContenedorKPIs/TarjetaPrecision/VBox" unique_id=1455383705]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.1, 0.85, 0.45, 1)
+theme_override_font_sizes/font_size = 22
+text = "0.0%"
+horizontal_alignment = 1
+
+[node name="TarjetaTiempo" type="PanelContainer" parent="VBoxPrincipal/ContenedorKPIs" unique_id=1455383706]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_card")
+
+[node name="VBox" type="VBoxContainer" parent="VBoxPrincipal/ContenedorKPIs/TarjetaTiempo" unique_id=1455383707]
+layout_mode = 2
+alignment = 1
+
+[node name="Titulo" type="Label" parent="VBoxPrincipal/ContenedorKPIs/TarjetaTiempo/VBox" unique_id=1455383708]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.6, 0.7, 0.85, 1)
+theme_override_font_sizes/font_size = 12
+text = "TIEMPO PROMEDIO"
+horizontal_alignment = 1
+
+[node name="Valor" type="Label" parent="VBoxPrincipal/ContenedorKPIs/TarjetaTiempo/VBox" unique_id=1455383709]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.22, 0.74, 0.97, 1)
+theme_override_font_sizes/font_size = 22
+text = "0.00s"
+horizontal_alignment = 1
+
+[node name="TarjetaEnfoque" type="PanelContainer" parent="VBoxPrincipal/ContenedorKPIs" unique_id=1455383710]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_card")
+
+[node name="VBox" type="VBoxContainer" parent="VBoxPrincipal/ContenedorKPIs/TarjetaEnfoque" unique_id=1455383711]
+layout_mode = 2
+alignment = 1
+
+[node name="Titulo" type="Label" parent="VBoxPrincipal/ContenedorKPIs/TarjetaEnfoque/VBox" unique_id=1455383712]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.6, 0.7, 0.85, 1)
+theme_override_font_sizes/font_size = 12
+text = "OPERACIÓN DESTACADA"
+horizontal_alignment = 1
+
+[node name="Valor" type="Label" parent="VBoxPrincipal/ContenedorKPIs/TarjetaEnfoque/VBox" unique_id=1455383713]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.98, 0.75, 0.14, 1)
+theme_override_font_sizes/font_size = 18
+text = "En evaluación"
+horizontal_alignment = 1
+
+[node name="ContenedorCuerpo" type="HBoxContainer" parent="VBoxPrincipal" unique_id=1455383714]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 12
+
+[node name="PanelGrafico" type="PanelContainer" parent="VBoxPrincipal/ContenedorCuerpo" unique_id=1455383715]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 1.15
+theme_override_styles/panel = SubResource("StyleBoxFlat_card")
+
+[node name="VBox" type="VBoxContainer" parent="VBoxPrincipal/ContenedorCuerpo/PanelGrafico" unique_id=1455383716]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="HBoxHeaderGrafico" type="HBoxContainer" parent="VBoxPrincipal/ContenedorCuerpo/PanelGrafico/VBox" unique_id=1455383717]
+layout_mode = 2
+
+[node name="Titulo" type="Label" parent="VBoxPrincipal/ContenedorCuerpo/PanelGrafico/VBox/HBoxHeaderGrafico" unique_id=1455383718]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.9, 0.95, 1, 1)
+theme_override_font_sizes/font_size = 14
+text = "📈 FLUJO DE PRECISIÓN Y VELOCIDAD POR OPERACIÓN"
+
+[node name="Leyenda" type="Label" parent="VBoxPrincipal/ContenedorCuerpo/PanelGrafico/VBox/HBoxHeaderGrafico" unique_id=1455383719]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.7, 0.8, 0.9, 1)
+theme_override_font_sizes/font_size = 11
+text = "🟩 Aciertos  🟥 Errores  🔵 Tiempo (s)"
+
+[node name="LienzoGrafico" type="Control" parent="VBoxPrincipal/ContenedorCuerpo/PanelGrafico/VBox" unique_id=1455383720]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="PanelHistorial" type="PanelContainer" parent="VBoxPrincipal/ContenedorCuerpo" unique_id=1455383721]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.85
+theme_override_styles/panel = SubResource("StyleBoxFlat_card")
+
+[node name="VBox" type="VBoxContainer" parent="VBoxPrincipal/ContenedorCuerpo/PanelHistorial" unique_id=1455383722]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Titulo" type="Label" parent="VBoxPrincipal/ContenedorCuerpo/PanelHistorial/VBox" unique_id=1455383723]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9, 0.95, 1, 1)
+theme_override_font_sizes/font_size = 14
+text = "📋 HISTORIAL RECIENTE DE INTENTOS"
+
+[node name="Scroll" type="ScrollContainer" parent="VBoxPrincipal/ContenedorCuerpo/PanelHistorial/VBox" unique_id=1455383724]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="VBoxFilas" type="VBoxContainer" parent="VBoxPrincipal/ContenedorCuerpo/PanelHistorial/VBox/Scroll" unique_id=1455383725]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 6
+
+[node name="LabelEstado" type="Label" parent="VBoxPrincipal/ContenedorCuerpo/PanelHistorial" unique_id=1455383726]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.6, 0.7, 0.8, 1)
+theme_override_font_sizes/font_size = 13
+text = "Cargando datos..."
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="PanelDiagnostico" type="PanelContainer" parent="VBoxPrincipal" unique_id=1455383727]
+custom_minimum_size = Vector2(0, 95)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_diag")
+
+[node name="VBox" type="VBoxContainer" parent="VBoxPrincipal/PanelDiagnostico" unique_id=1455383728]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="HBoxTit" type="HBoxContainer" parent="VBoxPrincipal/PanelDiagnostico/VBox" unique_id=1455383729]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="LabelIcono" type="Label" parent="VBoxPrincipal/PanelDiagnostico/VBox/HBoxTit" unique_id=1455383730]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "🌟"
+
+[node name="LabelTitulo" type="Label" parent="VBoxPrincipal/PanelDiagnostico/VBox/HBoxTit" unique_id=1455383731]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.992, 0.878, 0.278, 1)
+theme_override_font_sizes/font_size = 16
+text = "Diagnóstico Pedagógico Automatizado"
+
+[node name="LabelDiagnostico" type="Label" parent="VBoxPrincipal/PanelDiagnostico/VBox" unique_id=1455383732]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9, 0.95, 1, 1)
+theme_override_font_sizes/font_size = 13
+text = "Cargando métricas y evaluando patrón cognitivo..."
+autowrap_mode = 3
+
+[node name="LabelRecomendacion" type="Label" parent="VBoxPrincipal/PanelDiagnostico/VBox" unique_id=1455383733]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.22, 0.74, 0.97, 1)
+theme_override_font_sizes/font_size = 13
+text = "💡 Consejo Docente: -"
+autowrap_mode = 3

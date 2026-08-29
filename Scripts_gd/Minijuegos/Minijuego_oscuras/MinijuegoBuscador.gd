@@ -120,17 +120,14 @@ func iniciar_minijuego(_tema: String = "espacio"):
 # Guardamos el tiempo exacto en el que se abre la caja
 var tiempo_inicio_caja: float = 0.0
 
-func _on_caja_solicitar_operacion(caja_ref):
-	if not juego_activo: return
-	if pregunta_abierta and interfaz_pregunta and interfaz_pregunta.visible:
-		return
-		
-	caja_actual_interactuando = caja_ref
+func _on_caja_solicitar_operacion(caja_node: Node2D):
+	caja_actual_interactuando = caja_node
 	
 	# ⏱️ 1. Iniciar cronómetro de esta caja
 	tiempo_inicio_caja = Time.get_ticks_msec()
 	
 	var pregunta = _obtener_datos_operacion()
+	pregunta_actual_dict = pregunta
 	_maquetar_operacion_matematica(pregunta)
 	
 	if interfaz_pregunta:
@@ -710,6 +707,11 @@ func _validar_intento():
 func _procesar_acierto():
 	var tiempo_tardado = (Time.get_ticks_msec() - tiempo_inicio_caja) / 1000.0
 	
+	# 📊 REGISTRO PEDAGÓGICO EN HISTORIAL DE SUPABASE
+	if ConexionSupabase:
+		var cat = ConexionSupabase.determinar_categoria(pregunta_actual_dict)
+		ConexionSupabase.registrar_en_historial(cat, true, tiempo_tardado)
+	
 	DatosUsuario.dificultad_actual = SistemaExperto.evaluar_desempeno(
 		DatosUsuario.dificultad_actual, 
 		true, 
@@ -726,7 +728,6 @@ func _procesar_acierto():
 	
 	# ⚡ En lugar de terminar el juego, activamos la mesa del generador dinámicamente
 	if gemas_obtenidas >= gemas_requeridas:
-		
 		_activar_generador()
 
 func _activar_generador():
@@ -741,6 +742,11 @@ func _activar_generador():
 func _procesar_error(_ingresado: String, _esperado: String):
 	# ⏱️ 2. Calcular tiempo tardado antes del error
 	var tiempo_tardado = (Time.get_ticks_msec() - tiempo_inicio_caja) / 1000.0
+	
+	# 📊 REGISTRO PEDAGÓGICO EN HISTORIAL DE SUPABASE
+	if ConexionSupabase:
+		var cat = ConexionSupabase.determinar_categoria(pregunta_actual_dict)
+		ConexionSupabase.registrar_en_historial(cat, false, tiempo_tardado)
 	
 	# 🧠 3. Evaluar con el Sistema Experto
 	DatosUsuario.dificultad_actual = SistemaExperto.evaluar_desempeno(

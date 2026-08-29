@@ -10,6 +10,7 @@
 [ext_resource type="Texture2D" uid="uid://v6ip1apqfjel" path="res://assets/Boton_Derecha.png" id="8_dk6qc"]
 [ext_resource type="Texture2D" uid="uid://dw31my30emi3f" path="res://assets/Boton_Derecha_Presionado.png" id="9_mya4v"]
 [ext_resource type="Texture2D" uid="uid://b7tiendaicon" path="res://assets/Boton_Tienda.png" id="10_tienda"]
+[ext_resource type="Texture2D" uid="uid://bmonedaicon1" path="res://assets/Iconos_UI/Icono_Moneda.png" id="11_moneda"]
 
 [node name="Album" type="Control" unique_id=1846142326]
 layout_mode = 3
@@ -100,20 +101,32 @@ layout_mode = 1
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
-offset_left = -220.0
+offset_left = -210.0
 offset_top = 15.0
 offset_right = -20.0
 offset_bottom = 58.0
 grow_horizontal = 0
 
-[node name="LabelMonedas" type="Label" parent="ContenedorMonedas" unique_id=987123457]
+[node name="HBoxContainer" type="HBoxContainer" parent="ContenedorMonedas" unique_id=987123459]
+layout_mode = 2
+alignment = 1
+theme_override_constants/separation = 8
+
+[node name="IconoMoneda" type="TextureRect" parent="ContenedorMonedas/HBoxContainer" unique_id=987123460]
+custom_minimum_size = Vector2(28, 28)
+layout_mode = 2
+texture = ExtResource("11_moneda")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="LabelMonedas" type="Label" parent="ContenedorMonedas/HBoxContainer" unique_id=987123457]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.98, 0.75, 0.14, 1)
 theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.8)
 theme_override_constants/shadow_offset_x = 2
 theme_override_constants/shadow_offset_y = 2
-theme_override_font_sizes/font_size = 20
-text = "🪙 Monedas: 0"
+theme_override_font_sizes/font_size = 18
+text = "Monedas: 0"
 horizontal_alignment = 1
 vertical_alignment = 1
 

@@ -17,11 +17,15 @@ func _ready():
 	if label_estado:
 		label_estado.text = "CARGANDO... 0%\nCONECTANDO CON EL MÓDULO DEL COMPAÑERO...\nESPERANDO PREGUNTAS DEL ESPACIO..."
 	
+	# 🚀 Si las preguntas aún no están en RAM, iniciamos la descarga asíncrona de inmediato
+	if DatosUsuario.banco_preguntas.size() == 0:
+		ConexionSupabase.descargar_preguntas()
+	
 	# ⏳ Espera de 2 cuadros para asegurar renderizado en pantalla
 	await get_tree().process_frame
 	await get_tree().process_frame
 
-	# Iniciar carga en segundo plano
+	# Iniciar carga de la escena en segundo plano
 	if ruta_destino != "":
 		ResourceLoader.load_threaded_request(ruta_destino)
 
@@ -44,19 +48,22 @@ func _process(delta):
 		var p_int = int(progreso_visual)
 		var fase_texto = "CONECTANDO CON EL MÓDULO DEL COMPAÑERO..."
 		if p_int > 30 and p_int <= 70:
-			fase_texto = "CALIBRANDO RUTAS Y GALAXIAS..."
+			fase_texto = "CALIBRANDO BANCO DE PREGUNTAS Y GALAXIAS..."
 		elif p_int > 70:
 			fase_texto = "¡PREPARANDO SISTEMAS DE NAVEGACIÓN!"
 			
 		label_estado.text = "CARGANDO... %d%%\n%s\nESPERANDO PREGUNTAS DEL ESPACIO..." % [p_int, fase_texto]
 	
-	# Cuando la escena esté 100% lista y el progreso visual haya llegado a la meta
-	if estado == ResourceLoader.THREAD_LOAD_LOADED and progreso_visual >= 95.0:
+	# Validamos si las preguntas ya están en RAM (o si estamos offline)
+	var preguntas_listas = DatosUsuario.banco_preguntas.size() > 0 or not DatosUsuario.esta_conectado_a_la_nube
+	
+	# Cuando la escena esté 100% lista, el progreso visual haya llegado a la meta y las preguntas estén listas
+	if estado == ResourceLoader.THREAD_LOAD_LOADED and progreso_visual >= 95.0 and preguntas_listas:
 		set_process(false)
 		if barra_progreso: barra_progreso.value = 100
 		if label_estado:
 			label_estado.text = "CARGANDO... 100%\n¡MISIÓN LISTA PARA EL DESPEGUE!\nESPERANDO PREGUNTAS DEL ESPACIO..."
 			
-		await get_tree().create_timer(0.4).timeout
+		await get_tree().create_timer(0.3).timeout
 		var escena_cargada = ResourceLoader.load_threaded_get(ruta_destino)
 		get_tree().change_scene_to_packed(escena_cargada)

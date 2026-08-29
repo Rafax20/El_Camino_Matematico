@@ -1,33 +1,93 @@
-## res://Scripts_gd/ArbolDecisionMaestro.gd
-#extends Node
-#
-## Esta función representa nuestro Árbol de Decisión Inteligente
-#func procesar_diagnostico(aciertos: int, fallas: int, tiempo_promedio: float) -> String:
-	#var total_preguntas = aciertos + fallas
-	#
-	## Control de seguridad si el niño no ha jugado
-	#if total_preguntas == 0:
-		#return "El estudiante aún no registra actividad en el tablero."
-		#
-	#var porcentaje_exito = (float(aciertos) / float(total_preguntas)) * 100.0
-	#var diagnostico = ""
-	#
-	## === NODO RAÍZ: ¿El estudiante aprueba el umbral básico (70%)? ===
-	#if porcentaje_exito >= 70.0:
-		## Ramificación A: Alto rendimiento
-		## Sub-nodo: Evaluación de Fluidez por Tiempo
-		#if tiempo_promedio <= 12.0:
-			#diagnostico = "Dominio Sobresaliente: El alumno resuelve los problemas con alta precisión y automatización cognitiva (procesamiento rápido). Está listo para desafíos de lógica avanzada."
-		#else:
-			#diagnostico = "Dominio Preciso pero Lento: El alumno comprende los conceptos y responde correctamente, pero requiere un tiempo elevado de cálculo mental. Se sugiere practicar velocidad."
-	#else:
-		## Ramificación B: Rendimiento bajo el promedio (Requiere atención)
-		## Sub-nodo: Analizar si el fallo es por frustración o distracción
-		#if tiempo_promedio >= 25.0:
-			#diagnostico = "🚨 Alerta de Rezago Cognitivo: El alumno presenta serias dificultades. Tarda mucho tiempo y la mayoría de sus respuestas son incorrectas. Requiere intervención pedagógica urgente y tutoría personalizada."
-		#elif tiempo_promedio <= 8.0:
-			#diagnostico = "⚠️ Patrón de Impulsividad/Distracción: El estudiante responde de forma incorrecta pero sumamente rápido. Este comportamiento indica falta de lectura o respuestas al azar, más que incapacidad matemática."
-		#else:
-			#diagnostico = "Refuerzo Requerido: El alumno trabaja a un ritmo normal pero confunde los procedimientos operativos. Se recomienda repasar las bases de las operaciones en las que falló."
-			#
-	#return diagnostico
+# res://Scripts_gd/Globales/ArbolDecisionMaestro.gd
+extends Node
+
+## Árbol de Decisión Inteligente para Diagnóstico Pedagógico
+## Evalúa aciertos, errores, tiempos de respuesta y categorías para orientar al maestro.
+
+func procesar_diagnostico_global(aciertos: int, fallas: int, tiempo_promedio: float, datos_categorias: Dictionary = {}) -> Dictionary:
+	var total_preguntas = aciertos + fallas
+	
+	if total_preguntas == 0:
+		return {
+			"titulo": "Sin Registros de Actividad",
+			"nivel": "neutral",
+			"diagnostico": "El estudiante aún no registra intentos en el tablero o minijuegos.",
+			"recomendacion": "Motivar al estudiante a ingresar a los minijuegos espaciales para comenzar a recopilar métricas.",
+			"icono": "ℹ️"
+		}
+		
+	var porcentaje_exito = (float(aciertos) / float(total_preguntas)) * 100.0
+	var res = {
+		"titulo": "",
+		"nivel": "",
+		"diagnostico": "",
+		"recomendacion": "",
+		"icono": ""
+	}
+	
+	# === RAMA 1: Alto Desempeño (Precisión >= 75%) ===
+	if porcentaje_exito >= 75.0:
+		if tiempo_promedio <= 6.0:
+			res["titulo"] = "Dominio Sobresaliente y Fluido"
+			res["nivel"] = "excelente"
+			res["icono"] = "🌟"
+			res["diagnostico"] = "El estudiante demuestra automatización cognitiva y excelente velocidad mental. Resuelve operaciones con alta seguridad y precisión matemática."
+			res["recomendacion"] = "El alumno está listo para desafíos de mayor dificultad y operaciones combinadas avanzadas."
+		else:
+			res["titulo"] = "Alta Precisión con Cálculo Pausado"
+			res["nivel"] = "bueno"
+			res["icono"] = "⏳"
+			res["diagnostico"] = "Comprende los conceptos correctamente y acierta casi siempre, pero requiere un tiempo elevado de cálculo mental (superior al promedio)."
+			res["recomendacion"] = "Incentivar actividades lúdicas de agilidad mental (ej. minijuego de asteroides) para desarrollar fluidez sin perder precisión."
+			
+	# === RAMA 2: Desempeño Medio (50% - 74%) ===
+	elif porcentaje_exito >= 50.0:
+		if tiempo_promedio <= 5.0:
+			res["titulo"] = "Patrón de Impulsividad"
+			res["nivel"] = "atencion"
+			res["icono"] = "⚡"
+			res["diagnostico"] = "El estudiante responde con mucha prisa pero comete errores evitables. Su velocidad rápida con fallas sugiere respuestas intuitivas sin verificación previa."
+			res["recomendacion"] = "Trabajar en la pausa reflexiva: pedirle que verifique mentalmente antes de pulsar la opción."
+		else:
+			res["titulo"] = "Consolidación en Proceso"
+			res["nivel"] = "regular"
+			res["icono"] = "📘"
+			res["diagnostico"] = "El estudiante comprende parte de las operaciones pero muestra dudas en procedimientos específicos."
+			res["recomendacion"] = "Revisar la categoría con menor porcentaje de acierto para reforzar las bases operativas."
+			
+	# === RAMA 3: Desempeño Bajo (< 50%) ===
+	else:
+		if tiempo_promedio >= 15.0:
+			res["titulo"] = "Alerta de Rezago Cognitivo"
+			res["nivel"] = "critico"
+			res["icono"] = "🚨"
+			res["diagnostico"] = "El estudiante tarda mucho tiempo en contestar y la mayoría de sus respuestas son erróneas. Presenta frustración o bloqueo ante los problemas planteados."
+			res["recomendacion"] = "Intervención pedagógica personalizada urgente: regresar a representaciones visuales concretas y nivel básico de dificultad."
+		elif tiempo_promedio <= 4.0:
+			res["titulo"] = "Respuestas al Azar / Desconexión"
+			res["nivel"] = "critico"
+			res["icono"] = "⚠️"
+			res["diagnostico"] = "Respuestas sumamente rápidas e incorrectas. Indica que el alumno está pulsando opciones al azar sin leer la pregunta."
+			res["recomendacion"] = "Acompañamiento docente presencial para reenganchar al niño con el objetivo del juego."
+		else:
+			res["titulo"] = "Dificultad Operativa General"
+			res["nivel"] = "atencion"
+			res["icono"] = "🔍"
+			res["diagnostico"] = "Presenta dificultades en los algoritmos de cálculo estándar a ritmo normal."
+			res["recomendacion"] = "Reforzar las tablas numéricas y el valor posicional con ejercicios paso a paso."
+			
+	# Evaluación complementaria por categorías específicas
+	if datos_categorias.size() > 0:
+		var debilidades: Array = []
+		for cat in datos_categorias.keys():
+			var cat_data = datos_categorias[cat]
+			var total_c = cat_data.get("aciertos", 0) + cat_data.get("fallas", 0)
+			if total_c >= 2:
+				var pct_c = (float(cat_data.get("aciertos", 0)) / float(total_c)) * 100.0
+				if pct_c < 50.0:
+					debilidades.append(cat.capitalize())
+					
+		if debilidades.size() > 0:
+			res["recomendacion"] += " [Refuerzo prioritario detectado en: " + ", ".join(debilidades) + "]"
+			
+	return res

@@ -8,6 +8,8 @@ signal progreso_creado_exito()
 var SUPABASE_URL = ""
 var SUPABASE_ANON_KEY = ""
 
+var descargando_preguntas: bool = false
+
 func _ready():
 	await get_tree().process_frame
 	
@@ -16,6 +18,9 @@ func _ready():
 	
 	if not SUPABASE_URL.ends_with("/"):
 		SUPABASE_URL += "/"
+		
+	# 🚀 PRE-DESCARGA INMEDIATA AL INICIAR EL JUEGO
+	descargar_preguntas()
 
 func _build_url(endpoint: String) -> String:
 	var clean_endpoint = endpoint
@@ -33,7 +38,18 @@ func _obtener_cabeceras(incluir_json: bool = false) -> Array:
 		headers.append("Content-Type: application/json")
 	return headers
 
-func descargar_preguntas():
+func descargar_preguntas(forzar: bool = false):
+	# Si ya están descargadas y no se fuerza la recarga, emitimos directamente
+	if not forzar and DatosUsuario.banco_preguntas.size() > 0:
+		print("ℹ️ [API] Preguntas ya disponibles en memoria global. Total: ", DatosUsuario.banco_preguntas.size())
+		preguntas_descargadas.emit(DatosUsuario.banco_preguntas)
+		return
+		
+	if descargando_preguntas:
+		print("⏳ [API] Descarga de preguntas ya en curso...")
+		return
+		
+	descargando_preguntas = true
 	print("⏳ [API] Descargando banco de preguntas...")
 	var cliente_http = HTTPRequest.new()
 	add_child(cliente_http)
@@ -58,6 +74,7 @@ func descargar_preguntas():
 		else:
 			print("❌ ERROR: Servidor respondió con código ", response_code)
 		
+		descargando_preguntas = false
 		cliente_http.queue_free()
 	)
 	
@@ -119,41 +136,101 @@ func actualizar_progreso_en_nube(casilla: int, pendiente: bool):
 	
 	http_update.request(url_final, headers, HTTPClient.METHOD_PATCH, JSON.stringify(datos_a_guardar))
 	
+func determinar_categoria(datos_pregunta: Dictionary) -> String:
+	if datos_pregunta.has("categoria") and str(datos_pregunta.get("categoria")).strip_edges() != "":
+		return str(datos_pregunta.get("categoria")).to_lower().strip_edges()
+		
+	var op_str = str(datos_pregunta.get("operacion", "")).to_lower()
+	if "+" in op_str or "más" in op_str or "mas" in op_str or "suma" in op_str:
+		return "suma"
+	elif "-" in op_str or "menos" in op_str or "resta" in op_str:
+		return "resta"
+	elif "x" in op_str or "*" in op_str or "por" in op_str or "multiplica" in op_str:
+		return "multiplicacion"
+	elif "/" in op_str or "÷" in op_str or "entre" in op_str or "dividido" in op_str or "divide" in op_str:
+		return "division"
+		
+	return "matematicas"
+
 func registrar_en_historial(categoria: String, es_correcta: bool, tiempo: float):
-	if not DatosUsuario.esta_conectado_a_la_nube: return
-	
-	# ¡AQUÍ ESTÁ EL CAMBIO!
-	# Validamos que tengamos base antes de lanzar el request
-	if SUPABASE_URL == "" or SUPABASE_URL == "/":
-		print("⚠️ [BLOQUEO] URL no lista, esperando...")
-		await get_tree().create_timer(0.5).timeout
+	if not DatosUsuario.esta_conectado_a_la_nube or DatosUsuario.usuario_id_db <= 0: return
 	
 	var http_historial = HTTPRequest.new()
 	add_child(http_historial)
 	http_historial.accept_gzip = false
 	
 	http_historial.request_completed.connect(func(result, response_code, headers, body):
-		print("📡 --- DIAGNÓSTICO HISTORIAL ---")
 		if response_code != 201 and response_code != 200:
-			print("❌ Error de Supabase: ", body.get_string_from_utf8())
+			print("❌ Error de Supabase al guardar en historial_respuestas: ", body.get_string_from_utf8())
 		else:
-			print("✅ ¡Registro exitoso en el historial de Supabase!")
+			print("✅ ¡Registro exitoso en el historial de Supabase! (", categoria, " - ", "OK" if es_correcta else "ERROR", " - ", snapped(tiempo, 0.01), "s)")
 		http_historial.queue_free()
 	)
 	
+	var cat_normalizada = categoria.to_lower().strip_edges()
+	if cat_normalizada == "": cat_normalizada = "matematicas"
+	
 	var nueva_jugada = {
 		"usuario_id": DatosUsuario.usuario_id_db,
-		"categoria": categoria,
+		"categoria": cat_normalizada,
 		"es_correcta": es_correcta,
-		"tiempo_tardado": tiempo
+		"tiempo_tardado": snapped(tiempo, 0.001)
 	}
 	
-	# CONCATENACIÓN DINÁMICA
-	var url_final = _build_url("historial_respuestas?usuario_id=eq." + str(DatosUsuario.usuario_id_db))
+	var url_final = _build_url("historial_respuestas")
 	var headers = _obtener_cabeceras(true)
 	headers.append("Prefer: return=minimal")
 	
 	http_historial.request(url_final, headers, HTTPClient.METHOD_POST, JSON.stringify(nueva_jugada))
+
+# =====================================================================
+# 🎓 CONSULTAS PARA EL PANEL DEL MAESTRO
+# =====================================================================
+func obtener_lista_estudiantes(callback: Callable):
+	var http_estudiantes = HTTPRequest.new()
+	add_child(http_estudiantes)
+	http_estudiantes.accept_gzip = false
+	
+	http_estudiantes.request_completed.connect(func(result, response_code, headers, body):
+		var lista_estudiantes: Array = []
+		if response_code == 200:
+			var json = JSON.new()
+			if json.parse(body.get_string_from_utf8()) == OK:
+				if json.data is Array:
+					lista_estudiantes = json.data
+		else:
+			print("❌ Error al obtener estudiantes de Supabase: ", response_code)
+		http_estudiantes.queue_free()
+		callback.call(lista_estudiantes)
+	)
+	
+	var url_final = _build_url("usuarios?rol=eq.estudiante&select=id,usuario,created_at&order=usuario.asc")
+	http_estudiantes.request(url_final, _obtener_cabeceras(), HTTPClient.METHOD_GET)
+
+func obtener_historial_respuestas(usuario_id: int, callback: Callable):
+	var http_historial = HTTPRequest.new()
+	add_child(http_historial)
+	http_historial.accept_gzip = false
+	
+	http_historial.request_completed.connect(func(result, response_code, headers, body):
+		var registros: Array = []
+		if response_code == 200:
+			var json = JSON.new()
+			if json.parse(body.get_string_from_utf8()) == OK:
+				if json.data is Array:
+					registros = json.data
+		else:
+			print("❌ Error al obtener historial de respuestas: ", response_code)
+		http_historial.queue_free()
+		callback.call(registros)
+	)
+	
+	var url_query = "historial_respuestas?select=*&order=created_at.desc&limit=150"
+	if usuario_id > 0:
+		url_query = "historial_respuestas?usuario_id=eq." + str(usuario_id) + "&select=*&order=created_at.desc&limit=150"
+		
+	var url_final = _build_url(url_query)
+	http_historial.request(url_final, _obtener_cabeceras(), HTTPClient.METHOD_GET)
 
 # =====================================================================
 # ⚽ SISTEMA DE ÁLBUM DEL MUNDIAL

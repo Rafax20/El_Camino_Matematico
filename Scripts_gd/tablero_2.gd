@@ -78,9 +78,15 @@ func _ready():
 	print("CASILLA CARGADA DONDE DEBERA ESTAR: ", casilla_actual)
 	_mover_ficha_visualmente(casilla_actual, true)
 	
-	# Conectamos la descarga de preguntas en background
-	ConexionSupabase.preguntas_descargadas.connect(_on_preguntas_cargadas)
-	ConexionSupabase.descargar_preguntas()
+	# ⚡ VALIDACIÓN INSTANTÁNEA: Si las preguntas ya están en RAM, las usamos de inmediato sin esperar la red
+	if DatosUsuario.banco_preguntas.size() > 0:
+		print("⚡ [Tablero] Preguntas ya disponibles en memoria global (", DatosUsuario.banco_preguntas.size(), "). Activación instantánea.")
+		_on_preguntas_cargadas(DatosUsuario.banco_preguntas)
+	else:
+		print("⏳ [Tablero] Esperando preguntas de Supabase...")
+		if not ConexionSupabase.preguntas_descargadas.is_connected(_on_preguntas_cargadas):
+			ConexionSupabase.preguntas_descargadas.connect(_on_preguntas_cargadas)
+		ConexionSupabase.descargar_preguntas()
 
 func _on_preguntas_cargadas(lista):
 	# duplicate() crea una copia de trabajo local para poder hacer .shuffle() 
@@ -396,9 +402,9 @@ func _finalizar_examen(superado: bool):
 		boton_chat.disabled = true
 		Menu_Volver.disabled = true
 		
-		# 🪙 OTORGAR 20 MONEDAS POR COMPLETAR EL TABLERO
-		DatosUsuario.monedas += 20
-		print("🪙 ¡+20 Monedas ganadas! Total actual: ", DatosUsuario.monedas)
+		# 🪙 OTORGAR 30 MONEDAS POR COMPLETAR EL TABLERO
+		DatosUsuario.monedas += 30
+		print("🪙 ¡+30 Monedas ganadas! Total actual: ", DatosUsuario.monedas)
 		
 		# 🏆 Verificar si es la primera vez que obtiene el logro 1
 		var es_nuevo_logro: bool = not DatosUsuario.logros_poseidos.has(1)
@@ -490,7 +496,7 @@ func _mostrar_pantalla_felicitaciones_victoria(es_nuevo_logro: bool = true):
 	
 	var lbl_desc = Label.new()
 	if es_nuevo_logro:
-		lbl_desc.text = "¡Has completado con éxito todo el tablero espacial y aprobado el examen final!\n🏆 ¡Nuevo Logro Desbloqueado: Tablero Completado!"
+		lbl_desc.text = "¡Has completado con éxito todo el tablero espacial y aprobado el examen final!\n¡Nuevo Logro Desbloqueado: Tablero Completado!"
 	else:
 		lbl_desc.text = "¡Has completado nuevamente con éxito todo el tablero espacial y aprobado el examen final!"
 	lbl_desc.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -498,13 +504,25 @@ func _mostrar_pantalla_felicitaciones_victoria(es_nuevo_logro: bool = true):
 	lbl_desc.add_theme_color_override("font_color", Color("#e2e8f0"))
 	vbox.add_child(lbl_desc)
 	
-	# 🪙 Banner de Recompensa de Monedas
+	# Banner de Recompensa de Monedas con Icono PNG
+	var hbox_monedas = HBoxContainer.new()
+	hbox_monedas.alignment = BoxContainer.ALIGNMENT_CENTER
+	hbox_monedas.add_theme_constant_override("separation", 8)
+	vbox.add_child(hbox_monedas)
+	
+	var ico_moneda_vic = TextureRect.new()
+	ico_moneda_vic.custom_minimum_size = Vector2(26, 26)
+	ico_moneda_vic.texture = load("res://assets/Iconos_UI/Icono_Moneda.png")
+	ico_moneda_vic.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	ico_moneda_vic.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	hbox_monedas.add_child(ico_moneda_vic)
+	
 	var lbl_monedas = Label.new()
-	lbl_monedas.text = "🪙 ¡Has ganado +20 Monedas Espaciales! (Total: %d monedas)" % DatosUsuario.monedas
+	lbl_monedas.text = "¡Has ganado +30 Monedas Espaciales! (Total: %d monedas)" % DatosUsuario.monedas
 	lbl_monedas.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	lbl_monedas.add_theme_font_size_override("font_size", 18)
-	lbl_monedas.add_theme_color_override("font_color", Color("#fbbf24")) # Dorado radiante
-	vbox.add_child(lbl_monedas)
+	lbl_monedas.add_theme_color_override("font_color", Color("#fbbf24"))
+	hbox_monedas.add_child(lbl_monedas)
 	
 	var lbl_contador = Label.new()
 	lbl_contador.text = "Regresando a la base espacial en 6 segundos..."
@@ -680,7 +698,7 @@ func _mostrar_popup_nuevo_logro(id_logro: int):
 	if not has_node("CapaLogro"): return
 	if DatosUsuario.CATALOGO_LOGROS.has(id_logro):
 		$CapaLogro/Control/TextureRect.texture = DatosUsuario.CATALOGO_LOGROS[id_logro]
-		$CapaLogro/Control/TextureRect/Label.text = "🏆 ¡Nuevo Logro Desbloqueado!"
+		$CapaLogro/Control/TextureRect/Label.text = "¡Nuevo Logro Desbloqueado!"
 		$CapaLogro.visible = true
 		$CapaLogro/Control.scale = Vector2.ZERO
 		var tween = create_tween().set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)

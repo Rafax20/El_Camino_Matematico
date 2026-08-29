@@ -520,8 +520,14 @@ func _evaluar_respuesta(valor: int):
 	if not juego_activo: return
 	var tiempo_tardado = (Time.get_ticks_msec() - tiempo_inicio_pregunta) / 1000.0
 	if gema_platillo_der: gema_platillo_der.text = str(valor)
+	var es_correcto = (valor == respuesta_correcta)
 	
-	if valor == respuesta_correcta:
+	# 📊 REGISTRO PEDAGÓGICO EN HISTORIAL DE SUPABASE
+	if ConexionSupabase:
+		var cat = ConexionSupabase.determinar_categoria(pregunta_actual)
+		ConexionSupabase.registrar_en_historial(cat, es_correcto, tiempo_tardado)
+	
+	if es_correcto:
 		aciertos_actuales += 1
 		_reproducir_sonido("Correcto")
 		if balanza_brazo:

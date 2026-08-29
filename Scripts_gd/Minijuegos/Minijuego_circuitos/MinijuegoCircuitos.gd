@@ -257,6 +257,7 @@ func _construir_nodos_panel():
 		btn.flat = true
 		btn.mouse_filter = Control.MOUSE_FILTER_STOP
 		btn.set_meta("respuesta_correcta", resp)
+		btn.set_meta("datos_pregunta", p)
 		btn.set_meta("resuelto", false)
 		
 		# Carcasa metálica cilíndrica horizontal (Pill Shape)
@@ -446,8 +447,15 @@ func _seleccionar_nodo_derecho(btn_der: Button):
 	var resp_esperada = int(nodo_izq_seleccionado.get_meta("respuesta_correcta"))
 	var resp_ofrecida = int(btn_der.get_meta("valor_respuesta"))
 	var tiempo_tardado = (Time.get_ticks_msec() - tiempo_inicio_panel) / 1000.0
+	var datos_p = nodo_izq_seleccionado.get_meta("datos_pregunta", {})
+	var es_correcto = (resp_esperada == resp_ofrecida)
 	
-	if resp_esperada == resp_ofrecida:
+	# 📊 REGISTRO PEDAGÓGICO EN HISTORIAL DE SUPABASE
+	if ConexionSupabase:
+		var cat = ConexionSupabase.determinar_categoria(datos_p)
+		ConexionSupabase.registrar_en_historial(cat, es_correcto, tiempo_tardado)
+	
+	if es_correcto:
 		_reproducir_sonido("Correcto")
 		nodo_izq_seleccionado.set_meta("resuelto", true)
 		btn_der.set_meta("resuelto", true)

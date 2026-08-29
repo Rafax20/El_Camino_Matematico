@@ -484,8 +484,14 @@ func _evaluar_respuesta(valor_elegido: int):
 		tween_caja.kill()
 	
 	var tiempo_tardado = (Time.get_ticks_msec() - tiempo_inicio_pregunta) / 1000.0
+	var es_correcto = (valor_elegido == respuesta_correcta)
 	
-	if valor_elegido == respuesta_correcta:
+	# 📊 REGISTRO PEDAGÓGICO EN HISTORIAL DE SUPABASE
+	if ConexionSupabase:
+		var cat = ConexionSupabase.determinar_categoria(pregunta_actual)
+		ConexionSupabase.registrar_en_historial(cat, es_correcto, tiempo_tardado)
+	
+	if es_correcto:
 		aciertos_actuales += 1
 		_reproducir_sonido("Correcto")
 		
