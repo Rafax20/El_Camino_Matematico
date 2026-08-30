@@ -1,4 +1,5 @@
 # res://Scripts_gd/Minijuegos/Minijuego_clasificador/MinijuegoClasificador.gd
+class_name MinijuegoClasificador
 extends Control
 
 ## Minijuego: Clasificador de Cinta Transportadora (Línea de Pedidos Espacial)
@@ -7,34 +8,16 @@ extends Control
 
 signal minijuego_finalizado(es_correcto: bool)
 
-# --- TEXTURAS ---
-var Fondo_Tex: Texture2D = preload("res://assets/Minijuegos/minijuego Clasificador/Fondo_Clasificador.jpg")
-
-var tex_azul_n: Texture2D = preload("res://assets/Minijuegos/minijuego Clasificador/Boton_Azul_Normal.png")
-var tex_azul_p: Texture2D = preload("res://assets/Minijuegos/minijuego Clasificador/Boton_Azul_Presionado.png")
-
-var tex_verde_n: Texture2D = preload("res://assets/Minijuegos/minijuego Clasificador/Boton_Verde_Normal.png")
-var tex_verde_p: Texture2D = preload("res://assets/Minijuegos/minijuego Clasificador/Boton_Verde_Presionado.png")
-
-var tex_amarillo_n: Texture2D = preload("res://assets/Minijuegos/minijuego Clasificador/Boton_Amarillo_Normal.png")
-var tex_amarillo_p: Texture2D = preload("res://assets/Minijuegos/minijuego Clasificador/Boton_Amarillo_Presionado.png")
-
-var tex_rojo_n: Texture2D = preload("res://assets/Minijuegos/minijuego Clasificador/Boton_Rojo_Normal.png")
-var tex_rojo_p: Texture2D = preload("res://assets/Minijuegos/minijuego Clasificador/Boton_Rojo_Presionado.png")
-
-var Botones_Normal: Array[Texture2D] = []
-var Botones_Presionado: Array[Texture2D] = []
-
+# --- TEXTURAS Y ESTILOS ---
 var textura_corazon_lleno = preload("res://assets/Minijuegos/corazon_lleno.png")
 var textura_corazon_vacio = preload("res://assets/Minijuegos/corazon_vacio.png")
 
-# Colores asociados a cada escotilla (Azul, Verde, Amarillo, Rojo)
-var colores_escotilla: Array[String] = ["Azul", "Verde", "Amarillo", "Rojo"]
-var colores_rgb: Array[Color] = [
-	Color("#3b82f6"), # Azul
-	Color("#22c55e"), # Verde
-	Color("#eab308"), # Amarillo
-	Color("#ef4444")  # Rojo
+# Paleta de 4 tubos y botones (Azul, Verde, Amarillo, Rojo)
+var paleta_escotillas: Array[Dictionary] = [
+	{ "nombre": "Azul", "base": Color("#3b82f6"), "borde": Color("#1d4ed8"), "glow": Color(0.23, 0.51, 0.96, 0.4), "texto": Color.WHITE },
+	{ "nombre": "Verde", "base": Color("#22c55e"), "borde": Color("#15803d"), "glow": Color(0.13, 0.77, 0.37, 0.4), "texto": Color.WHITE },
+	{ "nombre": "Amarillo", "base": Color("#eab308"), "borde": Color("#a16207"), "glow": Color(0.92, 0.70, 0.03, 0.4), "texto": Color.WHITE },
+	{ "nombre": "Rojo", "base": Color("#ef4444"), "borde": Color("#b91c1c"), "glow": Color(0.94, 0.27, 0.27, 0.4), "texto": Color.WHITE }
 ]
 
 # --- ESTADO DEL JUEGO ---
@@ -52,6 +35,7 @@ var esperando_respuesta: bool = false
 
 var cola_preguntas: Array = []
 var datos_pregunta_actual: Dictionary = {}
+var pregunta_actual: Dictionary = {}
 var tween_caja: Tween = null
 
 # --- BANCO DE RESPALDO (4to Grado) ---
@@ -94,10 +78,12 @@ var caja_paquete: Panel
 var label_operacion_caja: Label
 var contenedor_clasificadores: HBoxContainer
 var cinta_grafica: Panel
+var pizarra_borrador: Control = null
+var btn_pizarra: TextureButton = null
+var escena_pizarra = preload("res://Escenas/Minijuegos/PizarraBorrador.tscn")
+var tex_cuaderno = preload("res://assets/Minijuegos/minijuego Laboratorio/Cuaderno.png")
 
 func _ready():
-	Botones_Normal = [tex_azul_n, tex_verde_n, tex_amarillo_n, tex_rojo_n]
-	Botones_Presionado = [tex_azul_p, tex_verde_p, tex_amarillo_p, tex_rojo_p]
 	visible = false
 	_construir_interfaz()
 	if get_tree().current_scene == self:
@@ -116,201 +102,195 @@ func _construir_interfaz():
 	fondo_textura.set_anchors_preset(Control.PRESET_FULL_RECT)
 	fondo_textura.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	fondo_textura.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
-	if Fondo_Tex: 
-		fondo_textura.texture = Fondo_Tex
+	
+	var ruta_fondo = "res://assets/Minijuegos/minijuego Clasificador/Fondo_Clasificador.jpg"
+	if ResourceLoader.exists(ruta_fondo):
+		fondo_textura.texture = load(ruta_fondo)
+		panel_contenedor.add_child(fondo_textura)
 	else:
 		var color_fallback = ColorRect.new()
 		color_fallback.set_anchors_preset(Control.PRESET_FULL_RECT)
 		color_fallback.color = Color(0.06, 0.08, 0.15, 0.95)
 		panel_contenedor.add_child(color_fallback)
-	panel_contenedor.add_child(fondo_textura)
 
-	# 2. 🎛️ HEADER DE NAVEGACIÓN ESPACIAL
+	# 2. 🏆 HEADER DE ESTADO (Aciertos, Dificultad y Vidas)
 	header_panel = Panel.new()
 	header_panel.name = "HeaderPanel"
-	header_panel.position = Vector2(25, 10)
-	header_panel.custom_minimum_size = Vector2(1100, 60)
-	header_panel.size = Vector2(1100, 60)
+	header_panel.set_anchors_preset(Control.PRESET_TOP_WIDE)
+	header_panel.custom_minimum_size = Vector2(0, 75)
+	header_panel.offset_left = 30
+	header_panel.offset_top = 20
+	header_panel.offset_right = -30
+	header_panel.offset_bottom = 95
 	
 	var style_header = StyleBoxFlat.new()
-	style_header.bg_color = Color("#0f172a") # Azul pizarra oscuro
-	style_header.border_color = Color("#0284c7") # Borde cian nave
-	style_header.set_border_width_all(3)
-	style_header.set_corner_radius_all(14)
+	style_header.bg_color = Color(0.08, 0.10, 0.18, 0.88)
+	style_header.border_color = Color("#38bdf8")
+	style_header.set_border_width_all(2)
+	style_header.set_corner_radius_all(16)
 	style_header.shadow_color = Color(0, 0, 0, 0.6)
-	style_header.shadow_size = 6
+	style_header.shadow_size = 10
 	header_panel.add_theme_stylebox_override("panel", style_header)
 	panel_contenedor.add_child(header_panel)
 
 	var hbox_header = HBoxContainer.new()
 	hbox_header.set_anchors_preset(Control.PRESET_FULL_RECT)
-	hbox_header.add_theme_constant_override("margin_left", 20)
-	hbox_header.add_theme_constant_override("margin_right", 20)
 	hbox_header.alignment = BoxContainer.ALIGNMENT_CENTER
+	hbox_header.add_theme_constant_override("separation", 35)
 	header_panel.add_child(hbox_header)
 
-	var margin_left_spacer = Control.new()
-	margin_left_spacer.custom_minimum_size = Vector2(15, 10)
-	hbox_header.add_child(margin_left_spacer)
-
 	label_titulo = Label.new()
-	label_titulo.text = "LÍNEA DE PEDIDOS"
-	label_titulo.add_theme_font_size_override("font_size", 26)
-	label_titulo.add_theme_color_override("font_color", Color("#fbbf24")) # Dorado ámbar
-	label_titulo.add_theme_color_override("font_outline_color", Color("#78350f"))
-	label_titulo.add_theme_constant_override("outline_size", 4)
+	label_titulo.text = "LÍNEA DE PEDIDOS ESPACIAL"
+	label_titulo.add_theme_font_size_override("font_size", 24)
+	label_titulo.add_theme_color_override("font_color", Color("#38bdf8"))
+	label_titulo.add_theme_color_override("font_outline_color", Color("#0369a1"))
+	label_titulo.add_theme_constant_override("outline_size", 3)
 	hbox_header.add_child(label_titulo)
-	
-	var sp1 = Control.new()
-	sp1.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	hbox_header.add_child(sp1)
-	
-	label_aciertos = Label.new()
-	label_aciertos.name = "LabelAciertos"
-	label_aciertos.text = "Aciertos: 0/5"
-	label_aciertos.add_theme_font_size_override("font_size", 24)
-	label_aciertos.add_theme_color_override("font_color", Color("#38bdf8")) # Cian luminoso
-	label_aciertos.add_theme_color_override("font_outline_color", Color("#0369a1"))
-	label_aciertos.add_theme_constant_override("outline_size", 4)
-	hbox_header.add_child(label_aciertos)
-	
-	var sp2 = Control.new()
-	sp2.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	hbox_header.add_child(sp2)
-	
+
 	label_dificultad = Label.new()
-	label_dificultad.text = "Dificultad: Fácil"
-	label_dificultad.add_theme_font_size_override("font_size", 18)
-	label_dificultad.add_theme_color_override("font_color", Color("#a5f3fc"))
+	label_dificultad.text = "Dificultad: Media"
+	label_dificultad.add_theme_font_size_override("font_size", 20)
+	label_dificultad.add_theme_color_override("font_color", Color("#fde047"))
 	hbox_header.add_child(label_dificultad)
-	
-	var sp3 = Control.new()
-	sp3.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	hbox_header.add_child(sp3)
-	
+
+	label_aciertos = Label.new()
+	label_aciertos.text = "Aciertos: 0/5"
+	label_aciertos.add_theme_font_size_override("font_size", 20)
+	label_aciertos.add_theme_color_override("font_color", Color("#4ade80"))
+	hbox_header.add_child(label_aciertos)
+
 	contenedor_corazones = HBoxContainer.new()
-	contenedor_corazones.name = "ContenedorCorazones"
-	contenedor_corazones.add_theme_constant_override("separation", 10)
+	contenedor_corazones.alignment = BoxContainer.ALIGNMENT_CENTER
+	contenedor_corazones.add_theme_constant_override("separation", 6)
 	for i in range(3):
-		var tex_rect = TextureRect.new()
-		tex_rect.custom_minimum_size = Vector2(40, 40)
-		tex_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-		tex_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-		tex_rect.texture = textura_corazon_lleno
-		contenedor_corazones.add_child(tex_rect)
+		var img_corazon = TextureRect.new()
+		img_corazon.texture = textura_corazon_lleno
+		img_corazon.custom_minimum_size = Vector2(34, 34)
+		img_corazon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		img_corazon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		contenedor_corazones.add_child(img_corazon)
 	hbox_header.add_child(contenedor_corazones)
 
-	var margin_right_spacer = Control.new()
-	margin_right_spacer.custom_minimum_size = Vector2(15, 10)
-	hbox_header.add_child(margin_right_spacer)
-
-	# 3. ⚙️ CINTA TRANSPORTADORA
+	# 3. ⚙️ CINTA TRANSPORTADORA INDUSTRIAL (Riel con rodillos)
 	cinta_grafica = Panel.new()
 	cinta_grafica.name = "CintaTransportadora"
-	cinta_grafica.position = Vector2(30, 335)
-	cinta_grafica.size = Vector2(1090, 30)
+	cinta_grafica.position = Vector2(0, 240)
+	cinta_grafica.size = Vector2(1152, 45)
 	
 	var style_cinta = StyleBoxFlat.new()
 	style_cinta.bg_color = Color("#334155")
-	style_cinta.border_color = Color("#f59e0b") # Borde amarillo advertencia
-	style_cinta.set_border_width_all(2)
-	style_cinta.set_corner_radius_all(6)
+	style_cinta.border_color = Color("#64748b")
+	style_cinta.set_border_width_all(3)
+	style_cinta.shadow_color = Color(0, 0, 0, 0.7)
+	style_cinta.shadow_size = 8
 	cinta_grafica.add_theme_stylebox_override("panel", style_cinta)
+	cinta_grafica.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	panel_contenedor.add_child(cinta_grafica)
 
-	# 4. 📦 CONTENEDOR DE CARGA ESPACIAL (Caja con pantalla digital)
+	# 4. 📦 PAQUETE ESPACIAL FLOTANTE / RODANTE
 	caja_paquete = Panel.new()
 	caja_paquete.name = "CajaPaquete"
-	caja_paquete.size = Vector2(250, 130)
+	caja_paquete.size = Vector2(230, 95)
 	caja_paquete.position = pos_inicio_caja
 	
 	var style_caja = StyleBoxFlat.new()
-	style_caja.bg_color = Color("#0f172a") # Metal espacial oscuro
-	style_caja.border_color = Color("#f59e0b") # Marco brillante
+	style_caja.bg_color = Color("#b45309")
+	style_caja.border_color = Color("#fde047")
 	style_caja.set_border_width_all(4)
 	style_caja.set_corner_radius_all(14)
-	style_caja.shadow_color = Color(0.96, 0.62, 0.04, 0.5) # Glow dorado
+	style_caja.shadow_color = Color(0, 0, 0, 0.6)
 	style_caja.shadow_size = 12
 	caja_paquete.add_theme_stylebox_override("panel", style_caja)
+	caja_paquete.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	panel_contenedor.add_child(caja_paquete)
-	
-	# Pantalla digital interna de la caja
-	var pantalla_interior = Panel.new()
-	pantalla_interior.set_anchors_preset(Control.PRESET_FULL_RECT)
-	pantalla_interior.offset_left = 12
-	pantalla_interior.offset_top = 12
-	pantalla_interior.offset_right = -12
-	pantalla_interior.offset_bottom = -12
-	
-	var style_pantalla = StyleBoxFlat.new()
-	style_pantalla.bg_color = Color("#022c22") # Verde/Cian cibernético profundo
-	style_pantalla.border_color = Color("#38bdf8") # Borde cian neón
-	style_pantalla.set_border_width_all(2)
-	style_pantalla.set_corner_radius_all(8)
-	pantalla_interior.add_theme_stylebox_override("panel", style_pantalla)
-	caja_paquete.add_child(pantalla_interior)
 
 	label_operacion_caja = Label.new()
 	label_operacion_caja.name = "LabelOperacion"
 	label_operacion_caja.set_anchors_preset(Control.PRESET_FULL_RECT)
 	label_operacion_caja.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	label_operacion_caja.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	label_operacion_caja.add_theme_font_size_override("font_size", 32)
-	label_operacion_caja.add_theme_color_override("font_color", Color("#38bdf8")) # Texto cian brillante
-	label_operacion_caja.add_theme_color_override("font_outline_color", Color("#0284c7"))
+	label_operacion_caja.add_theme_font_size_override("font_size", 30)
+	label_operacion_caja.add_theme_color_override("font_color", Color("#ffffff"))
+	label_operacion_caja.add_theme_color_override("font_outline_color", Color("#78350f"))
 	label_operacion_caja.add_theme_constant_override("outline_size", 4)
-	pantalla_interior.add_child(label_operacion_caja)
+	label_operacion_caja.text = "15 + 15 = ?"
+	caja_paquete.add_child(label_operacion_caja)
 
-	# 5. 🚀 ESCOTILLAS / TUBOS Y BOTONES ARCADE
+	# 5. 🎯 ZONA INFERIOR: 4 ESCOTILLAS / TUBOS PNEUMÁTICOS CON BOTONES ARCADE
 	contenedor_clasificadores = HBoxContainer.new()
 	contenedor_clasificadores.name = "ContenedorClasificadores"
-	contenedor_clasificadores.position = Vector2(60, 390)
-	contenedor_clasificadores.custom_minimum_size = Vector2(1030, 245)
+	contenedor_clasificadores.set_anchors_preset(Control.PRESET_BOTTOM_WIDE)
+	contenedor_clasificadores.offset_left = 40
+	contenedor_clasificadores.offset_top = -280
+	contenedor_clasificadores.offset_right = -40
+	contenedor_clasificadores.offset_bottom = -20
 	contenedor_clasificadores.alignment = BoxContainer.ALIGNMENT_CENTER
-	contenedor_clasificadores.add_theme_constant_override("separation", 35)
+	contenedor_clasificadores.add_theme_constant_override("separation", 24)
 	panel_contenedor.add_child(contenedor_clasificadores)
+	
+	# 6. 📝 BOTÓN DE PIZARRA Y PIZARRA BORRADOR (Lado Derecho)
+	if escena_pizarra:
+		pizarra_borrador = escena_pizarra.instantiate()
+		pizarra_borrador.name = "PizarraBorrador"
+		pizarra_borrador.visible = false
+		pizarra_borrador.z_index = 30
+		panel_contenedor.add_child(pizarra_borrador)
+		
+	btn_pizarra = TextureButton.new()
+	btn_pizarra.name = "BotonPizarra"
+	btn_pizarra.texture_normal = tex_cuaderno
+	btn_pizarra.custom_minimum_size = Vector2(85, 85)
+	btn_pizarra.set_anchors_preset(Control.PRESET_CENTER_RIGHT)
+	btn_pizarra.anchor_left = 1.0
+	btn_pizarra.anchor_right = 1.0
+	btn_pizarra.anchor_top = 0.5
+	btn_pizarra.anchor_bottom = 0.5
+	btn_pizarra.offset_left = -115.0
+	btn_pizarra.offset_right = -20.0
+	btn_pizarra.offset_top = 25.0
+	btn_pizarra.offset_bottom = 120.0
+	btn_pizarra.ignore_texture_size = true
+	btn_pizarra.stretch_mode = TextureButton.STRETCH_KEEP_ASPECT_CENTERED
+	btn_pizarra.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+	btn_pizarra.pressed.connect(AbrirCerrar_Pizarra)
+	panel_contenedor.add_child(btn_pizarra)
+
+func AbrirCerrar_Pizarra():
+	if pizarra_borrador and pizarra_borrador.has_method("toggle_pizarra"):
+		pizarra_borrador.toggle_pizarra()
+		pizarra_borrador.z_index = 30
 
 func iniciar_minijuego(_tema: String = "espacio"):
-	visible = true
-	if panel_contenedor: panel_contenedor.visible = true
-	
 	vidas_actuales = 3
 	aciertos_actuales = 0
 	juego_activo = true
-	esperando_respuesta = false
+	visible = true
+	if panel_contenedor: panel_contenedor.visible = true
 	
 	_ajustar_velocidad_segun_dificultad()
-	_recargar_cola_preguntas()
 	_actualizar_ui_header()
 	_cargar_siguiente_caja()
 
 func _ajustar_velocidad_segun_dificultad():
 	var dif = DatosUsuario.dificultad_actual if DatosUsuario else 0
 	match dif:
-		0: velocidad_cinta = 80.0
-		1: velocidad_cinta = 115.0
-		2: velocidad_cinta = 150.0
-		_: velocidad_cinta = 90.0
+		0: velocidad_cinta = 75.0
+		1: velocidad_cinta = 95.0
+		2: velocidad_cinta = 125.0
 
-func _recargar_cola_preguntas():
-	cola_preguntas.clear()
-	var banco = banco_respaldo
-	if DatosUsuario and DatosUsuario.banco_preguntas.size() > 0:
-		banco = DatosUsuario.banco_preguntas
+func _obtener_pregunta_actual_dinamica() -> Dictionary:
+	var banco = DatosUsuario.banco_preguntas if (DatosUsuario and DatosUsuario.banco_preguntas.size() > 0) else banco_respaldo
 	var dif = DatosUsuario.dificultad_actual if DatosUsuario else 0
-	for preg in banco:
-		if int(preg.get("dificultad", 0)) == dif:
-			cola_preguntas.append(preg)
-	if cola_preguntas.size() == 0:
-		cola_preguntas = banco.duplicate()
-	cola_preguntas.shuffle()
+	var filtradas = banco.filter(func(p): return int(p.get("dificultad", 0)) == dif)
+	if filtradas.size() == 0:
+		filtradas = banco
+	return filtradas.pick_random()
 
 func _cargar_siguiente_caja():
-	if cola_preguntas.size() == 0:
-		_recargar_cola_preguntas()
-		if cola_preguntas.size() == 0: return
-		
-	datos_pregunta_actual = cola_preguntas.pop_front()
+	_actualizar_ui_header()
+	_ajustar_velocidad_segun_dificultad()
+	datos_pregunta_actual = _obtener_pregunta_actual_dinamica()
+	pregunta_actual = datos_pregunta_actual
 	var raw_op = datos_pregunta_actual.get("operacion", datos_pregunta_actual.get("pregunta", "15 + 15"))
 	var raw_resp = datos_pregunta_actual.get("respuesta_correcta", 30)
 	respuesta_correcta = int(raw_resp)
@@ -337,63 +317,72 @@ func _iniciar_movimiento_cinta():
 	
 	tween_caja = create_tween()
 	tween_caja.tween_property(caja_paquete, "position:x", pos_limite_cinta, duracion)
-	tween_caja.finished.connect(_on_caja_llego_al_final)
+	tween_caja.finished.connect(_on_caja_cayo_al_vacio)
 
-func _on_caja_llego_al_final():
-	if not juego_activo or not esperando_respuesta: return
+func _on_caja_cayo_al_vacio():
+	if not esperando_respuesta or not juego_activo: return
 	esperando_respuesta = false
+	
 	vidas_actuales -= 1
 	_reproducir_sonido("Incorrecto")
-	_actualizar_ui_header()
 	
 	if caja_paquete:
-		caja_paquete.modulate = Color(1.0, 0.3, 0.3, 0.6)
+		var tw = create_tween().set_parallel(true)
+		tw.tween_property(caja_paquete, "position:y", caja_paquete.position.y + 150, 0.4)
+		tw.tween_property(caja_paquete, "rotation_degrees", 45.0, 0.4)
+		tw.tween_property(caja_paquete, "modulate:a", 0.0, 0.4)
+	
+	_actualizar_ui_header()
+	
+	var dif_ant = DatosUsuario.dificultad_actual if DatosUsuario else 0
+	if SistemaExperto and SistemaExperto.has_method("evaluar_desempeno"):
+		var nueva_dif = SistemaExperto.evaluar_desempeno(dif_ant, false, 8.0)
+		if DatosUsuario: DatosUsuario.dificultad_actual = nueva_dif
 		
 	if vidas_actuales <= 0:
-		await get_tree().create_timer(0.8).timeout
+		await get_tree().create_timer(0.6).timeout
 		_finalizar_minijuego(false)
 	else:
-		await get_tree().create_timer(0.8).timeout
+		await get_tree().create_timer(0.6).timeout
 		_cargar_siguiente_caja()
 
 func _formatear_y_mostrar_operacion(op_str: String):
-	var op_limpia = op_str.to_lower()
-	op_limpia = op_limpia.replace(" por ", " x ")
-	op_limpia = op_limpia.replace(" mas ", " + ").replace(" más ", " + ")
-	op_limpia = op_limpia.replace(" menos ", " - ")
-	op_limpia = op_limpia.replace(" dividido en ", " ÷ ").replace(" / ", " ÷ ")
-	if not op_limpia.ends_with("="):
-		op_limpia += " = ?"
+	var op = op_str.to_lower()
+	op = op.replace(" por ", " x ").replace(" mas ", " + ").replace(" más ", " + ")
+	op = op.replace(" menos ", " - ").replace(" dividido en ", " ÷ ").replace(" / ", " ÷ ")
+	if not op.ends_with("="): op += " = ?"
 	if label_operacion_caja:
-		label_operacion_caja.text = op_limpia.to_upper()
+		label_operacion_caja.text = op.to_upper()
 
 func _generar_botones_clasificadores():
 	if not contenedor_clasificadores: return
-	for hijo in contenedor_clasificadores.get_children():
-		hijo.queue_free()
+	for child in contenedor_clasificadores.get_children():
+		child.queue_free()
 		
 	var opciones: Array = [respuesta_correcta]
 	while opciones.size() < 4:
-		var desvio = randi_range(-5, 7)
-		if desvio == 0: desvio = 3
-		var val_alt = respuesta_correcta + desvio
-		if val_alt > 0 and not val_alt in opciones:
-			opciones.append(val_alt)
+		var delta = randi_range(-6, 8)
+		if delta == 0: delta = 2
+		var val = respuesta_correcta + delta
+		if val > 0 and not val in opciones:
+			opciones.append(val)
 	opciones.shuffle()
 	
 	for i in range(opciones.size()):
 		var opc = opciones[i]
-		var idx_color = i % colores_escotilla.size()
-		var color_base = colores_rgb[idx_color]
+		var info_estilo = paleta_escotillas[i % paleta_escotillas.size()]
+		var color_base: Color = info_estilo["base"]
+		var color_borde: Color = info_estilo["borde"]
+		var color_glow: Color = info_estilo["glow"]
+		var color_texto: Color = info_estilo["texto"]
 		
-		# Contenedor vertical para el tubo neumático + botón
 		var columna_tubo = VBoxContainer.new()
 		columna_tubo.name = "ColumnaTubo_" + str(i)
 		columna_tubo.custom_minimum_size = Vector2(210, 240)
 		columna_tubo.alignment = BoxContainer.ALIGNMENT_CENTER
 		columna_tubo.add_theme_constant_override("separation", 6)
 		
-		# 1. 🧪 TUBO NEUMÁTICO DE CRISTAL (Visual como en el mockup)
+		# 1. 🧪 TUBO NEUMÁTICO DE CRISTAL
 		var tubo_cristal = Panel.new()
 		tubo_cristal.custom_minimum_size = Vector2(170, 95)
 		
@@ -411,31 +400,27 @@ func _generar_botones_clasificadores():
 		tubo_cristal.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		columna_tubo.add_child(tubo_cristal)
 		
-		# 2. 🎮 BOTÓN TÁCTIL ARCADE (TextureButton)
-		var btn = TextureButton.new()
+		# 2. 🎮 BOTÓN TÁCTIL ARCADE VECTORIAL (Sin dependencias de textura externas)
+		var btn = Button.new()
 		btn.name = "BotonEscotilla_" + str(i)
-		btn.custom_minimum_size = Vector2(180, 120)
-		btn.ignore_texture_size = true
-		btn.stretch_mode = TextureButton.STRETCH_KEEP_ASPECT_CENTERED
+		btn.custom_minimum_size = Vector2(180, 110)
+		btn.flat = true
 		btn.mouse_filter = Control.MOUSE_FILTER_STOP
 		
-		if Botones_Normal.size() > idx_color and Botones_Normal[idx_color]:
-			btn.texture_normal = Botones_Normal[idx_color]
-		if Botones_Presionado.size() > idx_color and Botones_Presionado[idx_color]:
-			btn.texture_pressed = Botones_Presionado[idx_color]
-			
-		# Fallback estilizado si la textura falta
-		if not btn.texture_normal:
-			var btn_fallback = Panel.new()
-			btn_fallback.set_anchors_preset(Control.PRESET_FULL_RECT)
-			var sf = StyleBoxFlat.new()
-			sf.bg_color = color_base
-			sf.border_color = Color("#ffffff")
-			sf.set_border_width_all(4)
-			sf.set_corner_radius_all(18)
-			btn_fallback.add_theme_stylebox_override("panel", sf)
-			btn_fallback.mouse_filter = Control.MOUSE_FILTER_IGNORE
-			btn.add_child(btn_fallback)
+		var fondo_btn = Panel.new()
+		fondo_btn.name = "FondoBtn"
+		fondo_btn.set_anchors_preset(Control.PRESET_FULL_RECT)
+		fondo_btn.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		
+		var sf_norm = StyleBoxFlat.new()
+		sf_norm.bg_color = color_base
+		sf_norm.border_color = Color(0.9, 0.95, 1.0, 0.9)
+		sf_norm.set_border_width_all(4)
+		sf_norm.set_corner_radius_all(20)
+		sf_norm.shadow_color = color_glow
+		sf_norm.shadow_size = 10
+		fondo_btn.add_theme_stylebox_override("panel", sf_norm)
+		btn.add_child(fondo_btn)
 		
 		# 3. 🔢 NÚMERO CENTRADO PERFECTAMENTE EN EL BOTÓN
 		var lbl = Label.new()
@@ -445,26 +430,23 @@ func _generar_botones_clasificadores():
 		lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 		lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		lbl.set_anchors_preset(Control.PRESET_FULL_RECT)
-		lbl.anchor_left = 0.0
-		lbl.anchor_top = 0.0
-		lbl.anchor_right = 1.0
-		lbl.anchor_bottom = 1.0
-		lbl.offset_left = 0
-		lbl.offset_top = 0
-		lbl.offset_right = 0
-		lbl.offset_bottom = 0
 		
-		lbl.add_theme_font_size_override("font_size", 46)
-		lbl.add_theme_color_override("font_color", Color.WHITE)
+		lbl.add_theme_font_size_override("font_size", 42)
+		lbl.add_theme_color_override("font_color", color_texto)
 		lbl.add_theme_color_override("font_outline_color", Color(0.05, 0.05, 0.1, 0.95))
-		lbl.add_theme_constant_override("outline_size", 8)
+		lbl.add_theme_constant_override("outline_size", 6)
 		lbl.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0.8))
-		lbl.add_theme_constant_override("shadow_offset_x", 3)
-		lbl.add_theme_constant_override("shadow_offset_y", 3)
+		lbl.add_theme_constant_override("shadow_offset_x", 2)
+		lbl.add_theme_constant_override("shadow_offset_y", 2)
 		
-		# Efecto de presión física táctil
-		btn.button_down.connect(func(): lbl.position.y = 6.0)
-		var restaurar = func(): lbl.position.y = 0.0
+		# Efecto de presión táctil
+		btn.button_down.connect(func(): 
+			lbl.position.y = 5.0
+			fondo_btn.position.y = 4.0
+		)
+		var restaurar = func(): 
+			lbl.position.y = 0.0
+			fondo_btn.position.y = 0.0
 		btn.button_up.connect(restaurar)
 		btn.mouse_exited.connect(restaurar)
 		
@@ -500,12 +482,11 @@ func _evaluar_respuesta(valor_elegido: int):
 			tw.tween_property(caja_paquete, "position:y", caja_paquete.position.y + 120, 0.4)
 			tw.tween_property(caja_paquete, "modulate:a", 0.0, 0.4)
 			
-		_actualizar_ui_header()
-		
 		var dif_ant = DatosUsuario.dificultad_actual if DatosUsuario else 0
 		if SistemaExperto and SistemaExperto.has_method("evaluar_desempeno"):
 			var nueva_dif = SistemaExperto.evaluar_desempeno(dif_ant, true, tiempo_tardado)
 			if DatosUsuario: DatosUsuario.dificultad_actual = nueva_dif
+		_actualizar_ui_header()
 
 		if aciertos_actuales >= META_ACIERTOS:
 			await get_tree().create_timer(0.8).timeout
@@ -523,12 +504,11 @@ func _evaluar_respuesta(valor_elegido: int):
 			var tw = create_tween()
 			tw.tween_property(caja_paquete, "rotation_degrees", 15.0, 0.2)
 			
-		_actualizar_ui_header()
-		
 		var dif_ant = DatosUsuario.dificultad_actual if DatosUsuario else 0
 		if SistemaExperto and SistemaExperto.has_method("evaluar_desempeno"):
 			var nueva_dif = SistemaExperto.evaluar_desempeno(dif_ant, false, tiempo_tardado)
 			if DatosUsuario: DatosUsuario.dificultad_actual = nueva_dif
+		_actualizar_ui_header()
 
 		if vidas_actuales <= 0:
 			await get_tree().create_timer(0.8).timeout
@@ -563,5 +543,6 @@ func _finalizar_minijuego(es_exito: bool):
 	if tween_caja and tween_caja.is_running():
 		tween_caja.kill()
 	visible = false
+	if pizarra_borrador: pizarra_borrador.visible = false
 	if panel_contenedor: panel_contenedor.visible = false
 	minijuego_finalizado.emit(es_exito)

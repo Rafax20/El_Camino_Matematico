@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://pc0bjbefxo2t"
-path="res://.godot/imported/Gemini_Generated_Image_z66tp2z66tp2z66t.jpg-f0e47d38f588859f4ab0c3ba83988d80.ctex"
+uid="uid://dh4ytre4t5wxe"
+path="res://.godot/imported/Boton_Pizarron_Normal.png-d0ca9bb62d94ce4e09a242dd8929f8aa.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/Album/Portugal/Gemini_Generated_Image_z66tp2z66tp2z66t.jpg"
-dest_files=["res://.godot/imported/Gemini_Generated_Image_z66tp2z66tp2z66t.jpg-f0e47d38f588859f4ab0c3ba83988d80.ctex"]
+source_file="res://assets/Interfaz_Tutoriales/Boton_Pizarron_Normal.png"
+dest_files=["res://.godot/imported/Boton_Pizarron_Normal.png-d0ca9bb62d94ce4e09a242dd8929f8aa.ctex"]
 
 [params]
 

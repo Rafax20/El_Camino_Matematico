@@ -1,4 +1,5 @@
 # res://Scripts_gd/Minijuegos/Minijuego_balanza/MinijuegoBalanza.gd
+class_name MinijuegoBalanza
 extends Control
 
 ## Minijuego: Balanzador de Energía Espacial (Steampunk)
@@ -28,6 +29,7 @@ var META_ACIERTOS: int = 5
 var juego_activo: bool = false
 var tiempo_inicio_pregunta: float = 0.0
 var respuesta_correcta: int = 0
+var pregunta_actual: Dictionary = {}
 var cola_preguntas: Array = []
 
 # --- BANCO DE RESPALDO (4to Grado) ---
@@ -67,6 +69,10 @@ var contenedor_corazones: HBoxContainer
 var contenedor_gemas: HBoxContainer
 var balanza_brazo: Control
 var gema_platillo_der: Label
+var pizarra_borrador: Control = null
+var btn_pizarra: TextureButton = null
+var escena_pizarra = preload("res://Escenas/Minijuegos/PizarraBorrador.tscn")
+var tex_cuaderno = preload("res://assets/Minijuegos/minijuego Laboratorio/Cuaderno.png")
 
 func _ready():
 	_precargar_texturas_botones()
@@ -396,6 +402,38 @@ func _construir_interfaz():
 	contenedor_gemas.alignment = BoxContainer.ALIGNMENT_CENTER
 	contenedor_gemas.add_theme_constant_override("separation", 45)
 	consola_panel.add_child(contenedor_gemas)
+	
+	# 7. 📝 BOTÓN DE PIZARRA Y PIZARRA BORRADOR (Lado Derecho)
+	if escena_pizarra:
+		pizarra_borrador = escena_pizarra.instantiate()
+		pizarra_borrador.name = "PizarraBorrador"
+		pizarra_borrador.visible = false
+		pizarra_borrador.z_index = 30
+		panel_contenedor.add_child(pizarra_borrador)
+		
+	btn_pizarra = TextureButton.new()
+	btn_pizarra.name = "BotonPizarra"
+	btn_pizarra.texture_normal = tex_cuaderno
+	btn_pizarra.custom_minimum_size = Vector2(85, 85)
+	btn_pizarra.set_anchors_preset(Control.PRESET_CENTER_RIGHT)
+	btn_pizarra.anchor_left = 1.0
+	btn_pizarra.anchor_right = 1.0
+	btn_pizarra.anchor_top = 0.5
+	btn_pizarra.anchor_bottom = 0.5
+	btn_pizarra.offset_left = -115.0
+	btn_pizarra.offset_right = -20.0
+	btn_pizarra.offset_top = 35.0
+	btn_pizarra.offset_bottom = 130.0
+	btn_pizarra.ignore_texture_size = true
+	btn_pizarra.stretch_mode = TextureButton.STRETCH_KEEP_ASPECT_CENTERED
+	btn_pizarra.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+	btn_pizarra.pressed.connect(AbrirCerrar_Pizarra)
+	panel_contenedor.add_child(btn_pizarra)
+
+func AbrirCerrar_Pizarra():
+	if pizarra_borrador and pizarra_borrador.has_method("toggle_pizarra"):
+		pizarra_borrador.toggle_pizarra()
+		pizarra_borrador.z_index = 30
 
 func iniciar_minijuego(_tema: String = "espacio"):
 	visible = true
@@ -403,30 +441,24 @@ func iniciar_minijuego(_tema: String = "espacio"):
 	vidas_actuales = 3
 	aciertos_actuales = 0
 	juego_activo = true
-	_recargar_cola_preguntas()
 	_actualizar_ui_header()
 	_cargar_siguiente_pregunta()
 
-func _recargar_cola_preguntas():
-	cola_preguntas.clear()
+func _obtener_pregunta_actual_dinamica() -> Dictionary:
 	var banco = banco_respaldo
 	if DatosUsuario and DatosUsuario.banco_preguntas.size() > 0:
 		banco = DatosUsuario.banco_preguntas
 	var dif = DatosUsuario.dificultad_actual if DatosUsuario else 0
-	for preg in banco:
-		if int(preg.get("dificultad", 0)) == dif:
-			cola_preguntas.append(preg)
-	if cola_preguntas.size() == 0:
-		cola_preguntas = banco.duplicate()
-	cola_preguntas.shuffle()
+	var filtradas = banco.filter(func(p): return int(p.get("dificultad", 0)) == dif)
+	if filtradas.size() == 0:
+		filtradas = banco
+	return filtradas.pick_random()
 
 func _cargar_siguiente_pregunta():
-	if cola_preguntas.size() == 0:
-		_recargar_cola_preguntas()
-		if cola_preguntas.size() == 0: return
-	var datos = cola_preguntas.pop_front()
-	var raw_op = datos.get("operacion", datos.get("pregunta", "10 + 10"))
-	respuesta_correcta = int(datos.get("respuesta_correcta", 20))
+	_actualizar_ui_header()
+	pregunta_actual = _obtener_pregunta_actual_dinamica()
+	var raw_op = pregunta_actual.get("operacion", pregunta_actual.get("pregunta", "10 + 10"))
+	respuesta_correcta = int(pregunta_actual.get("respuesta_correcta", 20))
 	
 	_formatear_y_mostrar_operacion(str(raw_op))
 	_generar_opciones_gemas()
@@ -533,11 +565,11 @@ func _evaluar_respuesta(valor: int):
 		if balanza_brazo:
 			var tw = create_tween()
 			tw.tween_property(balanza_brazo, "rotation_degrees", 0.0, 0.4).set_trans(Tween.TRANS_BOUNCE)
-		_actualizar_ui_header()
 		var dif_ant = DatosUsuario.dificultad_actual if DatosUsuario else 0
 		if SistemaExperto and SistemaExperto.has_method("evaluar_desempeno"):
 			var nd = SistemaExperto.evaluar_desempeno(dif_ant, true, tiempo_tardado)
 			if DatosUsuario: DatosUsuario.dificultad_actual = nd
+		_actualizar_ui_header()
 		if aciertos_actuales >= META_ACIERTOS:
 			await get_tree().create_timer(1.0).timeout
 			_finalizar_minijuego(true)
@@ -547,14 +579,25 @@ func _evaluar_respuesta(valor: int):
 	else:
 		vidas_actuales -= 1
 		_reproducir_sonido("Incorrecto")
+		
+		# ⚖️ FÍSICA DE LA BALANZA:
+		# Si la respuesta es menor, el lado izquierdo sigue siendo más pesado (se mueve levemente pero no se nivela)
+		# Si la respuesta es mayor, el lado derecho se vuelve más pesado y cae hacia la derecha (+15°)
 		if balanza_brazo:
 			var tw = create_tween()
-			tw.tween_property(balanza_brazo, "rotation_degrees", 15.0, 0.3)
-		_actualizar_ui_header()
+			if valor < respuesta_correcta:
+				# Insuficiente peso en la derecha: sube un poco pero no llega a 0° y vuelve a caer a la izquierda (-8°)
+				tw.tween_property(balanza_brazo, "rotation_degrees", -4.0, 0.22).set_trans(Tween.TRANS_QUAD)
+				tw.tween_property(balanza_brazo, "rotation_degrees", -8.0, 0.25).set_trans(Tween.TRANS_BOUNCE)
+			else:
+				# Exceso de peso en la derecha: se inclina y cae a la derecha (+15°)
+				tw.tween_property(balanza_brazo, "rotation_degrees", 15.0, 0.35).set_trans(Tween.TRANS_BOUNCE)
+				
 		var dif_ant = DatosUsuario.dificultad_actual if DatosUsuario else 0
 		if SistemaExperto and SistemaExperto.has_method("evaluar_desempeno"):
 			var nd = SistemaExperto.evaluar_desempeno(dif_ant, false, tiempo_tardado)
 			if DatosUsuario: DatosUsuario.dificultad_actual = nd
+		_actualizar_ui_header()
 		if vidas_actuales <= 0:
 			await get_tree().create_timer(1.0).timeout
 			_finalizar_minijuego(false)
@@ -564,7 +607,7 @@ func _evaluar_respuesta(valor: int):
 
 func _actualizar_ui_header():
 	if label_aciertos:
-		label_aciertos.text = "Circuitos Reparados: " + str(aciertos_actuales) + "/" + str(META_ACIERTOS)
+		label_aciertos.text = "Energía Equilibrada: " + str(aciertos_actuales) + "/" + str(META_ACIERTOS)
 	if label_dificultad:
 		var dif = DatosUsuario.dificultad_actual if DatosUsuario else 0
 		label_dificultad.text = "Dificultad: " + ["Fácil", "Media", "Difícil"][clampi(dif, 0, 2)]
@@ -584,5 +627,6 @@ func _reproducir_sonido(tipo: String):
 func _finalizar_minijuego(es_exito: bool):
 	juego_activo = false
 	visible = false
+	if pizarra_borrador: pizarra_borrador.visible = false
 	if panel_contenedor: panel_contenedor.visible = false
 	minijuego_finalizado.emit(es_exito)

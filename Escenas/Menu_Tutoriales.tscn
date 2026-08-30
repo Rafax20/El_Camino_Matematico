@@ -7,6 +7,20 @@
 [ext_resource type="Texture2D" uid="uid://cay7rraob4uqq" path="res://assets/Boton_Volver.png" id="3_lsf2y"]
 [ext_resource type="FontFile" uid="uid://cvwfc51hrkou3" path="res://Fuentes/Fredoka/static/Fredoka-Bold.ttf" id="3_ux5vy"]
 [ext_resource type="Texture2D" uid="uid://bb1a12tdtvavi" path="res://assets/Boton_Volver_Presionado.png" id="4_wjn4s"]
+[ext_resource type="Texture2D" uid="uid://cbtpizarronn" path="res://assets/Interfaz_Tutoriales/Boton_Pizarron_Normal.png" id="4_piznorm"]
+[ext_resource type="Texture2D" uid="uid://cbtpizarronp" path="res://assets/Interfaz_Tutoriales/Boton_Pizarron_Presionado.png" id="5_pizpres"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ctrl"]
+bg_color = Color(0.15, 0.23, 0.38, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.22, 0.74, 0.97, 0.8)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
 
 [node name="MenuTutoriales" type="Control" unique_id=62139445]
 layout_mode = 3
@@ -43,42 +57,139 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-theme_override_constants/margin_left = 92
+theme_override_constants/margin_left = 100
 theme_override_constants/margin_top = 45
-theme_override_constants/margin_right = 106
-theme_override_constants/margin_bottom = 184
+theme_override_constants/margin_right = 100
+theme_override_constants/margin_bottom = 130
 
 [node name="VBoxContainerPrincipal" type="VBoxContainer" parent="MarginContainer" unique_id=1922254943]
 layout_mode = 2
+theme_override_constants/separation = 16
 
 [node name="TituloGeneral" type="Label" parent="MarginContainer/VBoxContainerPrincipal" unique_id=1234014937]
 layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.8)
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 2
 theme_override_fonts/font = ExtResource("3_ux5vy")
-theme_override_font_sizes/font_size = 40
+theme_override_font_sizes/font_size = 38
 text = "TUTORIALES DE MATEMÁTICAS"
 horizontal_alignment = 1
 
 [node name="ContenidoDividido" type="HBoxContainer" parent="MarginContainer/VBoxContainerPrincipal" unique_id=1657100297]
 layout_mode = 2
+size_flags_vertical = 3
+alignment = 1
 
 [node name="PanelCategorias" type="VBoxContainer" parent="MarginContainer/VBoxContainerPrincipal/ContenidoDividido" unique_id=364311148]
 layout_mode = 2
+theme_override_constants/separation = 12
+alignment = 1
 
-[node name="BtnSuma" type="Button" parent="MarginContainer/VBoxContainerPrincipal/ContenidoDividido/PanelCategorias" unique_id=1342052086]
+[node name="BtnSuma" type="TextureButton" parent="MarginContainer/VBoxContainerPrincipal/ContenidoDividido/PanelCategorias" unique_id=1342052086]
+custom_minimum_size = Vector2(420, 80)
 layout_mode = 2
+mouse_default_cursor_shape = 2
+texture_normal = ExtResource("4_piznorm")
+texture_pressed = ExtResource("5_pizpres")
+ignore_texture_size = true
+stretch_mode = 0
+
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainerPrincipal/ContenidoDividido/PanelCategorias/BtnSuma" unique_id=1342052087]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(0.99, 0.95, 0.82, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.8)
+theme_override_constants/shadow_offset_x = 1
+theme_override_constants/shadow_offset_y = 1
+theme_override_fonts/font = ExtResource("3_ux5vy")
+theme_override_font_sizes/font_size = 21
 text = "1. Aprendiendo a Sumar"
+horizontal_alignment = 1
+vertical_alignment = 1
 
-[node name="BtnResta" type="Button" parent="MarginContainer/VBoxContainerPrincipal/ContenidoDividido/PanelCategorias" unique_id=139197706]
+[node name="BtnResta" type="TextureButton" parent="MarginContainer/VBoxContainerPrincipal/ContenidoDividido/PanelCategorias" unique_id=139197706]
+custom_minimum_size = Vector2(420, 80)
 layout_mode = 2
+mouse_default_cursor_shape = 2
+texture_normal = ExtResource("4_piznorm")
+texture_pressed = ExtResource("5_pizpres")
+ignore_texture_size = true
+stretch_mode = 0
+
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainerPrincipal/ContenidoDividido/PanelCategorias/BtnResta" unique_id=139197707]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(0.99, 0.95, 0.82, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.8)
+theme_override_constants/shadow_offset_x = 1
+theme_override_constants/shadow_offset_y = 1
+theme_override_fonts/font = ExtResource("3_ux5vy")
+theme_override_font_sizes/font_size = 21
 text = "2. Aprendiendo a Restar"
+horizontal_alignment = 1
+vertical_alignment = 1
 
-[node name="BtnMulti" type="Button" parent="MarginContainer/VBoxContainerPrincipal/ContenidoDividido/PanelCategorias" unique_id=676473959]
+[node name="BtnMulti" type="TextureButton" parent="MarginContainer/VBoxContainerPrincipal/ContenidoDividido/PanelCategorias" unique_id=676473959]
+custom_minimum_size = Vector2(420, 80)
 layout_mode = 2
-text = "3. Multiplicación"
+mouse_default_cursor_shape = 2
+texture_normal = ExtResource("4_piznorm")
+texture_pressed = ExtResource("5_pizpres")
+ignore_texture_size = true
+stretch_mode = 0
 
-[node name="BtnDivi" type="Button" parent="MarginContainer/VBoxContainerPrincipal/ContenidoDividido/PanelCategorias" unique_id=1453584520]
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainerPrincipal/ContenidoDividido/PanelCategorias/BtnMulti" unique_id=676473960]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(0.99, 0.95, 0.82, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.8)
+theme_override_constants/shadow_offset_x = 1
+theme_override_constants/shadow_offset_y = 1
+theme_override_fonts/font = ExtResource("3_ux5vy")
+theme_override_font_sizes/font_size = 21
+text = "3. Multiplicación Paso a Paso"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="BtnDivi" type="TextureButton" parent="MarginContainer/VBoxContainerPrincipal/ContenidoDividido/PanelCategorias" unique_id=1453584520]
+custom_minimum_size = Vector2(420, 80)
 layout_mode = 2
-text = "4. División"
+mouse_default_cursor_shape = 2
+texture_normal = ExtResource("4_piznorm")
+texture_pressed = ExtResource("5_pizpres")
+ignore_texture_size = true
+stretch_mode = 0
+
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainerPrincipal/ContenidoDividido/PanelCategorias/BtnDivi" unique_id=1453584521]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(0.99, 0.95, 0.82, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.8)
+theme_override_constants/shadow_offset_x = 1
+theme_override_constants/shadow_offset_y = 1
+theme_override_fonts/font = ExtResource("3_ux5vy")
+theme_override_font_sizes/font_size = 21
+text = "4. Aprende a Dividir"
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="ReproductorCanvas" type="CanvasLayer" parent="." unique_id=487783155]
 
@@ -97,7 +208,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0, 0, 0, 0.43137255)
+color = Color(0, 0, 0, 0.65)
 
 [node name="VideoPlayer" type="VideoStreamPlayer" parent="ReproductorCanvas/ModalVideo" unique_id=606066656]
 custom_minimum_size = Vector2(980, 600)
@@ -131,16 +242,22 @@ anchor_top = 1.0
 anchor_right = 0.5
 anchor_bottom = 1.0
 offset_left = -76.0
-offset_top = -31.0
+offset_top = -45.0
 offset_right = 76.0
+offset_bottom = -10.0
 grow_horizontal = 2
 grow_vertical = 0
+theme_override_constants/separation = 15
 alignment = 1
 
 [node name="BtnPlayPausa" type="Button" parent="ReproductorCanvas/ModalVideo/BarraControles" unique_id=1494769983]
+custom_minimum_size = Vector2(100, 36)
 layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_ctrl")
 text = "Pausa"
 
 [node name="BtnReiniciar" type="Button" parent="ReproductorCanvas/ModalVideo/BarraControles" unique_id=1369703953]
+custom_minimum_size = Vector2(100, 36)
 layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_ctrl")
 text = "Repetir"

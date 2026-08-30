@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cvw3a22vljp7c"
-path="res://.godot/imported/Gemini_Generated_Image_3mm2im3mm2im3mm2.jpg-79a10a67b46b13423a4e6ae74f4de3ca.ctex"
+uid="uid://ymwpclhcw4ca"
+path="res://.godot/imported/Fondo_Cabina_Piloto.png-b1806b41c703709ccc34b5e5817daa42.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/Album/Portugal/Gemini_Generated_Image_3mm2im3mm2im3mm2.jpg"
-dest_files=["res://.godot/imported/Gemini_Generated_Image_3mm2im3mm2im3mm2.jpg-79a10a67b46b13423a4e6ae74f4de3ca.ctex"]
+source_file="res://assets/Minijuegos/minijuego Piloto/Fondo_Cabina_Piloto.png"
+dest_files=["res://.godot/imported/Fondo_Cabina_Piloto.png-b1806b41c703709ccc34b5e5817daa42.ctex"]
 
 [params]
 

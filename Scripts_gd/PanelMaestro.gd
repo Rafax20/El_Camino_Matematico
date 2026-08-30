@@ -1,7 +1,7 @@
 # res://Scripts_gd/PanelMaestro.gd
 extends Control
 
-# Referencias UI - Rutas exactas corregidas
+# Referencias UI
 @onready var selector_estudiantes: OptionButton = $VBoxPrincipal/BarraFiltros/SelectorEstudiante
 @onready var selector_categoria: OptionButton = $VBoxPrincipal/BarraFiltros/SelectorCategoria
 @onready var btn_actualizar: Button = $VBoxPrincipal/BarraFiltros/BtnActualizar
@@ -15,6 +15,8 @@ extends Control
 @onready var kpi_enfoque: Label = $VBoxPrincipal/ContenedorKPIs/TarjetaEnfoque/VBox/Valor
 
 # Gráfico y Tabla
+@onready var selector_tipo_grafico: OptionButton = $VBoxPrincipal/ContenedorCuerpo/PanelGrafico/VBox/HBoxHeaderGrafico/SelectorTipoGrafico
+@onready var label_leyenda: Label = $VBoxPrincipal/ContenedorCuerpo/PanelGrafico/VBox/HBoxHeaderGrafico/Leyenda
 @onready var lienzo_grafico: Control = $VBoxPrincipal/ContenedorCuerpo/PanelGrafico/VBox/LienzoGrafico
 @onready var contenedor_filas_tabla: VBoxContainer = $VBoxPrincipal/ContenedorCuerpo/PanelHistorial/VBox/Scroll/VBoxFilas
 @onready var label_estado_tabla: Label = $VBoxPrincipal/ContenedorCuerpo/PanelHistorial/LabelEstado
@@ -48,6 +50,8 @@ func _ready():
 		selector_estudiantes.item_selected.connect(_on_estudiante_seleccionado)
 	if selector_categoria:
 		selector_categoria.item_selected.connect(_on_filtro_categoria_seleccionado)
+	if selector_tipo_grafico:
+		selector_tipo_grafico.item_selected.connect(_on_tipo_grafico_seleccionado)
 	if btn_actualizar:
 		btn_actualizar.pressed.connect(_cargar_datos)
 	if btn_salir:
@@ -88,6 +92,10 @@ func _on_estudiante_seleccionado(_idx: int):
 
 func _on_filtro_categoria_seleccionado(_idx: int):
 	_procesar_y_actualizar_ui()
+
+func _on_tipo_grafico_seleccionado(_idx: int):
+	if lienzo_grafico:
+		lienzo_grafico.queue_redraw()
 
 func _cargar_datos():
 	if label_estado_tabla:
@@ -220,14 +228,23 @@ func _actualizar_diagnostico_pedagogico(aciertos: int, fallas: int, tiempo_prom:
 	if lbl_diag_recom: lbl_diag_recom.text = "Consejo Docente: " + diag.get("recomendacion", "")
 
 # =====================================================================
-# RENDERIZADO DEL GRAFICO VECTORIAL DE DESEMPENO
+# RENDERIZADO DEL GRAFICO VECTORIAL SEPARADO (BARRAS vs LINEAS)
 # =====================================================================
 func _dibujar_grafico_desempeno():
 	if not lienzo_grafico: return
 	var g_size = lienzo_grafico.size
 	if g_size.x < 50 or g_size.y < 50: return
 	
-	# Area de dibujo con margenes para ejes
+	var modo_grafico = selector_tipo_grafico.selected if selector_tipo_grafico else 0
+	
+	# Actualizar texto de la leyenda
+	if label_leyenda:
+		match modo_grafico:
+			0: label_leyenda.text = "Aciertos (Verde)  |  Errores (Rojo)"
+			1: label_leyenda.text = "Tiempo Promedio de Respuesta en Segundos (Azul)"
+			2: label_leyenda.text = "Barras: Precisión %  |  Línea: Tiempo (s)"
+	
+	# Área de dibujo con márgenes para ejes
 	var margin_left = 55.0
 	var margin_right = 55.0
 	var margin_top = 35.0
@@ -237,88 +254,122 @@ func _dibujar_grafico_desempeno():
 	var chart_h = g_size.y - margin_top - margin_bottom
 	var chart_bottom = g_size.y - margin_bottom
 	
-	# 1. Fondo y Lineas de Cuadricula Horizontal
 	var font = ThemeDB.fallback_font
 	var font_size = 12
 	
-	for i in range(5):
-		var pct_val = i * 25 # 0%, 25%, 50%, 75%, 100%
-		var y = chart_bottom - (chart_h * (pct_val / 100.0))
-		# Linea tenue
-		lienzo_grafico.draw_line(Vector2(margin_left, y), Vector2(g_size.x - margin_right, y), Color(1, 1, 1, 0.08), 1.0)
-		# Texto Eje Izquierdo (% Precision)
-		lienzo_grafico.draw_string(font, Vector2(10, y + 4), "%d%%" % pct_val, HORIZONTAL_ALIGNMENT_RIGHT, -1, font_size, Color("#94a3b8"))
-		
-	# Eje Derecho: Escala de Tiempos (0s, 5s, 10s, 15s)
-	for i in range(4):
-		var seg_val = i * 5.0
-		var y = chart_bottom - (chart_h * (seg_val / 15.0))
-		lienzo_grafico.draw_string(font, Vector2(g_size.x - margin_right + 8, y + 4), "%.0fs" % seg_val, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size, Color("#38bdf8"))
-		
-	# 2. Dibujar Columnas y Curva por Categoria
 	var categorias = ["suma", "resta", "multiplicacion", "division"]
 	var nombres_cat = ["SUMA", "RESTA", "MULTI", "DIVISION"]
 	var num_cats = categorias.size()
 	var slot_w = chart_w / float(num_cats)
 	var bar_w = min(slot_w * 0.45, 45.0)
 	
-	var puntos_tiempo: PackedVector2Array = []
-	
-	for i in range(num_cats):
-		var cat_key = categorias[i]
-		var data = stats_categorias[cat_key]
-		var total_cat = data["aciertos"] + data["fallas"]
-		var center_x = margin_left + (i * slot_w) + (slot_w / 2.0)
-		
-		# A) Barras apiladas de Aciertos (Verde) y Errores (Rojo)
-		if total_cat > 0:
-			var pct_aciertos = data["pct"]
-			var h_aciertos = chart_h * (pct_aciertos / 100.0)
-			var h_fallas = chart_h * ((100.0 - pct_aciertos) / 100.0)
+	# -------------------------------------------------------------
+	# MODO 0 O MODO 2: GRAFICO DE BARRAS (PRECISION %)
+	# -------------------------------------------------------------
+	if modo_grafico == 0 or modo_grafico == 2:
+		# Líneas de cuadrícula %
+		for i in range(5):
+			var pct_val = i * 25 # 0%, 25%, 50%, 75%, 100%
+			var y = chart_bottom - (chart_h * (pct_val / 100.0))
+			lienzo_grafico.draw_line(Vector2(margin_left, y), Vector2(g_size.x - margin_right, y), Color(1, 1, 1, 0.08), 1.0)
+			lienzo_grafico.draw_string(font, Vector2(10, y + 4), "%d%%" % pct_val, HORIZONTAL_ALIGNMENT_RIGHT, -1, font_size, Color("#94a3b8"))
 			
-			# Barra Fallas (Rojo / fondo superior)
-			if h_fallas > 0:
-				var rect_err = Rect2(center_x - (bar_w / 2.0), chart_bottom - chart_h, bar_w, h_fallas)
-				lienzo_grafico.draw_rect(rect_err, Color("#ef4444"), true)
+		for i in range(num_cats):
+			var cat_key = categorias[i]
+			var data = stats_categorias[cat_key]
+			var total_cat = data["aciertos"] + data["fallas"]
+			var center_x = margin_left + (i * slot_w) + (slot_w / 2.0)
+			
+			if total_cat > 0:
+				var pct_aciertos = data["pct"]
+				var h_aciertos = chart_h * (pct_aciertos / 100.0)
+				var h_fallas = chart_h * ((100.0 - pct_aciertos) / 100.0)
 				
-			# Barra Aciertos (Verde / base)
-			if h_aciertos > 0:
-				var rect_ok = Rect2(center_x - (bar_w / 2.0), chart_bottom - h_aciertos, bar_w, h_aciertos)
-				lienzo_grafico.draw_rect(rect_ok, Color("#10b981"), true)
+				# Barra Fallas (Rojo / fondo superior)
+				if h_fallas > 0:
+					var rect_err = Rect2(center_x - (bar_w / 2.0), chart_bottom - chart_h, bar_w, h_fallas)
+					lienzo_grafico.draw_rect(rect_err, Color("#ef4444"), true)
+					
+				# Barra Aciertos (Verde / base)
+				if h_aciertos > 0:
+					var rect_ok = Rect2(center_x - (bar_w / 2.0), chart_bottom - h_aciertos, bar_w, h_aciertos)
+					lienzo_grafico.draw_rect(rect_ok, Color("#10b981"), true)
+					
+				# Borde de la barra
+				var rect_total = Rect2(center_x - (bar_w / 2.0), chart_bottom - chart_h, bar_w, chart_h)
+				lienzo_grafico.draw_rect(rect_total, Color(1, 1, 1, 0.2), false, 2.0)
 				
-			# Borde de la barra
-			var rect_total = Rect2(center_x - (bar_w / 2.0), chart_bottom - chart_h, bar_w, chart_h)
-			lienzo_grafico.draw_rect(rect_total, Color(1, 1, 1, 0.2), false, 2.0)
-			
-			# Porcentaje encima de la barra
-			lienzo_grafico.draw_string(font, Vector2(center_x - 24, chart_bottom - chart_h - 8), "%.0f%%" % pct_aciertos, HORIZONTAL_ALIGNMENT_CENTER, 48, font_size, Color("#fde047"))
-		else:
-			# Barra vacia sin datos
-			var rect_vacio = Rect2(center_x - (bar_w / 2.0), chart_bottom - (chart_h * 0.1), bar_w, chart_h * 0.1)
-			lienzo_grafico.draw_rect(rect_vacio, Color(0.2, 0.25, 0.35, 0.4), true)
-			lienzo_grafico.draw_string(font, Vector2(center_x - 24, chart_bottom - 15), "S/D", HORIZONTAL_ALIGNMENT_CENTER, 48, font_size, Color("#64748b"))
-			
-		# B) Punto de Tiempo Promedio para la curva
-		var t_prom = clampf(data["tiempo_prom"], 0.0, 15.0)
-		var y_tiempo = chart_bottom - (chart_h * (t_prom / 15.0))
-		puntos_tiempo.append(Vector2(center_x, y_tiempo))
+				# Porcentaje encima de la barra
+				lienzo_grafico.draw_string(font, Vector2(center_x - 24, chart_bottom - chart_h - 8), "%.0f%%" % pct_aciertos, HORIZONTAL_ALIGNMENT_CENTER, 48, font_size + 1, Color("#fde047"))
+			else:
+				# Barra vacía sin datos
+				var rect_vacio = Rect2(center_x - (bar_w / 2.0), chart_bottom - (chart_h * 0.1), bar_w, chart_h * 0.1)
+				lienzo_grafico.draw_rect(rect_vacio, Color(0.2, 0.25, 0.35, 0.4), true)
+				lienzo_grafico.draw_string(font, Vector2(center_x - 24, chart_bottom - 15), "S/D", HORIZONTAL_ALIGNMENT_CENTER, 48, font_size, Color("#64748b"))
+				
+			# Etiqueta de Categoría debajo
+			lienzo_grafico.draw_string(font, Vector2(center_x - 30, chart_bottom + 22), nombres_cat[i], HORIZONTAL_ALIGNMENT_CENTER, 60, font_size + 1, Color.WHITE)
+
+	# -------------------------------------------------------------
+	# MODO 1 O MODO 2: GRAFICO DE LINEAS (TIEMPO EN SEGUNDOS)
+	# -------------------------------------------------------------
+	if modo_grafico == 1 or modo_grafico == 2:
+		# Líneas de cuadrícula de segundos (si solo se ve la línea)
+		if modo_grafico == 1:
+			for i in range(5):
+				var seg_val = i * 4.0 # 0s, 4s, 8s, 12s, 16s
+				var y = chart_bottom - (chart_h * (seg_val / 16.0))
+				lienzo_grafico.draw_line(Vector2(margin_left, y), Vector2(g_size.x - margin_right, y), Color(1, 1, 1, 0.08), 1.0)
+				lienzo_grafico.draw_string(font, Vector2(10, y + 4), "%.0fs" % seg_val, HORIZONTAL_ALIGNMENT_RIGHT, -1, font_size, Color("#38bdf8"))
+
+		var puntos_tiempo: PackedVector2Array = []
 		
-		# Etiqueta de Categoria debajo
-		lienzo_grafico.draw_string(font, Vector2(center_x - 30, chart_bottom + 22), nombres_cat[i], HORIZONTAL_ALIGNMENT_CENTER, 60, font_size + 1, Color.WHITE)
-		
-	# 3. Dibujar Linea y Puntos de Tiempos de Respuesta
-	if puntos_tiempo.size() > 1:
-		for i in range(puntos_tiempo.size() - 1):
-			lienzo_grafico.draw_line(puntos_tiempo[i], puntos_tiempo[i+1], Color("#38bdf8"), 3.0, true)
+		for i in range(num_cats):
+			var cat_key = categorias[i]
+			var data = stats_categorias[cat_key]
+			var center_x = margin_left + (i * slot_w) + (slot_w / 2.0)
 			
-	for i in range(puntos_tiempo.size()):
-		var p = puntos_tiempo[i]
-		var data = stats_categorias[categorias[i]]
-		# Halo y punto cian
-		lienzo_grafico.draw_circle(p, 6.0, Color("#38bdf8"))
-		lienzo_grafico.draw_circle(p, 3.0, Color.WHITE)
-		if data["aciertos"] + data["fallas"] > 0:
-			lienzo_grafico.draw_string(font, Vector2(p.x + 8, p.y - 6), "%.1fs" % data["tiempo_prom"], HORIZONTAL_ALIGNMENT_LEFT, -1, font_size, Color("#38bdf8"))
+			var max_seg = 16.0 if modo_grafico == 1 else 15.0
+			var t_prom = clampf(data["tiempo_prom"], 0.0, max_seg)
+			var y_tiempo = chart_bottom - (chart_h * (t_prom / max_seg))
+			puntos_tiempo.append(Vector2(center_x, y_tiempo))
+			
+			if modo_grafico == 1:
+				# Dibujar etiquetas de categoría abajo si no están las barras
+				lienzo_grafico.draw_string(font, Vector2(center_x - 30, chart_bottom + 22), nombres_cat[i], HORIZONTAL_ALIGNMENT_CENTER, 60, font_size + 1, Color.WHITE)
+
+		# Polígono translúcido bajo la curva
+		if puntos_tiempo.size() > 1 and modo_grafico == 1:
+			var poly: PackedVector2Array = []
+			poly.append(Vector2(puntos_tiempo[0].x, chart_bottom))
+			for p in puntos_tiempo: poly.append(p)
+			poly.append(Vector2(puntos_tiempo[puntos_tiempo.size() - 1].x, chart_bottom))
+			lienzo_grafico.draw_colored_polygon(poly, Color(0.22, 0.74, 0.97, 0.12))
+
+		# Dibujar líneas conectando los puntos
+		if puntos_tiempo.size() > 1:
+			for i in range(puntos_tiempo.size() - 1):
+				lienzo_grafico.draw_line(puntos_tiempo[i], puntos_tiempo[i+1], Color("#38bdf8"), 3.5, true)
+				
+		# Puntos y etiquetas de valor con placa de contraste
+		for i in range(puntos_tiempo.size()):
+			var p = puntos_tiempo[i]
+			var data = stats_categorias[categorias[i]]
+			var total_cat = data["aciertos"] + data["fallas"]
+			
+			# Halo y circulo cian
+			lienzo_grafico.draw_circle(p, 7.0, Color("#38bdf8"))
+			lienzo_grafico.draw_circle(p, 3.5, Color.WHITE)
+			
+			if total_cat > 0:
+				var str_val = "%.1f s" % data["tiempo_prom"]
+				# Placa oscura de fondo para contraste total
+				var offset_y = -26.0 if modo_grafico == 1 else -32.0
+				var pill_rect = Rect2(p.x - 22, p.y + offset_y, 44, 18)
+				
+				lienzo_grafico.draw_rect(pill_rect, Color("#0f172a"), true)
+				lienzo_grafico.draw_rect(pill_rect, Color("#38bdf8"), false, 1.5)
+				lienzo_grafico.draw_string(font, Vector2(p.x - 22, p.y + offset_y + 13), str_val, HORIZONTAL_ALIGNMENT_CENTER, 44, font_size, Color("#38bdf8"))
 
 # =====================================================================
 # TABLA DETALLADA DE HISTORIAL DE RESPUESTAS
@@ -326,7 +377,6 @@ func _dibujar_grafico_desempeno():
 func _actualizar_tabla_historial():
 	if not contenedor_filas_tabla: return
 	
-	# Limpiar filas previas
 	for h in contenedor_filas_tabla.get_children():
 		h.queue_free()
 		
@@ -355,7 +405,7 @@ func _actualizar_tabla_historial():
 		hbox.add_theme_constant_override("separation", 12)
 		panel_fila.add_child(hbox)
 		
-		# Categoria
+		# Categoría
 		var cat_name = str(reg.get("categoria", "Matematicas")).capitalize()
 		var lbl_cat = Label.new()
 		lbl_cat.text = "[%s]" % cat_name

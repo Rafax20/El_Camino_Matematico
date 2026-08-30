@@ -2,7 +2,7 @@
 extends Node2D
 
 @onready var path_follow = $Path2D/PathFollow2D
-#@onready var path_alternativo = $Path2D_Derecha
+@onready var path_follow_derecha = $Path2D_Derecha/PathFollow2D if has_node("Path2D_Derecha/PathFollow2D") else null
 @onready var dado_objeto = $ContenedorDado/DadoObjeto
 @onready var anim_dado = $ContenedorDado/DadoObjeto/AnimationPlayer
 @onready var boton_dado = $Panel/BotonDado 
@@ -14,6 +14,7 @@ extends Node2D
 @onready var minijuego_balanza = $CapaMinijuegos/MinijuegoBalanza
 @onready var minijuego_clasificador = $CapaMinijuegos/MinijuegoClasificador
 @onready var minijuego_circuitos = $CapaMinijuegos/MinijuegoCircuitos
+@onready var minijuego_piloto = $CapaMinijuegos/MinijuegoPilotoNave if has_node("CapaMinijuegos/MinijuegoPilotoNave") else null
 
 var total_casillas = 29
 var casilla_actual = 0
@@ -25,7 +26,7 @@ var servidor_listo: bool = false
 
 var pregunta_actual: Dictionary = {}
 
-# Valor: Diccionario con su ratio del Path2D y el tipo de evento
+# Valor: Diccionario con su ratio del Path2D (Camino Largo Izquierdo)
 var mapa_casillas: Dictionary = {
 	1:  {"ratio": 0.039, "tipo": "asteroides"},
 	2:  {"ratio": 0.078, "tipo": "buscador_cajas"},
@@ -38,7 +39,7 @@ var mapa_casillas: Dictionary = {
 	9:  {"ratio": 0.325, "tipo": "laboratorio"},
 	10: {"ratio": 0.364, "tipo": "balanza"},
 	11: {"ratio": 0.395, "tipo": "clasificador"},
-	12: {"ratio": 0.426, "tipo": "circuitos"},
+	12: {"ratio": 0.426, "tipo": "piloto_nave"}, # Casilla de bifurcación de la Nave
 	13: {"ratio": 0.465, "tipo": "asteroides"},
 	14: {"ratio": 0.504, "tipo": "buscador_cajas"},
 	15: {"ratio": 0.535, "tipo": "laboratorio"},
@@ -56,6 +57,24 @@ var mapa_casillas: Dictionary = {
 	27: {"ratio": 0.943, "tipo": "laboratorio"},
 	28: {"ratio": 0.974, "tipo": "balanza"},
 	29: {"ratio": 1.000, "tipo": "examen"} # Meta final
+}
+
+# 📌 DICCIONARIO ALTERNATIVO: Ratios para Path2D_Derecha (Atajo de la Casilla 12)
+# La primera posición de esta curva es la Casilla 12 (ratio 0.0), avanzando hacia la nave (ratio 1.0)
+var mapa_casillas_derecha: Dictionary = {
+	12: {"ratio": 0.0000, "tipo": "piloto_nave"},
+	13: {"ratio": 0.1094, "tipo": "asteroides"},
+	14: {"ratio": 0.1979, "tipo": "buscador_cajas"},
+	15: {"ratio": 0.2758, "tipo": "laboratorio"},
+	16: {"ratio": 0.3643, "tipo": "balanza"},
+	17: {"ratio": 0.4528, "tipo": "clasificador"},
+	18: {"ratio": 0.5518, "tipo": "circuitos"},
+	19: {"ratio": 0.6403, "tipo": "asteroides"},
+	20: {"ratio": 0.7184, "tipo": "buscador_cajas"},
+	21: {"ratio": 0.7788, "tipo": "laboratorio"},
+	22: {"ratio": 0.8569, "tipo": "balanza"},
+	23: {"ratio": 0.935, "tipo": "clasificador"},
+	24: {"ratio": 1.0000, "tipo": "examen"} # Meta final del atajo
 }
 
 
@@ -128,20 +147,32 @@ func _on_boton_dado_pressed():
 	$Panel/BotonDado/Numero_Dado.clear()
 	$Panel/BotonDado/Numero_Dado.add_text(str(resultado))
 	# 3. Lógica del juego: actualizar posición y progresos
-	casilla_actual = clampi(casilla_actual + resultado, 0, total_casillas)
+	var casilla_destino_calculada = casilla_actual + resultado
+	var max_casillas = _obtener_total_casillas()
+	
+	# 🪐 REGLA DE BIFURCACIÓN EN CASILLA 12:
+	# Si el jugador viene de una casilla anterior (< 12) y el tiro lo llevaría a superar la 12 (>= 12),
+	# se le frena obligatoriamente en la Casilla 12 para resolver el desafío y decidir el camino.
+	if casilla_anterior < 12 and casilla_destino_calculada >= 12:
+		print("🪐 ¡Bifurcación en Saturno! Frenado obligatorio en Casilla 12 para decidir el camino.")
+		casilla_actual = 12
+	else:
+		casilla_actual = clampi(casilla_destino_calculada, 0, max_casillas)
 	
 	DatosUsuario.casilla_actual_db = casilla_actual
 	DatosUsuario.pregunta_pendiente_db = true
 	ConexionSupabase.actualizar_progreso_en_nube(casilla_actual, true)
 	
 	# 4. Continuación de animaciones de mapa
-	await $Path2D/PathFollow2D/Animacion.Animar_Movimiento(true)
+	var anim_activa = _obtener_animacion_activa()
+	if anim_activa and anim_activa.has_method("Animar_Movimiento"):
+		anim_activa.Animar_Movimiento(true)
 	await _mover_ficha_visualmente(casilla_actual, false)
-	await get_tree().create_timer(2.5).timeout
-	await $Path2D/PathFollow2D/Animacion.Animar_Caida(true)
-	await get_tree().create_timer(1.2).timeout
+	if anim_activa and anim_activa.has_method("Animar_Caida"):
+		await anim_activa.Animar_Caida(true)
+	await get_tree().create_timer(0.3).timeout
 	
-	if casilla_actual == total_casillas:
+	if casilla_actual >= max_casillas:
 		mostrar_pregunta_en_pantalla()
 	else:
 		boton_chat.disabled = true
@@ -248,20 +279,44 @@ func _animar_lanzamiento_dado(resultado_final: int) -> void:
 func tween_salida1_subida_or_timeout(tw: Tween) -> void:
 	await tw.finished
 
+func _obtener_animacion_activa() -> Node:
+	var usa_derecho = DatosUsuario.tomo_camino_corto and path_follow_derecha != null and casilla_actual >= 12
+	if usa_derecho and has_node("Path2D_Derecha/PathFollow2D/Animacion"):
+		return $Path2D_Derecha/PathFollow2D/Animacion
+	elif has_node("Path2D/PathFollow2D/Animacion"):
+		return $Path2D/PathFollow2D/Animacion
+	return null
+
 func _mover_ficha_visualmente(casilla: int, instantaneo: bool):
 	if casilla == 0:
-		path_follow.progress_ratio = 0.0
+		if path_follow: 
+			path_follow.visible = true
+			path_follow.progress_ratio = 0.0
+		if path_follow_derecha: 
+			path_follow_derecha.visible = false
+			path_follow_derecha.progress_ratio = 0.0
 		return
 	
-	# Obtenemos la posición asignada a la casilla actual (por defecto 0.0 si no existe)
-	var datos_casilla = mapa_casillas.get(casilla, {"ratio": 0.0})
+	# Determinar si se usa el atajo derecho ($Path2D_Derecha) o el camino largo ($Path2D)
+	var usa_derecho = DatosUsuario.tomo_camino_corto and path_follow_derecha != null and casilla >= 12
+	var target_follow = path_follow_derecha if usa_derecho else path_follow
+	var target_mapa = mapa_casillas_derecha if usa_derecho else mapa_casillas
+	
+	# Visibilidad y sincronización de nodos
+	if path_follow_derecha and path_follow:
+		path_follow.visible = not usa_derecho
+		path_follow_derecha.visible = usa_derecho
+	
+	# Obtenemos la posición asignada a la casilla actual
+	var datos_casilla = target_mapa.get(casilla, {"ratio": 0.0})
 	var ratio_destino = datos_casilla["ratio"]
 	
 	if instantaneo:
-		path_follow.progress_ratio = ratio_destino
+		target_follow.progress_ratio = ratio_destino
 	else:
 		var tween = create_tween()
-		tween.tween_property(path_follow, "progress_ratio", ratio_destino, 4.0).set_trans(Tween.TRANS_SINE)
+		tween.tween_property(target_follow, "progress_ratio", ratio_destino, 2.5).set_trans(Tween.TRANS_SINE)
+		await tween.finished
 	
 
 # ==========================================
@@ -271,7 +326,7 @@ func mostrar_pregunta_en_pantalla():
 	if lista_preguntas.size() == 0: return
 	
 	# 🎯 Si estamos en la casilla final o reanudando un examen interrumpido
-	if casilla_actual == total_casillas or DatosUsuario.en_examen_final:
+	if casilla_actual >= _obtener_total_casillas() or DatosUsuario.en_examen_final:
 		DatosUsuario.en_examen_final = true
 		print("📝 MODO EXAMEN: Pregunta ", DatosUsuario.examen_preguntas_respondidas + 1, " de 5")
 	
@@ -553,6 +608,17 @@ func _mostrar_pantalla_felicitaciones_victoria(es_nuevo_logro: bool = true):
 func _procesar_respuesta_casilla_normal(es_correcta: bool, tiempo_tardado: float):
 	if es_correcta:
 		print("🎯 ¡Correcta! El niño tardó: ", tiempo_tardado, " segundos.")
+		
+		# 🪐 BIFURCACIÓN EN CASILLA 12: Si acierta la 12, desbloquea el atajo derecho
+		if casilla_actual == 12:
+			DatosUsuario.tomo_camino_corto = true
+			if path_follow_derecha:
+				path_follow_derecha.progress_ratio = 0.0
+				path_follow_derecha.visible = true
+			if path_follow:
+				path_follow.visible = false
+			print("🌟 ¡Casilla 12 Superada! Se ha activado el Atajo Derecho ($Path2D_Derecha) desde ratio 0.0.")
+		
 		GestionAudio.reproducir_audio_local("Elogios/" + ["elogio1", "elogio2", "elogio3"].pick_random())
 		
 		if randf() < 0.80:
@@ -584,6 +650,16 @@ func _procesar_respuesta_casilla_normal(es_correcta: bool, tiempo_tardado: float
 		
 	else:
 		print("❌ ¡Incorrecta! Regresando a casilla anterior: ", casilla_anterior)
+		
+		# 🪐 BIFURCACIÓN EN CASILLA 12: Si se equivoca, se mantiene en el camino largo
+		if casilla_actual == 12:
+			DatosUsuario.tomo_camino_corto = false
+			if path_follow:
+				path_follow.visible = true
+			if path_follow_derecha:
+				path_follow_derecha.visible = false
+			print("🛑 Fallo en la Casilla 12. Se debe recorrer el camino largo ($Path2D) alrededor de Saturno.")
+			
 		GestionAudio.reproducir_audio_local("Animos/" + ["animo1", "animo2", "animo3"].pick_random())
 		await get_tree().create_timer(2.0).timeout
 		
@@ -597,10 +673,15 @@ func _procesar_respuesta_casilla_normal(es_correcta: bool, tiempo_tardado: float
 		boton_dado.disabled = false
 		Menu_Volver.disabled = false
 
+func _obtener_total_casillas() -> int:
+	return 24 if DatosUsuario.tomo_camino_corto else 29
+
 func lanzar_minijuego_casilla():
-	# 1. Seleccionamos una pregunta del banco precargado
-	var datos_casilla = mapa_casillas.get(casilla_actual, {"tipo": "buscador_cajas"})
-	print("MINIJUEGO DETECTADO EN DATOS CASILLA: ", datos_casilla["tipo"])
+	# 1. Seleccionamos el diccionario del camino actual (Atajo o Principal)
+	var usa_derecho = DatosUsuario.tomo_camino_corto and casilla_actual >= 12
+	var target_mapa = mapa_casillas_derecha if usa_derecho else mapa_casillas
+	var datos_casilla = target_mapa.get(casilla_actual, {"tipo": "buscador_cajas"})
+	print("MINIJUEGO DETECTADO EN DATOS CASILLA (Casilla ", casilla_actual, "): ", datos_casilla["tipo"])
 	match datos_casilla["tipo"]:
 		"asteroides":
 			lanzar_minijuego_asteroides()
@@ -619,6 +700,9 @@ func lanzar_minijuego_casilla():
 
 		"circuitos":
 			lanzar_minijuego_circuitos()
+
+		"piloto_nave":
+			lanzar_minijuego_piloto()
 
 
 func _obtener_pregunta_actual() -> Dictionary:
@@ -643,6 +727,7 @@ func _on_minijuego_resuelto(es_correcto: bool):
 	if minijuego_balanza: minijuego_balanza.visible = false
 	if minijuego_clasificador: minijuego_clasificador.visible = false
 	if minijuego_circuitos: minijuego_circuitos.visible = false
+	if minijuego_piloto: minijuego_piloto.visible = false
 
 	# 🎥 RESTAURAR CÁMARA DEL TABLERO
 	$CamaraTablero.enabled = true
@@ -653,6 +738,17 @@ func _on_minijuego_resuelto(es_correcto: bool):
 
 	if es_correcto:
 		print("🎉 ¡Minijuego superado exitosamente!")
+		
+		# 🪐 BIFURCACIÓN EN CASILLA 12: Si gana el minijuego de la 12, habilita el atajo derecho
+		if casilla_actual == 12:
+			DatosUsuario.tomo_camino_corto = true
+			if path_follow_derecha:
+				path_follow_derecha.progress_ratio = 0.0 # Casilla 12 es el inicio del camino derecho
+				path_follow_derecha.visible = true
+			if path_follow:
+				path_follow.visible = false
+			print("🌟 ¡Minijuego de Casilla 12 Ganado! Atajo Derecho ($Path2D_Derecha) Activado desde su inicio (0.0).")
+			
 		DatosUsuario.pregunta_pendiente_db = false
 		ConexionSupabase.actualizar_progreso_en_nube(casilla_actual, false)
 		
@@ -676,6 +772,16 @@ func _on_minijuego_resuelto(es_correcto: bool):
 		Menu_Volver.disabled = false
 	else:
 		print("❌ ¡Incorrecta! Regresando a casilla anterior: ", casilla_anterior)
+		
+		# 🪐 BIFURCACIÓN EN CASILLA 12: Si pierde el minijuego de la 12, se queda en el camino largo
+		if casilla_actual == 12:
+			DatosUsuario.tomo_camino_corto = false
+			if path_follow:
+				path_follow.visible = true
+			if path_follow_derecha:
+				path_follow_derecha.visible = false
+			print("🛑 Minijuego de Casilla 12 Perdido. Tomando camino largo alrededor de Saturno.")
+			
 		var animos = ["animo1", "animo2", "animo3"]
 		GestionAudio.reproducir_audio_local("Animos/" + animos.pick_random())
 		
@@ -759,22 +865,54 @@ func lanzar_minijuego_laboratorio():
 	minijuego_laboratorio.iniciar_minijuego("espacio")
 	
 func lanzar_minijuego_balanza():
-	if not minijuego_balanza.minijuego_finalizado.is_connected(_on_minijuego_resuelto):
-		minijuego_balanza.minijuego_finalizado.connect(_on_minijuego_resuelto)
-	$CapaMinijuegos.visible = true
-	minijuego_balanza.visible = true
-	minijuego_balanza.iniciar_minijuego("espacio")
+	if minijuego_balanza == null and has_node("CapaMinijuegos/MinijuegoBalanza"):
+		minijuego_balanza = $CapaMinijuegos/MinijuegoBalanza
+	if minijuego_balanza:
+		if not minijuego_balanza.has_signal("minijuego_finalizado"):
+			var scr = load("res://Scripts_gd/Minijuegos/Minijuego_balanza/MinijuegoBalanza.gd")
+			minijuego_balanza.set_script(scr)
+		if not minijuego_balanza.minijuego_finalizado.is_connected(_on_minijuego_resuelto):
+			minijuego_balanza.minijuego_finalizado.connect(_on_minijuego_resuelto)
+		$CapaMinijuegos.visible = true
+		minijuego_balanza.visible = true
+		minijuego_balanza.iniciar_minijuego("espacio")
 	
 func lanzar_minijuego_clasificador():
-	if not minijuego_clasificador.minijuego_finalizado.is_connected(_on_minijuego_resuelto):
-		minijuego_clasificador.minijuego_finalizado.connect(_on_minijuego_resuelto)
-	$CapaMinijuegos.visible = true
-	minijuego_clasificador.visible = true
-	minijuego_clasificador.iniciar_minijuego("espacio")
+	if minijuego_clasificador == null and has_node("CapaMinijuegos/MinijuegoClasificador"):
+		minijuego_clasificador = $CapaMinijuegos/MinijuegoClasificador
+	if minijuego_clasificador:
+		if not minijuego_clasificador.has_signal("minijuego_finalizado"):
+			var scr = load("res://Scripts_gd/Minijuegos/Minijuego_clasificador/MinijuegoClasificador.gd")
+			minijuego_clasificador.set_script(scr)
+		if not minijuego_clasificador.minijuego_finalizado.is_connected(_on_minijuego_resuelto):
+			minijuego_clasificador.minijuego_finalizado.connect(_on_minijuego_resuelto)
+		$CapaMinijuegos.visible = true
+		minijuego_clasificador.visible = true
+		minijuego_clasificador.iniciar_minijuego("espacio")
 	
 func lanzar_minijuego_circuitos():
-	if not minijuego_circuitos.minijuego_finalizado.is_connected(_on_minijuego_resuelto):
-		minijuego_circuitos.minijuego_finalizado.connect(_on_minijuego_resuelto)
-	$CapaMinijuegos.visible = true
-	minijuego_circuitos.visible = true
-	minijuego_circuitos.iniciar_minijuego("espacio")
+	if minijuego_circuitos == null and has_node("CapaMinijuegos/MinijuegoCircuitos"):
+		minijuego_circuitos = $CapaMinijuegos/MinijuegoCircuitos
+	if minijuego_circuitos:
+		if not minijuego_circuitos.has_signal("minijuego_finalizado"):
+			var scr = load("res://Scripts_gd/Minijuegos/Minijuego_circuitos/MinijuegoCircuitos.gd")
+			minijuego_circuitos.set_script(scr)
+		if not minijuego_circuitos.minijuego_finalizado.is_connected(_on_minijuego_resuelto):
+			minijuego_circuitos.minijuego_finalizado.connect(_on_minijuego_resuelto)
+		$CapaMinijuegos.visible = true
+		minijuego_circuitos.visible = true
+		minijuego_circuitos.iniciar_minijuego("espacio")
+
+# 🚀 Invocador del minijuego de pilotaje de cabina (Bifurcación de Caminos)
+func lanzar_minijuego_piloto():
+	if minijuego_piloto == null and has_node("CapaMinijuegos/MinijuegoPilotoNave"):
+		minijuego_piloto = $CapaMinijuegos/MinijuegoPilotoNave
+	if minijuego_piloto:
+		if not minijuego_piloto.has_signal("minijuego_finalizado"):
+			var scr = load("res://Scripts_gd/Minijuegos/Minijuego_piloto/MinijuegoPilotoNave.gd")
+			minijuego_piloto.set_script(scr)
+		if not minijuego_piloto.minijuego_finalizado.is_connected(_on_minijuego_resuelto):
+			minijuego_piloto.minijuego_finalizado.connect(_on_minijuego_resuelto)
+		$CapaMinijuegos.visible = true
+		minijuego_piloto.visible = true
+		minijuego_piloto.iniciar_minijuego()

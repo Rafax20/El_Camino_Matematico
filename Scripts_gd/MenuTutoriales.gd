@@ -29,10 +29,10 @@ const VIDEOS_TUTORIALES = {
 
 # Botones de la interfaz principal
 @onready var btn_volver: TextureButton = $FondoEscolar/BtnVolver
-@onready var btn_suma: Button = $MarginContainer/VBoxContainerPrincipal/ContenidoDividido/PanelCategorias/BtnSuma
-@onready var btn_resta: Button = $MarginContainer/VBoxContainerPrincipal/ContenidoDividido/PanelCategorias/BtnResta
-@onready var btn_multi: Button = $MarginContainer/VBoxContainerPrincipal/ContenidoDividido/PanelCategorias/BtnMulti
-@onready var btn_divi: Button = $MarginContainer/VBoxContainerPrincipal/ContenidoDividido/PanelCategorias/BtnDivi
+@onready var btn_suma: TextureButton = $MarginContainer/VBoxContainerPrincipal/ContenidoDividido/PanelCategorias/BtnSuma
+@onready var btn_resta: TextureButton = $MarginContainer/VBoxContainerPrincipal/ContenidoDividido/PanelCategorias/BtnResta
+@onready var btn_multi: TextureButton = $MarginContainer/VBoxContainerPrincipal/ContenidoDividido/PanelCategorias/BtnMulti
+@onready var btn_divi: TextureButton = $MarginContainer/VBoxContainerPrincipal/ContenidoDividido/PanelCategorias/BtnDivi
 
 func _ready():
 	# Iniciar oculto el popup de video

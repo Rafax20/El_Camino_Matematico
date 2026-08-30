@@ -5,7 +5,7 @@ extends Control
 
 @onready var boton_anterior = $BotonAnterior
 @onready var boton_siguiente = $BotonSiguiente
-@onready var label_monedas = $ContenedorMonedas/LabelMonedas
+@onready var label_monedas = $ContenedorMonedas/HBoxContainer/LabelMonedas if has_node("ContenedorMonedas/HBoxContainer/LabelMonedas") else null
 @onready var boton_tienda = $BotonTienda
 
 # 📌 Estructura de navegación sin duplicar rutas de imágenes

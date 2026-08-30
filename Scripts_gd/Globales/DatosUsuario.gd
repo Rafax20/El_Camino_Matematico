@@ -23,6 +23,8 @@ var laminas_poseidas: Array = []
 var logros_poseidos: Array = []
 # 🪙 Monedas del jugador para comprar sobres en la tienda
 var monedas: int = 0
+# 🪐 Indica si el niño desbloqueó el atajo derecho en la casilla 12
+var tomo_camino_corto: bool = false
 
 # ⚡ CATALOGO_LAMINAS OPTIMIZADO: Almacena directamente la textura en RAM
 var CATALOGO_LAMINAS: Dictionary = {
@@ -155,3 +157,4 @@ func cerrar_sesion():
 	monedas = 0
 	laminas_poseidas.clear()
 	logros_poseidos.clear()
+	tomo_camino_corto = false

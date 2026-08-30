@@ -35,6 +35,7 @@ var tema_actual: String
 var respuesta_correcta: int = 0
 var juego_activo: bool = false
 var vidas_actuales: int = 3
+var pregunta_actual: Dictionary = {}
 
 var aciertos_actuales: int = 0
 var META_ACIERTOS: int = 5
@@ -102,6 +103,7 @@ func _cargar_siguiente_pregunta():
 	_limpiar_asteroides_pantalla()
 
 	var datos_pregunta = cola_preguntas.pop_front()
+	pregunta_actual = datos_pregunta
 	var texto_raw = datos_pregunta.get("operacion", datos_pregunta.get("pregunta", "2 mas 2"))
 	var texto_formateado = _formatear_operacion(texto_raw)
 	

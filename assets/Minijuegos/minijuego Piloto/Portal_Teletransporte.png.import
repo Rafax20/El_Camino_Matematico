@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://ccf2cr87x56v7"
-path="res://.godot/imported/Gemini_Generated_Image_o617c7o617c7o617.jpg-9912b32fbe1ee8652028051beb98c175.ctex"
+uid="uid://ke0i5ioh6eqd"
+path="res://.godot/imported/Portal_Teletransporte.png-f04a47c194968aaa553b915c670b2515.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/Album/Inglaterra/Gemini_Generated_Image_o617c7o617c7o617.jpg"
-dest_files=["res://.godot/imported/Gemini_Generated_Image_o617c7o617c7o617.jpg-9912b32fbe1ee8652028051beb98c175.ctex"]
+source_file="res://assets/Minijuegos/minijuego Piloto/Portal_Teletransporte.png"
+dest_files=["res://.godot/imported/Portal_Teletransporte.png-f04a47c194968aaa553b915c670b2515.ctex"]
 
 [params]
 

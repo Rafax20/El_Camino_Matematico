@@ -100,6 +100,7 @@
 [ext_resource type="PackedScene" uid="uid://dfbugve5tujxm" path="res://Escenas/Minijuegos/MinijuegoLaboratorio.tscn" id="98_2l76i"]
 [ext_resource type="PackedScene" uid="uid://c3jxmpani0i5q" path="res://Escenas/Minijuegos/MinijuegoCircuitos.tscn" id="98_ym5il"]
 [ext_resource type="PackedScene" uid="uid://rvsxco6dm85n" path="res://Escenas/Minijuegos/MinijuegoBalanza.tscn" id="99_e35ft"]
+[ext_resource type="PackedScene" uid="uid://c5n3v8law0x2p" path="res://Escenas/Minijuegos/MinijuegoPilotoNave.tscn" id="100_piloto"]
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_ipnda"]
 animations = [{
@@ -592,6 +593,12 @@ animations = [{
 "speed": 15.0
 }]
 
+[sub_resource type="Curve2D" id="Curve2D_Derecha"]
+_data = {
+"points": PackedVector2Array(0, 0, 0, 0, 238, 341, 0, 0, 0, 0, 320, 357, 0, 0, 0, 0, 391, 347, 0, 0, 0, 0, 449, 316, 0, 0, 0, 0, 504, 351, 0, 0, 0, 0, 561, 388, 0, 0, 0, 0, 624, 423, 0, 0, 0, 0, 693, 460, 0, 0, 0, 0, 738, 424, 0, 0, 0, 0, 764, 381, 0, 0, 0, 0, 800, 334, 0, 0, 0, 0, 842, 296, 0, 0, 0, 0, 894, 259)
+}
+point_count = 13
+
 [sub_resource type="Animation" id="Animation_08y31"]
 length = 0.001
 loop_mode = 1
@@ -741,6 +748,22 @@ animation = &"Saltando_Espacio"
 flip_h = true
 script = ExtResource("33_6anpw")
 
+[node name="Path2D_Derecha" type="Path2D" parent="." unique_id=2134460069]
+curve = SubResource("Curve2D_Derecha")
+
+[node name="PathFollow2D" type="PathFollow2D" parent="Path2D_Derecha" unique_id=292056440]
+position = Vector2(238, 341)
+rotates = false
+
+[node name="Animacion" type="AnimatedSprite2D" parent="Path2D_Derecha/PathFollow2D" unique_id=698203264]
+position = Vector2(-2.4552507, -61.7417)
+rotation = -0.04363323
+scale = Vector2(0.28505954, 0.2372879)
+sprite_frames = SubResource("SpriteFrames_nc2ci")
+animation = &"Saltando_Espacio"
+flip_h = true
+script = ExtResource("33_6anpw")
+
 [node name="Interfaz" parent="." unique_id=562769401 instance=ExtResource("33_h3ra3")]
 visible = false
 
@@ -811,6 +834,9 @@ visible = false
 visible = false
 
 [node name="MinijuegoBalanza" parent="CapaMinijuegos" unique_id=194785104 instance=ExtResource("99_e35ft")]
+visible = false
+
+[node name="MinijuegoPilotoNave" parent="CapaMinijuegos" unique_id=1847120934 instance=ExtResource("100_piloto")]
 visible = false
 
 [node name="ContenedorDado" type="CanvasLayer" parent="." unique_id=632679077]

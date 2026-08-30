@@ -1,4 +1,5 @@
 # res://Scripts_gd/Minijuegos/Minijuego_circuitos/MinijuegoCircuitos.gd
+class_name MinijuegoCircuitos
 extends Control
 
 ## Minijuego: Conector de Circuitos Estelares
@@ -61,6 +62,10 @@ var contenedor_corazones: HBoxContainer
 var contenedor_izquierdo: VBoxContainer
 var contenedor_derecho: VBoxContainer
 var capa_lineas: Control
+var pizarra_borrador: Control = null
+var btn_pizarra: TextureButton = null
+var escena_pizarra = preload("res://Escenas/Minijuegos/PizarraBorrador.tscn")
+var tex_cuaderno = preload("res://assets/Minijuegos/minijuego Laboratorio/Cuaderno.png")
 
 func _ready():
 	_precargar_texturas_botones()
@@ -203,6 +208,38 @@ func _construir_interfaz():
 	cont_term.add_child(contenedor_derecho)
 	
 	panel_contenedor.add_child(cont_term)
+	
+	# 7. 📝 BOTÓN DE PIZARRA Y PIZARRA BORRADOR (Centro Abajo)
+	if escena_pizarra:
+		pizarra_borrador = escena_pizarra.instantiate()
+		pizarra_borrador.name = "PizarraBorrador"
+		pizarra_borrador.visible = false
+		pizarra_borrador.z_index = 30
+		panel_contenedor.add_child(pizarra_borrador)
+		
+	btn_pizarra = TextureButton.new()
+	btn_pizarra.name = "BotonPizarra"
+	btn_pizarra.texture_normal = tex_cuaderno
+	btn_pizarra.custom_minimum_size = Vector2(85, 85)
+	btn_pizarra.set_anchors_preset(Control.PRESET_CENTER_BOTTOM)
+	btn_pizarra.anchor_left = 0.5
+	btn_pizarra.anchor_right = 0.5
+	btn_pizarra.anchor_top = 1.0
+	btn_pizarra.anchor_bottom = 1.0
+	btn_pizarra.offset_left = -42.5
+	btn_pizarra.offset_right = 42.5
+	btn_pizarra.offset_top = -95.0
+	btn_pizarra.offset_bottom = -10.0
+	btn_pizarra.ignore_texture_size = true
+	btn_pizarra.stretch_mode = TextureButton.STRETCH_KEEP_ASPECT_CENTERED
+	btn_pizarra.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+	btn_pizarra.pressed.connect(AbrirCerrar_Pizarra)
+	panel_contenedor.add_child(btn_pizarra)
+
+func AbrirCerrar_Pizarra():
+	if pizarra_borrador and pizarra_borrador.has_method("toggle_pizarra"):
+		pizarra_borrador.toggle_pizarra()
+		pizarra_borrador.z_index = 30
 
 func iniciar_minijuego(_tema: String = "espacio"):
 	visible = true
@@ -231,8 +268,8 @@ func _cargar_nuevo_panel_circuitos():
 	nodo_izq_seleccionado = null
 	conexiones_completadas = 0
 	_limpiar_cables()
-	if cola_preguntas.size() < total_conexiones_panel:
-		_recargar_cola_preguntas()
+	_recargar_cola_preguntas()
+	_actualizar_ui_header()
 	pares_actuales.clear()
 	for i in range(total_conexiones_panel):
 		if cola_preguntas.size() > 0:
@@ -257,7 +294,7 @@ func _construir_nodos_panel():
 		btn.flat = true
 		btn.mouse_filter = Control.MOUSE_FILTER_STOP
 		btn.set_meta("respuesta_correcta", resp)
-		btn.set_meta("datos_pregunta", p)
+		btn.set_meta("datos_pregunta", datos)
 		btn.set_meta("resuelto", false)
 		
 		# Carcasa metálica cilíndrica horizontal (Pill Shape)
@@ -468,11 +505,11 @@ func _seleccionar_nodo_derecho(btn_der: Button):
 		conexiones_completadas += 1
 		if conexiones_completadas >= total_conexiones_panel:
 			aciertos_actuales += 1
-			_actualizar_ui_header()
 			var dif_ant = DatosUsuario.dificultad_actual if DatosUsuario else 0
 			if SistemaExperto and SistemaExperto.has_method("evaluar_desempeno"):
 				var nd = SistemaExperto.evaluar_desempeno(dif_ant, true, tiempo_tardado)
 				if DatosUsuario: DatosUsuario.dificultad_actual = nd
+			_actualizar_ui_header()
 			if aciertos_actuales >= META_ACIERTOS:
 				await get_tree().create_timer(1.0).timeout
 				_finalizar_minijuego(true)
@@ -483,11 +520,11 @@ func _seleccionar_nodo_derecho(btn_der: Button):
 		_reproducir_sonido("Incorrecto")
 		vidas_actuales -= 1
 		var cable_error = _trazar_cable_realista(nodo_izq_seleccionado, btn_der, false)
-		_actualizar_ui_header()
 		var dif_ant = DatosUsuario.dificultad_actual if DatosUsuario else 0
 		if SistemaExperto and SistemaExperto.has_method("evaluar_desempeno"):
 			var nd = SistemaExperto.evaluar_desempeno(dif_ant, false, tiempo_tardado)
 			if DatosUsuario: DatosUsuario.dificultad_actual = nd
+		_actualizar_ui_header()
 		if nodo_izq_seleccionado:
 			nodo_izq_seleccionado.modulate = Color.WHITE
 			nodo_izq_seleccionado = null
@@ -592,5 +629,6 @@ func _reproducir_sonido(tipo: String):
 func _finalizar_minijuego(es_exito: bool):
 	juego_activo = false
 	visible = false
+	if pizarra_borrador: pizarra_borrador.visible = false
 	if panel_contenedor: panel_contenedor.visible = false
 	minijuego_finalizado.emit(es_exito)

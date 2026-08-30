@@ -47,6 +47,7 @@ var gemas_requeridas: int = 3
 var vidas_actuales: int = 3
 var juego_activo: bool = false
 var pregunta_abierta: bool = false
+var pregunta_actual_dict: Dictionary = {}
 
 var caja_actual_interactuando: Node = null
 

@@ -78,8 +78,8 @@ var banco_preguntas: Array = [
 var datos_pregunta_actual: Dictionary = {}
 
 func _ready():
-	_cargar_aliens_disponibles()
 	$MinijuegoCompleto.visible = false
+	_cargar_aliens_disponibles()
 	panel_operacion.visible = false
 	if panel_grande:
 		panel_grande.visible = false
@@ -110,6 +110,7 @@ func _cargar_aliens_disponibles():
 		
 		
 	if get_tree().current_scene == self:
+		$MinijuegoCompleto.visible = true
 		iniciar_minijuego("espacio")
 
 # --- TRANSICIÓN FADE IN / FADE OUT ENTRE PANELES ---
@@ -348,13 +349,26 @@ func _mostrar_peticion_alien() -> void:
 	var tween_texto = create_tween()
 	tween_texto.tween_property(texto_dialogo, "visible_ratio", 1.0, 1.2)
 	tween_texto.finished.connect(func(): 
-		panel_operacion.visible = true
+		if panel_operacion:
+			panel_operacion.modulate.a = 1.0
+			panel_operacion.visible = true
 		bloqueado = false # DESBLOQUEA el input cuando termina de hablar
 	)
 
 func alien_atendido_con_exito() -> void:
-	panel_operacion.visible = false
-	if panel_grande: panel_grande.visible = false
+	esta_expandido = false
+	if tween_panel and tween_panel.is_running():
+		tween_panel.kill()
+		
+	if panel_grande:
+		panel_grande.visible = false
+		panel_grande.modulate.a = 0.0
+		panel_grande.z_index = 0
+		
+	if panel_operacion:
+		panel_operacion.visible = false
+		panel_operacion.modulate.a = 1.0
+		
 	globo_dialogo.visible = false
 	
 	var tween_salida = create_tween().set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
