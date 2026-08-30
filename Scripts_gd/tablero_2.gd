@@ -471,6 +471,7 @@ func _finalizar_examen(superado: bool):
 		casilla_anterior = 0
 		DatosUsuario.casilla_actual_db = 0
 		DatosUsuario.pregunta_pendiente_db = false
+		DatosUsuario.tomo_camino_corto = false
 		ConexionSupabase.actualizar_progreso_en_nube(0, false)
 		
 		# 🏆 Reproducir voz/elogio de victoria

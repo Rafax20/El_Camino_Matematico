@@ -179,17 +179,33 @@ func _on_request_completed(result, response_code, headers, body):
 			DatosUsuario.pregunta_pendiente_db = bool(progreso_data.get("pregunta_pendiente", false))
 			DatosUsuario.casilla_actual_db = int(progreso_data.get("casilla_actual", 0))
 			DatosUsuario.dificultad_actual = int(progreso_data.get("dificultad", 0))
-			DatosUsuario.monedas = int(progreso_data.get("monedas", 0))
+			
+			# 🪙 Sincronización de monedas: Si acumuló monedas como invitado antes de loguearse, se conservan y suman
+			var monedas_db = int(progreso_data.get("monedas", 0))
+			var monedas_invitado = DatosUsuario.monedas
+			DatosUsuario.monedas = monedas_db + monedas_invitado
 			
 			DatosUsuario.en_examen_final = bool(progreso_data.get("en_examen_final", false))
 			DatosUsuario.examen_correctas = int(progreso_data.get("examen_correctas", 0))
 			DatosUsuario.examen_preguntas_respondidas = int(progreso_data.get("examen_preguntas_respondidas", 0))
 			
+			# 🪐 Restaurar ruta/camino de Saturno
+			if progreso_data.has("tomo_camino_corto"):
+				DatosUsuario.tomo_camino_corto = bool(progreso_data.get("tomo_camino_corto", false))
+			elif progreso_data.has("ruta_actual"):
+				DatosUsuario.tomo_camino_corto = (str(progreso_data.get("ruta_actual", "")).to_lower() == "derecha")
+			elif progreso_data.has("camino_actual"):
+				DatosUsuario.tomo_camino_corto = (str(progreso_data.get("camino_actual", "")).to_lower() == "derecha")
+			
+			# Si traía monedas como invitado, actualizamos la base de datos con el nuevo saldo combinado
+			if monedas_invitado > 0:
+				ConexionSupabase.actualizar_monedas_en_nube(DatosUsuario.monedas)
+				
 			ConexionSupabase.cargar_album_nube()
 			_abrir_interfaz_bienvenida()
 		else:
 			print("🆕 Inicializando tabla de progreso...")
-			var es_migracion = (DatosUsuario.casilla_actual_db > 0 or DatosUsuario.laminas_poseidas.size() > 0)
+			var es_migracion = (DatosUsuario.casilla_actual_db > 0 or DatosUsuario.laminas_poseidas.size() > 0 or DatosUsuario.monedas > 0)
 			ConexionSupabase.inicializar_progreso_nuevo_usuario(es_migracion)
 			_abrir_interfaz_bienvenida()
 

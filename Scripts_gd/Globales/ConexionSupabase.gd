@@ -127,14 +127,51 @@ func actualizar_progreso_en_nube(casilla: int, pendiente: bool):
 		"monedas": DatosUsuario.monedas,
 		"en_examen_final": DatosUsuario.en_examen_final,
 		"examen_correctas": DatosUsuario.examen_correctas,
-		"examen_preguntas_respondidas": DatosUsuario.examen_preguntas_respondidas
+		"examen_preguntas_respondidas": DatosUsuario.examen_preguntas_respondidas,
+		"tomo_camino_corto": DatosUsuario.tomo_camino_corto,
+		"ruta_actual": "derecha" if DatosUsuario.tomo_camino_corto else "izquierda"
 	}
 	
-	var url_final = SUPABASE_URL + "progreso?usuario_id=eq." + str(DatosUsuario.usuario_id_db)
+	var url_final = _build_url("progreso?usuario_id=eq." + str(DatosUsuario.usuario_id_db))
 	var headers = _obtener_cabeceras(true)
 	headers.append("Prefer: return=minimal")
 	
 	http_update.request(url_final, headers, HTTPClient.METHOD_PATCH, JSON.stringify(datos_a_guardar))
+
+func inicializar_progreso_nuevo_usuario(es_migracion: bool = false):
+	if not DatosUsuario.esta_conectado_a_la_nube or DatosUsuario.usuario_id_db <= 0:
+		return
+		
+	var http_init = HTTPRequest.new()
+	add_child(http_init)
+	http_init.accept_gzip = false
+	http_init.request_completed.connect(func(r, rc, h, b):
+		if rc == 201 or rc == 200:
+			print("✅ Fila de progreso inicializada exitosamente en Supabase.")
+		else:
+			print("⚠️ Respuesta al inicializar progreso: ", rc, " - ", b.get_string_from_utf8())
+		http_init.queue_free()
+	)
+	
+	var nuevo_progreso = {
+		"usuario_id": DatosUsuario.usuario_id_db,
+		"casilla_actual": DatosUsuario.casilla_actual_db if es_migracion else 0,
+		"tablero_actual": "Tablero_1",
+		"pregunta_pendiente": DatosUsuario.pregunta_pendiente_db if es_migracion else false,
+		"dificultad": DatosUsuario.dificultad_actual,
+		"monedas": DatosUsuario.monedas,
+		"en_examen_final": DatosUsuario.en_examen_final,
+		"examen_correctas": DatosUsuario.examen_correctas,
+		"examen_preguntas_respondidas": DatosUsuario.examen_preguntas_respondidas,
+		"tomo_camino_corto": DatosUsuario.tomo_camino_corto,
+		"ruta_actual": "derecha" if DatosUsuario.tomo_camino_corto else "izquierda"
+	}
+	
+	var url_final = _build_url("progreso")
+	var headers = _obtener_cabeceras(true)
+	headers.append("Prefer: return=minimal")
+	
+	http_init.request(url_final, headers, HTTPClient.METHOD_POST, JSON.stringify(nuevo_progreso))
 	
 func determinar_categoria(datos_pregunta: Dictionary) -> String:
 	if datos_pregunta.has("categoria") and str(datos_pregunta.get("categoria")).strip_edges() != "":
