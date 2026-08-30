@@ -791,6 +791,7 @@ func _on_minijuego_resuelto(es_correcto: bool):
 		$Interfaz.visible = false
 		casilla_actual = casilla_anterior
 		DatosUsuario.casilla_actual_db = casilla_actual
+		DatosUsuario.pregunta_pendiente_db = false
 		
 		ConexionSupabase.actualizar_progreso_en_nube(casilla_actual, false)
 		_mover_ficha_visualmente(casilla_actual, true)

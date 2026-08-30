@@ -789,9 +789,9 @@ func _procesar_acierto():
 		HUD.get_node("BannerInstrucciones").visible = true
 	_configurar_controles_tactiles()
 	
-	# ⚡ En lugar de terminar el juego, activamos la mesa del generador dinámicamente
+	# ⚡ Al obtener todas las gemas requeridas, ejecutamos directamente la secuencia de victoria
 	if gemas_obtenidas >= gemas_requeridas:
-		_activar_generador()
+		_secuencia_restaurar_energia()
 
 func _activar_generador():
 	print("Se activo el Generador ")
@@ -1195,15 +1195,17 @@ func _secuencia_restaurar_energia():
 	if jugador and jugador.has_method("desactivar_movimiento"):
 		jugador.desactivar_movimiento()
 		
+	if HUD and HUD.has_node("BannerInstrucciones"):
+		HUD.get_node("BannerInstrucciones").visible = false
+
 	if label_mensaje:
-		label_mensaje.text = "Insertando gemas en el generador..."
+		label_mensaje.text = "¡Todas las gemas recolectadas! Restaurando energía..."
 		label_mensaje.visible = true
 
 	# 2. Transición progresiva de luz con CanvasModulate usando un Tween
 	if luz_iluminacion_global:
 		var tween = create_tween()
-		# Transiciona el color oscuro al blanco normal en 2.5 segundos
-		tween.tween_property(luz_iluminacion_global, "color", Color(1.0, 1.0, 1.0, 1.0), 2.5)\
+		tween.tween_property(luz_iluminacion_global, "color", Color(1.0, 1.0, 1.0, 1.0), 1.5)\
 			.set_trans(Tween.TRANS_SINE)\
 			.set_ease(Tween.EASE_OUT)
 		await tween.finished
@@ -1212,8 +1214,8 @@ func _secuencia_restaurar_energia():
 	if label_mensaje:
 		label_mensaje.text = "¡Excelente! La energía ha sido restaurada."
 		
-	# Esperar 2 segundos para que el jugador lea el mensaje
-	await get_tree().create_timer(2.0).timeout
+	# Esperar 1.5 segundos para que el jugador lea el mensaje
+	await get_tree().create_timer(1.5).timeout
 	
 	# 4. Ocultar mensaje y salir al tablero
 	if label_mensaje:

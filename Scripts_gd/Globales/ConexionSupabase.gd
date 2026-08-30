@@ -115,13 +115,24 @@ func actualizar_progreso_en_nube(casilla: int, pendiente: bool):
 		print("⚠️ OMITIDO: No hay usuario autenticado. No se guardará progreso en Supabase.")
 		return
 	
+	# Sincronizamos la RAM local inmediatamente
+	DatosUsuario.casilla_actual_db = casilla
+	DatosUsuario.pregunta_pendiente_db = pendiente
+	
 	var http_update = HTTPRequest.new()
 	add_child(http_update)
 	http_update.accept_gzip = false
-	http_update.request_completed.connect(func(r, rc, h, b): http_update.queue_free())
+	http_update.request_completed.connect(func(r, rc, h, b):
+		if rc != 200 and rc != 204 and rc != 201:
+			print("❌ Error de Supabase al actualizar progreso (HTTP ", rc, "): ", b.get_string_from_utf8())
+		else:
+			print("✅ Progreso actualizado en la nube: Casilla ", casilla, " | Pendiente: ", pendiente)
+		http_update.queue_free()
+	)
 	
 	var datos_a_guardar = {
 		"casilla_actual": casilla,
+		"tablero_actual": "Tablero_2",
 		"pregunta_pendiente": pendiente,
 		"dificultad": DatosUsuario.dificultad_actual,
 		"monedas": DatosUsuario.monedas,
@@ -136,7 +147,10 @@ func actualizar_progreso_en_nube(casilla: int, pendiente: bool):
 	var headers = _obtener_cabeceras(true)
 	headers.append("Prefer: return=minimal")
 	
-	http_update.request(url_final, headers, HTTPClient.METHOD_PATCH, JSON.stringify(datos_a_guardar))
+	var err = http_update.request(url_final, headers, HTTPClient.METHOD_PATCH, JSON.stringify(datos_a_guardar))
+	if err != OK:
+		print("❌ Error al iniciar HTTPRequest de actualizar progreso: ", err)
+		http_update.queue_free()
 
 func inicializar_progreso_nuevo_usuario(es_migracion: bool = false):
 	if not DatosUsuario.esta_conectado_a_la_nube or DatosUsuario.usuario_id_db <= 0:
