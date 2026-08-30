@@ -13,7 +13,7 @@ signal logro_unhovered()
 
 func _ready():
 	if es_logro:
-		custom_minimum_size = Vector2(100, 100)
+		custom_minimum_size = Vector2(150, 150)
 	else:
 		custom_minimum_size = Vector2(120, 160)
 	expand_mode = TextureRect.EXPAND_IGNORE_SIZE
@@ -51,7 +51,7 @@ func _gui_input(event: InputEvent):
 
 func actualizar_estado():
 	if es_logro:
-		custom_minimum_size = Vector2(100, 100)
+		custom_minimum_size = Vector2(150, 150)
 	else:
 		custom_minimum_size = Vector2(120, 160)
 	var id_a_buscar = int(id_lamina)

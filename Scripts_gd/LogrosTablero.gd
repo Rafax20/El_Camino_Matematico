@@ -1,7 +1,7 @@
 # res://Escenas/LogrosTablero.gd
 extends Control
 
-const LOGROS_POR_PAGINA: int = 15
+const LOGROS_POR_PAGINA: int = 8
 
 @onready var grid_laminas = $GridLaminas
 @onready var label_titulo_pais = $Titulo_pais
