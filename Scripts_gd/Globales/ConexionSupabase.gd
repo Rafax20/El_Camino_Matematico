@@ -190,7 +190,9 @@ func determinar_categoria(datos_pregunta: Dictionary) -> String:
 	return "matematicas"
 
 func registrar_en_historial(categoria: String, es_correcta: bool, tiempo: float):
-	if not DatosUsuario.esta_conectado_a_la_nube or DatosUsuario.usuario_id_db <= 0: return
+	if not DatosUsuario.esta_conectado_a_la_nube or DatosUsuario.usuario_id_db <= 0:
+		print("ℹ️ Modo offline / invitado: no se envía a historial_respuestas")
+		return
 	
 	var http_historial = HTTPRequest.new()
 	add_child(http_historial)
@@ -198,7 +200,7 @@ func registrar_en_historial(categoria: String, es_correcta: bool, tiempo: float)
 	
 	http_historial.request_completed.connect(func(result, response_code, headers, body):
 		if response_code != 201 and response_code != 200:
-			print("❌ Error de Supabase al guardar en historial_respuestas: ", body.get_string_from_utf8())
+			print("❌ Error de Supabase al guardar en historial_respuestas (HTTP ", response_code, "): ", body.get_string_from_utf8())
 		else:
 			print("✅ ¡Registro exitoso en el historial de Supabase! (", categoria, " - ", "OK" if es_correcta else "ERROR", " - ", snapped(tiempo, 0.01), "s)")
 		http_historial.queue_free()
@@ -207,18 +209,23 @@ func registrar_en_historial(categoria: String, es_correcta: bool, tiempo: float)
 	var cat_normalizada = categoria.to_lower().strip_edges()
 	if cat_normalizada == "": cat_normalizada = "matematicas"
 	
+	var tiempo_seguro = max(0.1, snapped(tiempo, 0.001))
+	
 	var nueva_jugada = {
 		"usuario_id": DatosUsuario.usuario_id_db,
 		"categoria": cat_normalizada,
 		"es_correcta": es_correcta,
-		"tiempo_tardado": snapped(tiempo, 0.001)
+		"tiempo_tardado": tiempo_seguro
 	}
 	
 	var url_final = _build_url("historial_respuestas")
 	var headers = _obtener_cabeceras(true)
 	headers.append("Prefer: return=minimal")
 	
-	http_historial.request(url_final, headers, HTTPClient.METHOD_POST, JSON.stringify(nueva_jugada))
+	var err = http_historial.request(url_final, headers, HTTPClient.METHOD_POST, JSON.stringify(nueva_jugada))
+	if err != OK:
+		print("❌ Error al iniciar HTTPRequest de historial_respuestas: ", err)
+		http_historial.queue_free()
 
 # =====================================================================
 # 🎓 CONSULTAS PARA EL PANEL DEL MAESTRO

@@ -161,8 +161,11 @@ func _unhandled_input(event: InputEvent):
 				minimizar_panel()
 				get_viewport().set_input_as_handled()
 
+var tiempo_inicio_mision: float = 0.0
+
 # --- CARGA Y ACTUALIZACIÓN DE DATOS EN LA ESCENA ---
 func _cargar_nueva_mision(datos: Dictionary):
+	tiempo_inicio_mision = Time.get_ticks_msec()
 	UI.visible = true
 	var a1 = datos.get("cantidad_a1", 2)
 	var b1 = datos.get("cantidad_b1", 8)
@@ -340,6 +343,13 @@ func _validar_respuesta():
 		_al_fallar()
 
 func _al_acertar():
+	var tiempo_tardado = (Time.get_ticks_msec() - tiempo_inicio_mision) / 1000.0
+	
+	# 📊 REGISTRO PEDAGÓGICO EN HISTORIAL DE SUPABASE
+	if ConexionSupabase:
+		var cat = ConexionSupabase.determinar_categoria(datos_pregunta_actual)
+		ConexionSupabase.registrar_en_historial(cat, true, tiempo_tardado)
+	
 	aciertos += 1
 	_actualizar_ui_header()
 	if aciertos >= 3:
@@ -349,6 +359,13 @@ func _al_acertar():
 		alien_atendido_con_exito()
 
 func _al_fallar():
+	var tiempo_tardado = (Time.get_ticks_msec() - tiempo_inicio_mision) / 1000.0
+	
+	# 📊 REGISTRO PEDAGÓGICO EN HISTORIAL DE SUPABASE
+	if ConexionSupabase:
+		var cat = ConexionSupabase.determinar_categoria(datos_pregunta_actual)
+		ConexionSupabase.registrar_en_historial(cat, false, tiempo_tardado)
+		
 	vidas -= 1
 	_sacudir_panel()
 	_actualizar_ui_header()

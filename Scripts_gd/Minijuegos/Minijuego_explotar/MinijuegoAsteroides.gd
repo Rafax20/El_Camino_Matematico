@@ -24,10 +24,30 @@ var texturas_tableros = {
 }
 
 var banco_respaldo = [
-	{"operacion": "5 por 5", "respuesta_correcta": "25"},
-	{"operacion": "4 por 9", "respuesta_correcta": "36"},
-	{"operacion": "15 mas 4", "respuesta_correcta": "19"},
-	{"operacion": "20 mas 7", "respuesta_correcta": "27"},
+	# Fácil (Dificultad 0)
+	{"operacion": "5 x 5", "respuesta_correcta": "25", "dificultad": 0},
+	{"operacion": "4 x 9", "respuesta_correcta": "36", "dificultad": 0},
+	{"operacion": "15 + 24", "respuesta_correcta": "39", "dificultad": 0},
+	{"operacion": "30 - 12", "respuesta_correcta": "18", "dificultad": 0},
+	{"operacion": "6 x 7", "respuesta_correcta": "42", "dificultad": 0},
+	{"operacion": "48 / 6", "respuesta_correcta": "8", "dificultad": 0},
+	{"operacion": "50 + 35", "respuesta_correcta": "85", "dificultad": 0},
+	# Media (Dificultad 1)
+	{"operacion": "120 + 65", "respuesta_correcta": "185", "dificultad": 1},
+	{"operacion": "150 - 45", "respuesta_correcta": "105", "dificultad": 1},
+	{"operacion": "12 x 6", "respuesta_correcta": "72", "dificultad": 1},
+	{"operacion": "81 / 9", "respuesta_correcta": "9", "dificultad": 1},
+	{"operacion": "210 + 140", "respuesta_correcta": "350", "dificultad": 1},
+	{"operacion": "200 - 75", "respuesta_correcta": "125", "dificultad": 1},
+	{"operacion": "14 x 4", "respuesta_correcta": "56", "dificultad": 1},
+	# Difícil (Dificultad 2)
+	{"operacion": "250 + 175", "respuesta_correcta": "425", "dificultad": 2},
+	{"operacion": "300 - 135", "respuesta_correcta": "165", "dificultad": 2},
+	{"operacion": "16 x 5", "respuesta_correcta": "80", "dificultad": 2},
+	{"operacion": "144 / 12", "respuesta_correcta": "12", "dificultad": 2},
+	{"operacion": "350 + 250", "respuesta_correcta": "600", "dificultad": 2},
+	{"operacion": "500 - 225", "respuesta_correcta": "275", "dificultad": 2},
+	{"operacion": "25 x 4", "respuesta_correcta": "100", "dificultad": 2},
 ]
 
 var tiempo_inicio_pregunta: float = 0.0
@@ -238,12 +258,15 @@ func _on_objeto_tocado(valor_tocado: int):
 	var tiempo_tardado = (Time.get_ticks_msec() - tiempo_inicio_pregunta) / 1000.0
 	var es_correcto = (valor_tocado == respuesta_correcta)
 	
-	# 📊 REGISTRO PEDAGÓGICO EN HISTORIAL DE SUPABASE
+	# 📊 REGISTRO PEDAGÓGICO EN HISTORIAL DE SUPABASE (Registra TODAS las respuestas)
 	if ConexionSupabase:
 		var cat = ConexionSupabase.determinar_categoria(pregunta_actual)
 		ConexionSupabase.registrar_en_historial(cat, es_correcto, tiempo_tardado)
 	
 	if es_correcto:
+		if timer_spawn: timer_spawn.stop()
+		_limpiar_asteroides_pantalla()
+		
 		aciertos_actuales += 1
 		GestionAudio.reproducir_audio_local("Minijuegos/Minijuego_explotar/" + ["Correcto_1", "Correcto_2", "Correcto_3"].pick_random())
 		_actualizar_ui_aciertos()
