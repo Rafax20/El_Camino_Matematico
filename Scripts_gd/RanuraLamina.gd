@@ -12,6 +12,10 @@ signal logro_hovered(id_logro: int, desbloqueado: bool)
 signal logro_unhovered()
 
 func _ready():
+	if es_logro:
+		custom_minimum_size = Vector2(100, 100)
+	else:
+		custom_minimum_size = Vector2(120, 160)
 	expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	mouse_filter = Control.MOUSE_FILTER_PASS
@@ -46,6 +50,10 @@ func _gui_input(event: InputEvent):
 			tween.tween_property(self, "scale", Vector2.ONE, 0.12).set_delay(0.1).set_trans(Tween.TRANS_SINE)
 
 func actualizar_estado():
+	if es_logro:
+		custom_minimum_size = Vector2(100, 100)
+	else:
+		custom_minimum_size = Vector2(120, 160)
 	var id_a_buscar = int(id_lamina)
 	var lista = DatosUsuario.logros_poseidos if es_logro else DatosUsuario.laminas_poseidas
 	if lista.has(id_a_buscar):
