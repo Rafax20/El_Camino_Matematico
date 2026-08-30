@@ -12,6 +12,8 @@ signal logro_hovered(id_logro: int, desbloqueado: bool)
 signal logro_unhovered()
 
 func _ready():
+	expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	mouse_filter = Control.MOUSE_FILTER_PASS
 	if not mouse_entered.is_connected(_on_mouse_entered):
 		mouse_entered.connect(_on_mouse_entered)

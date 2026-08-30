@@ -268,7 +268,7 @@ func _abrir_tienda_sobres():
 		
 		btn_comprar.pressed.connect(func():
 			if DatosUsuario.monedas < 10:
-				lbl_mensaje_error.text = "❌ Monedas insuficientes. Completa tableros para ganar más monedas."
+				lbl_mensaje_error.text = "Monedas insuficientes. Completa tableros para ganar más monedas."
 				var tw_err = create_tween()
 				tw_err.tween_property(lbl_mensaje_error, "scale", Vector2(1.1, 1.1), 0.1)
 				tw_err.tween_property(lbl_mensaje_error, "scale", Vector2.ONE, 0.1)

@@ -117,7 +117,7 @@ theme_override_colors/font_outline_color = Color(0.06, 0.06, 0.1, 1)
 bbcode_enabled = true
 fit_content = true
 autowrap_mode = 0
-text = "[center]✨ Toca o pasa el ratón sobre un logro para ver cómo conseguirlo ✨[/center]"
+text = "[center]Toca o pasa el ratón sobre un logro para ver cómo conseguirlo[/center]"
 
 [node name="BotonAnterior" type="TextureButton" parent="." unique_id=1712088753]
 layout_mode = 1

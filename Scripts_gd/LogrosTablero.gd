@@ -18,44 +18,44 @@ var posicion_original_y: float = 0.0
 var posicion_original_x: float = 0.0
 var is_animating: bool = false
 
-const TEXTO_DEFAULT = "[center]✨ Toca o pasa el ratón sobre un logro para ver cómo conseguirlo ✨[/center]"
+const TEXTO_DEFAULT = "[center]Toca o pasa el ratón sobre un logro para ver cómo conseguirlo[/center]"
 
-# 🏆 Catálogo pedagógico y divertido de logros
+# Catálogo pedagógico y divertido de logros
 const DESCRIPCIONES_LOGROS: Dictionary = {
 	1: {
 		"nombre": "Explorador del Cosmos",
-		"desbloqueado": "🏆 ¡Llegaste a la meta y conquistaste todo el tablero!",
-		"bloqueado": "🚀 ¡Llega hasta la casilla final del tablero para ganar este trofeo!"
+		"desbloqueado": "¡Llegaste a la meta y conquistaste todo el tablero!",
+		"bloqueado": "¡Llega hasta la casilla final del tablero para ganar este trofeo!"
 	},
 	2: {
 		"nombre": "Destructor de Asteroides",
-		"desbloqueado": "🏆 ¡Defendiste la galaxia destruyendo asteroides matemáticos!",
-		"bloqueado": "💥 ¡Gana el minijuego de asteroides resolviendo las operaciones espaciales!"
+		"desbloqueado": "¡Defendiste la galaxia destruyendo asteroides matemáticos!",
+		"bloqueado": "¡Gana el minijuego de asteroides resolviendo las operaciones espaciales!"
 	},
 	3: {
 		"nombre": "Cazador de Misterios",
-		"desbloqueado": "🏆 ¡Exploraste las salas y hallaste todas las cajas matemáticas!",
-		"bloqueado": "📦 ¡Gana el minijuego del buscador encontrando las cajas ocultas!"
+		"desbloqueado": "¡Exploraste las salas y hallaste todas las cajas matemáticas!",
+		"bloqueado": "¡Gana el minijuego del buscador encontrando las cajas ocultas!"
 	},
 	4: {
 		"nombre": "Alquimista Numérico",
-		"desbloqueado": "🏆 ¡Creaste la fórmula perfecta en el laboratorio científico!",
-		"bloqueado": "🧪 ¡Supera el minijuego del laboratorio combinando las pociones correctas!"
+		"desbloqueado": "¡Creaste la fórmula perfecta en el laboratorio científico!",
+		"bloqueado": "¡Supera el minijuego del laboratorio combinando las pociones correctas!"
 	},
 	5: {
 		"nombre": "Maestro del Equilibrio",
-		"desbloqueado": "🏆 ¡Equilibraste la balanza con una precisión asombrosa!",
-		"bloqueado": "⚖️ ¡Gana el minijuego de la balanza igualando los pesos y números!"
+		"desbloqueado": "¡Equilibraste la balanza con una precisión asombrosa!",
+		"bloqueado": "¡Gana el minijuego de la balanza igualando los pesos y números!"
 	},
 	6: {
 		"nombre": "As de la Clasificación",
-		"desbloqueado": "🏆 ¡Clasificaste todas las figuras y números a la velocidad de la luz!",
-		"bloqueado": "🎯 ¡Supera el minijuego del clasificador ordenando todo rápidamente!"
+		"desbloqueado": "¡Clasificaste todas las figuras y números a la velocidad de la luz!",
+		"bloqueado": "¡Supera el minijuego del clasificador ordenando todo rápidamente!"
 	},
 	7: {
 		"nombre": "Genio de la Energía",
-		"desbloqueado": "🏆 ¡Encendiste toda la nave reparando los circuitos eléctricos!",
-		"bloqueado": "⚡ ¡Gana el minijuego de circuitos conectando las sumas correctas!"
+		"desbloqueado": "¡Encendiste toda la nave reparando los circuitos eléctricos!",
+		"bloqueado": "¡Gana el minijuego de circuitos conectando las sumas correctas!"
 	}
 }
 
@@ -158,14 +158,14 @@ func _on_logro_hovered(id_logro: int, desbloqueado: bool):
 	
 	var info = DESCRIPCIONES_LOGROS.get(id_logro, {
 		"nombre": "Misión Secreta #" + str(id_logro),
-		"desbloqueado": "🏆 ¡Logro especial completado!",
-		"bloqueado": "🌟 ¡Juega y supera desafíos en el tablero para descubrir este logro!"
+		"desbloqueado": "¡Logro especial completado!",
+		"bloqueado": "¡Juega y supera desafíos en el tablero para descubrir este logro!"
 	})
 	
 	if desbloqueado:
-		label_descripcion.text = "[center][color=#80d8ff]⭐ [b]" + info["nombre"] + "[/b]:[/color] [color=#b9f6ca]" + info["desbloqueado"] + "[/color][/center]"
+		label_descripcion.text = "[center][color=#80d8ff][b]" + info["nombre"] + ":[/b][/color] [color=#b9f6ca]" + info["desbloqueado"] + "[/color][/center]"
 	else:
-		label_descripcion.text = "[center][color=#ffd54f]🔒 [b]" + info["nombre"] + "[/b]:[/color] [color=#ffffff]" + info["bloqueado"] + "[/color][/center]"
+		label_descripcion.text = "[center][color=#ffd54f][b]" + info["nombre"] + ":[/b][/color] [color=#ffffff]" + info["bloqueado"] + "[/color][/center]"
 
 # 🎯 Evento al retirar el ratón de un logro
 func _on_logro_unhovered():
