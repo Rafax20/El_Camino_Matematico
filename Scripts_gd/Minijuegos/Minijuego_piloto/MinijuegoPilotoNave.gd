@@ -155,7 +155,7 @@ func iniciar_minijuego():
 	_mostrar_banner_instrucciones("🚀 ¡Calcula la operación y elige el portal con la respuesta correcta!")
 	_cargar_siguiente_pregunta()
 
-func _mostrar_banner_instrucciones(texto: String):
+func _mostrar_banner_instrucciones(texto: String, audio_nombre: String = "Instrucciones/como_jugar_piloto"):
 	if not canvas_ui: return
 	var banner_previo = canvas_ui.get_node_or_null("BannerInstrucciones")
 	if banner_previo:
@@ -166,14 +166,15 @@ func _mostrar_banner_instrucciones(texto: String):
 	panel.anchors_preset = Control.PRESET_CENTER_TOP
 	panel.anchor_left = 0.5
 	panel.anchor_right = 0.5
-	panel.offset_left = -360.0
-	panel.offset_right = 360.0
-	panel.offset_top = 14.0
-	panel.offset_bottom = 54.0
+	panel.offset_left = -370.0
+	panel.offset_right = 370.0
+	panel.offset_top = 80.0
+	panel.offset_bottom = 120.0
 	panel.grow_horizontal = Control.GROW_DIRECTION_BOTH
+	panel.z_index = 20
 	
 	var style = StyleBoxFlat.new()
-	style.bg_color = Color(0.04, 0.07, 0.16, 0.88)
+	style.bg_color = Color(0.04, 0.07, 0.16, 0.90)
 	style.border_color = Color(0.2, 0.75, 1.0, 0.9)
 	style.set_border_width_all(2)
 	style.set_corner_radius_all(12)
@@ -198,9 +199,17 @@ func _mostrar_banner_instrucciones(texto: String):
 	panel.add_child(label)
 	canvas_ui.add_child(panel)
 	
+	# Reproducción de voz opcional (segura, no detiene el juego si no existe)
+	if audio_nombre != "" and GestionAudio:
+		GestionAudio.reproducir_audio_local(audio_nombre)
+	
+	# Animación: Aparece -> Espera 3.5s -> Desaparece
 	panel.modulate.a = 0.0
-	var tw = create_tween().set_parallel(true)
-	tw.tween_property(panel, "modulate:a", 1.0, 0.4)
+	var tw = create_tween()
+	tw.tween_property(panel, "modulate:a", 1.0, 0.3)
+	tw.tween_interval(3.5)
+	tw.tween_property(panel, "modulate:a", 0.0, 0.5)
+	tw.tween_callback(panel.queue_free)
 
 func _actualizar_corazones():
 	if not contenedor_corazones: return

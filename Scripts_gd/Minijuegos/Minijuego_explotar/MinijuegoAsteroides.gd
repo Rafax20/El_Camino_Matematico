@@ -63,7 +63,7 @@ func iniciar_minijuego(tema: String = "espacio"):
 	_mostrar_banner_instrucciones("🎯 ¡Haz clic o toca sobre el asteroide con el resultado correcto!")
 	_cargar_siguiente_pregunta()
 
-func _mostrar_banner_instrucciones(texto: String):
+func _mostrar_banner_instrucciones(texto: String, audio_nombre: String = "Instrucciones/como_jugar_asteroides"):
 	if not Fondo: return
 	var banner_previo = Fondo.get_node_or_null("BannerInstrucciones")
 	if banner_previo:
@@ -74,14 +74,15 @@ func _mostrar_banner_instrucciones(texto: String):
 	panel.anchors_preset = Control.PRESET_CENTER_TOP
 	panel.anchor_left = 0.5
 	panel.anchor_right = 0.5
-	panel.offset_left = -340.0
-	panel.offset_right = 340.0
-	panel.offset_top = 14.0
-	panel.offset_bottom = 54.0
+	panel.offset_left = -360.0
+	panel.offset_right = 360.0
+	panel.offset_top = 85.0
+	panel.offset_bottom = 125.0
 	panel.grow_horizontal = Control.GROW_DIRECTION_BOTH
+	panel.z_index = 20
 	
 	var style = StyleBoxFlat.new()
-	style.bg_color = Color(0.04, 0.07, 0.16, 0.88)
+	style.bg_color = Color(0.04, 0.07, 0.16, 0.90)
 	style.border_color = Color(0.2, 0.75, 1.0, 0.9)
 	style.set_border_width_all(2)
 	style.set_corner_radius_all(12)
@@ -95,7 +96,7 @@ func _mostrar_banner_instrucciones(texto: String):
 	label.text = texto
 	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	label.add_theme_font_size_override("font_size", 16)
+	label.add_theme_font_size_override("font_size", 15)
 	label.add_theme_color_override("font_color", Color(1.0, 0.96, 0.75))
 	label.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0.8))
 	label.add_theme_constant_override("shadow_offset_x", 1)
@@ -106,9 +107,17 @@ func _mostrar_banner_instrucciones(texto: String):
 	panel.add_child(label)
 	Fondo.add_child(panel)
 	
+	# Reproducción de voz opcional (segura, no detiene el juego si no existe)
+	if audio_nombre != "" and GestionAudio:
+		GestionAudio.reproducir_audio_local(audio_nombre)
+	
+	# Animación: Aparece -> Espera 3.5s -> Desaparece
 	panel.modulate.a = 0.0
-	var tw = create_tween().set_parallel(true)
-	tw.tween_property(panel, "modulate:a", 1.0, 0.4)
+	var tw = create_tween()
+	tw.tween_property(panel, "modulate:a", 1.0, 0.3)
+	tw.tween_interval(3.5)
+	tw.tween_property(panel, "modulate:a", 0.0, 0.5)
+	tw.tween_callback(panel.queue_free)
 
 func _recargar_cola_preguntas():
 	cola_preguntas.clear()
