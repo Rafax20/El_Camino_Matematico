@@ -789,18 +789,18 @@ func _procesar_acierto():
 		HUD.get_node("BannerInstrucciones").visible = true
 	_configurar_controles_tactiles()
 	
-	# ⚡ Al obtener todas las gemas requeridas, ejecutamos directamente la secuencia de victoria
+	# ⚡ Al obtener las gemas requeridas, activamos la mesa del generador para que el jugador vaya a ella
 	if gemas_obtenidas >= gemas_requeridas:
-		_secuencia_restaurar_energia()
+		_activar_generador()
 
 func _activar_generador():
-	print("Se activo el Generador ")
+	print("⚡ Generador activado - El jugador debe ir a la mesa para restaurar la energía.")
 	if collision_mesa:
 		collision_mesa.set_deferred("disabled", false)
-		# Opcional: Mostrar aviso al jugador
-		if label_mensaje:
-			label_mensaje.text = "¡Gemas recolectadas! Ve al Generador."
-			label_mensaje.visible = true
+	if label_mensaje:
+		label_mensaje.text = "¡Gemas recolectadas! Ve a la Mesa del Generador."
+		label_mensaje.visible = true
+	_mostrar_banner_instrucciones("⚡ ¡Gemas recolectadas! Ve a la Mesa del Generador para restaurar la energía.")
 
 func _procesar_error(_ingresado: String, _esperado: String):
 	# ⏱️ 2. Calcular tiempo tardado antes del error
@@ -1185,7 +1185,7 @@ func _obtener_ancho_panel() -> float:
 
 func _on_mesa_generador_body_entered(body: Node2D):
 	# Verificamos que sea el jugador y que tengamos el total de gemas
-	if body == jugador and gemas_obtenidas >= gemas_requeridas and juego_activo:
+	if (body == jugador or body.name == "Jugador" or body.is_in_group("jugador")) and gemas_obtenidas >= gemas_requeridas and juego_activo:
 		_secuencia_restaurar_energia()
 
 func _secuencia_restaurar_energia():
