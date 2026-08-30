@@ -117,6 +117,54 @@ func iniciar_minijuego(_tema: String = "espacio"):
 		luz_iluminacion_global.color = Color(0.08, 0.08, 0.15, 1.0)
 	
 	_configurar_controles_tactiles()
+	_mostrar_banner_instrucciones("🎮 Muévete con WASD / Flechas y presiona E (o el botón táctil) para abrir las cajas.")
+
+func _mostrar_banner_instrucciones(texto: String):
+	if not HUD: return
+	var banner_previo = HUD.get_node_or_null("BannerInstrucciones")
+	if banner_previo:
+		banner_previo.queue_free()
+		
+	var panel = PanelContainer.new()
+	panel.name = "BannerInstrucciones"
+	panel.anchors_preset = Control.PRESET_CENTER_TOP
+	panel.anchor_left = 0.5
+	panel.anchor_right = 0.5
+	panel.offset_left = -370.0
+	panel.offset_right = 370.0
+	panel.offset_top = 16.0
+	panel.offset_bottom = 58.0
+	panel.grow_horizontal = Control.GROW_DIRECTION_BOTH
+	
+	var style = StyleBoxFlat.new()
+	style.bg_color = Color(0.04, 0.07, 0.16, 0.88)
+	style.border_color = Color(0.2, 0.75, 1.0, 0.9)
+	style.set_border_width_all(2)
+	style.set_corner_radius_all(12)
+	style.content_margin_left = 16
+	style.content_margin_right = 16
+	style.content_margin_top = 6
+	style.content_margin_bottom = 6
+	panel.add_theme_stylebox_override("panel", style)
+	
+	var label = Label.new()
+	label.text = texto
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	label.add_theme_font_size_override("font_size", 16)
+	label.add_theme_color_override("font_color", Color(1.0, 0.96, 0.75))
+	label.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0.8))
+	label.add_theme_constant_override("shadow_offset_x", 1)
+	label.add_theme_constant_override("shadow_offset_y", 1)
+	if ResourceLoader.exists("res://Fuentes/Fredoka/static/Fredoka-Bold.ttf"):
+		label.add_theme_font_override("font", load("res://Fuentes/Fredoka/static/Fredoka-Bold.ttf"))
+		
+	panel.add_child(label)
+	HUD.add_child(panel)
+	
+	panel.modulate.a = 0.0
+	var tw = create_tween().set_parallel(true)
+	tw.tween_property(panel, "modulate:a", 1.0, 0.4)
 
 # Guardamos el tiempo exacto en el que se abre la caja
 var tiempo_inicio_caja: float = 0.0
@@ -130,6 +178,9 @@ func _on_caja_solicitar_operacion(caja_node: Node2D):
 	var pregunta = _obtener_datos_operacion()
 	pregunta_actual_dict = pregunta
 	_maquetar_operacion_matematica(pregunta)
+	
+	if HUD and HUD.has_node("BannerInstrucciones"):
+		HUD.get_node("BannerInstrucciones").visible = false
 	
 	if interfaz_pregunta:
 		interfaz_pregunta.visible = true
@@ -725,6 +776,8 @@ func _procesar_acierto():
 	caja_actual_interactuando.abrir_caja()
 	interfaz_pregunta.visible = false
 	pregunta_abierta = false
+	if HUD and HUD.has_node("BannerInstrucciones"):
+		HUD.get_node("BannerInstrucciones").visible = true
 	_configurar_controles_tactiles()
 	
 	# ⚡ En lugar de terminar el juego, activamos la mesa del generador dinámicamente

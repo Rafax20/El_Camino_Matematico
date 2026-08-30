@@ -249,7 +249,55 @@ func iniciar_minijuego(_tema: String = "espacio"):
 	juego_activo = true
 	_recargar_cola_preguntas()
 	_actualizar_ui_header()
+	_mostrar_banner_instrucciones("⚡ ¡Conecta la energía! Toca una terminal izquierda y conéctala con su respuesta en la derecha.")
 	_cargar_nuevo_panel_circuitos()
+
+func _mostrar_banner_instrucciones(texto: String):
+	if not panel_contenedor: return
+	var banner_previo = panel_contenedor.get_node_or_null("BannerInstrucciones")
+	if banner_previo:
+		banner_previo.queue_free()
+		
+	var panel = PanelContainer.new()
+	panel.name = "BannerInstrucciones"
+	panel.anchors_preset = Control.PRESET_CENTER_TOP
+	panel.anchor_left = 0.5
+	panel.anchor_right = 0.5
+	panel.offset_left = -390.0
+	panel.offset_right = 390.0
+	panel.offset_top = 14.0
+	panel.offset_bottom = 54.0
+	panel.grow_horizontal = Control.GROW_DIRECTION_BOTH
+	
+	var style = StyleBoxFlat.new()
+	style.bg_color = Color(0.04, 0.07, 0.16, 0.88)
+	style.border_color = Color(0.2, 0.75, 1.0, 0.9)
+	style.set_border_width_all(2)
+	style.set_corner_radius_all(12)
+	style.content_margin_left = 16
+	style.content_margin_right = 16
+	style.content_margin_top = 6
+	style.content_margin_bottom = 6
+	panel.add_theme_stylebox_override("panel", style)
+	
+	var label = Label.new()
+	label.text = texto
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	label.add_theme_font_size_override("font_size", 15)
+	label.add_theme_color_override("font_color", Color(1.0, 0.96, 0.75))
+	label.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0.8))
+	label.add_theme_constant_override("shadow_offset_x", 1)
+	label.add_theme_constant_override("shadow_offset_y", 1)
+	if ResourceLoader.exists("res://Fuentes/Fredoka/static/Fredoka-Bold.ttf"):
+		label.add_theme_font_override("font", load("res://Fuentes/Fredoka/static/Fredoka-Bold.ttf"))
+		
+	panel.add_child(label)
+	panel_contenedor.add_child(panel)
+	
+	panel.modulate.a = 0.0
+	var tw = create_tween().set_parallel(true)
+	tw.tween_property(panel, "modulate:a", 1.0, 0.4)
 
 func _recargar_cola_preguntas():
 	cola_preguntas.clear()
