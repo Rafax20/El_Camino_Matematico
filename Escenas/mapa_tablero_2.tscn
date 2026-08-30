@@ -4,8 +4,14 @@
 [ext_resource type="Texture2D" uid="uid://x4qhtgmopbnr" path="res://assets/Interfaz_Tablero2/Asteroide.png" id="2_41y7p"]
 [ext_resource type="Texture2D" uid="uid://msgh2rxia8aj" path="res://assets/Interfaz_Tablero2/Bombillo.png" id="3_i17um"]
 [ext_resource type="Texture2D" uid="uid://c6v0khclrynub" path="res://assets/Interfaz_Tablero2/Tubos de Ensayo.png" id="4_i17um"]
+[ext_resource type="Texture2D" uid="uid://8ndxk33kyf27" path="res://assets/Interfaz_Tablero2/Balanza.png" id="5_8lwb4"]
+[ext_resource type="Texture2D" uid="uid://br3x36mypkfun" path="res://assets/Interfaz_Tablero2/Circuitos.png" id="6_335i2"]
+[ext_resource type="Texture2D" uid="uid://chu8mp1xws4l0" path="res://assets/Interfaz_Tablero2/Clasificador.png" id="7_vnedh"]
+[ext_resource type="Texture2D" uid="uid://b3tchhcacitl" path="res://assets/Interfaz_Tablero2/Direcciones.png" id="8_sw0x0"]
+[ext_resource type="Texture2D" uid="uid://cvgdy6dhqtbmq" path="res://assets/Interfaz_Tablero2/Examen.png" id="9_p7ery"]
 
 [node name="Mapa_Tablero_2" type="Sprite2D" unique_id=315950505]
+position = Vector2(0, -4)
 texture = ExtResource("1_3a43h")
 
 [node name="Asteroides" type="Node2D" parent="." unique_id=2034155148]
@@ -15,18 +21,13 @@ position = Vector2(57.8125, 402.25)
 scale = Vector2(0.07, 0.07)
 texture = ExtResource("2_41y7p")
 
-[node name="Asteroide2" type="Sprite2D" parent="Asteroides" unique_id=934650676]
-position = Vector2(16, 240)
-scale = Vector2(0.07, 0.07)
-texture = ExtResource("2_41y7p")
-
-[node name="Asteroide3" type="Sprite2D" parent="Asteroides" unique_id=634767230]
+[node name="Asteroide2" type="Sprite2D" parent="Asteroides" unique_id=634767230]
 position = Vector2(-122, 254)
 scale = Vector2(0.07, 0.07)
 texture = ExtResource("2_41y7p")
 
-[node name="Asteroide4" type="Sprite2D" parent="Asteroides" unique_id=527280212]
-position = Vector2(-347, 178)
+[node name="Asteroide3" type="Sprite2D" parent="Asteroides" unique_id=1570509079]
+position = Vector2(-118, 26)
 scale = Vector2(0.07, 0.07)
 texture = ExtResource("2_41y7p")
 
@@ -35,28 +36,13 @@ position = Vector2(-325, -78)
 scale = Vector2(0.07, 0.07)
 texture = ExtResource("2_41y7p")
 
-[node name="Asteroide6" type="Sprite2D" parent="Asteroides" unique_id=1559248510]
-position = Vector2(-152, -283)
-scale = Vector2(0.07, 0.07)
-texture = ExtResource("2_41y7p")
-
 [node name="Asteroide7" type="Sprite2D" parent="Asteroides" unique_id=454352708]
 position = Vector2(8.999996, -91)
 scale = Vector2(0.07, 0.07)
 texture = ExtResource("2_41y7p")
 
-[node name="Asteroide8" type="Sprite2D" parent="Asteroides" unique_id=1773327368]
-position = Vector2(72, 82)
-scale = Vector2(0.07, 0.07)
-texture = ExtResource("2_41y7p")
-
 [node name="Asteroide9" type="Sprite2D" parent="Asteroides" unique_id=92429162]
 position = Vector2(264, 136)
-scale = Vector2(0.07, 0.07)
-texture = ExtResource("2_41y7p")
-
-[node name="Asteroide10" type="Sprite2D" parent="Asteroides" unique_id=274612206]
-position = Vector2(379, -57)
 scale = Vector2(0.07, 0.07)
 texture = ExtResource("2_41y7p")
 
@@ -67,18 +53,8 @@ position = Vector2(135, 336)
 scale = Vector2(0.07, 0.07)
 texture = ExtResource("3_i17um")
 
-[node name="Bombillo2" type="Sprite2D" parent="bombillos" unique_id=686980431]
-position = Vector2(11, 134)
-scale = Vector2(0.07, 0.07)
-texture = ExtResource("3_i17um")
-
-[node name="Bombillo3" type="Sprite2D" parent="bombillos" unique_id=1879501427]
+[node name="Bombillo2" type="Sprite2D" parent="bombillos" unique_id=1879501427]
 position = Vector2(-211, 281)
-scale = Vector2(0.07, 0.07)
-texture = ExtResource("3_i17um")
-
-[node name="Bombillo4" type="Sprite2D" parent="bombillos" unique_id=1395911795]
-position = Vector2(-322, 91)
 scale = Vector2(0.07, 0.07)
 texture = ExtResource("3_i17um")
 
@@ -87,18 +63,8 @@ position = Vector2(-308, -187)
 scale = Vector2(0.07, 0.07)
 texture = ExtResource("3_i17um")
 
-[node name="Bombillo6" type="Sprite2D" parent="bombillos" unique_id=1479304734]
-position = Vector2(-59, -251)
-scale = Vector2(0.07, 0.07)
-texture = ExtResource("3_i17um")
-
 [node name="Bombillo7" type="Sprite2D" parent="bombillos" unique_id=1480130173]
 position = Vector2(-49, -25)
-scale = Vector2(0.07, 0.07)
-texture = ExtResource("3_i17um")
-
-[node name="Bombillo8" type="Sprite2D" parent="bombillos" unique_id=1197447725]
-position = Vector2(140, 136)
 scale = Vector2(0.07, 0.07)
 texture = ExtResource("3_i17um")
 
@@ -114,18 +80,8 @@ position = Vector2(70, 285)
 scale = Vector2(0.07, 0.07)
 texture = ExtResource("4_i17um")
 
-[node name="Tubo2" type="Sprite2D" parent="Tubos_Ensayo" unique_id=1345364821]
-position = Vector2(-49, 191)
-scale = Vector2(0.07, 0.07)
-texture = ExtResource("4_i17um")
-
 [node name="Tubo3" type="Sprite2D" parent="Tubos_Ensayo" unique_id=1674951341]
 position = Vector2(-302, 257)
-scale = Vector2(0.07, 0.07)
-texture = ExtResource("4_i17um")
-
-[node name="Tubo4" type="Sprite2D" parent="Tubos_Ensayo" unique_id=105282595]
-position = Vector2(-276, 13)
 scale = Vector2(0.07, 0.07)
 texture = ExtResource("4_i17um")
 
@@ -134,18 +90,8 @@ position = Vector2(-246, -247)
 scale = Vector2(0.07, 0.07)
 texture = ExtResource("4_i17um")
 
-[node name="Tubo6" type="Sprite2D" parent="Tubos_Ensayo" unique_id=1853914019]
-position = Vector2(15, -186)
-scale = Vector2(0.07, 0.07)
-texture = ExtResource("4_i17um")
-
 [node name="Tubo7" type="Sprite2D" parent="Tubos_Ensayo" unique_id=118016539]
 position = Vector2(10.999999, 35)
-scale = Vector2(0.07, 0.07)
-texture = ExtResource("4_i17um")
-
-[node name="Tubo8" type="Sprite2D" parent="Tubos_Ensayo" unique_id=1415218052]
-position = Vector2(211, 193)
 scale = Vector2(0.07, 0.07)
 texture = ExtResource("4_i17um")
 
@@ -153,3 +99,85 @@ texture = ExtResource("4_i17um")
 position = Vector2(327, 5)
 scale = Vector2(0.07, 0.07)
 texture = ExtResource("4_i17um")
+
+[node name="Balanzas" type="Node2D" parent="." unique_id=861874767]
+
+[node name="Balanza" type="Sprite2D" parent="Balanzas" unique_id=934650676]
+position = Vector2(15.000002, 240)
+scale = Vector2(0.09547006, 0.099638306)
+texture = ExtResource("5_8lwb4")
+
+[node name="Balanza2" type="Sprite2D" parent="Balanzas" unique_id=527280212]
+position = Vector2(-347, 175)
+scale = Vector2(0.0806026, 0.08472373)
+texture = ExtResource("5_8lwb4")
+
+[node name="Balanza3" type="Sprite2D" parent="Balanzas" unique_id=1559248510]
+position = Vector2(-161, -284)
+scale = Vector2(0.0806026, 0.080602616)
+texture = ExtResource("5_8lwb4")
+
+[node name="Balanza4" type="Sprite2D" parent="Balanzas" unique_id=1773327368]
+position = Vector2(76.00001, 86.00001)
+scale = Vector2(0.09037459, 0.08472377)
+texture = ExtResource("5_8lwb4")
+
+[node name="Balanza5" type="Sprite2D" parent="Balanzas" unique_id=274612206]
+position = Vector2(379, -58.000004)
+scale = Vector2(0.0806026, 0.082882136)
+texture = ExtResource("5_8lwb4")
+
+[node name="Circuitos" type="Node2D" parent="." unique_id=1078365714]
+
+[node name="Circuito" type="Sprite2D" parent="Circuitos" unique_id=1345364821]
+position = Vector2(-47.7375, 195.99998)
+scale = Vector2(0.097324565, 0.10500006)
+texture = ExtResource("6_335i2")
+
+[node name="Circuito2" type="Sprite2D" parent="Circuitos" unique_id=1853914019]
+position = Vector2(11.000001, -187)
+scale = Vector2(0.08587719, 0.0975)
+texture = ExtResource("6_335i2")
+
+[node name="Circuito3" type="Sprite2D" parent="Circuitos" unique_id=1726321979]
+position = Vector2(-192, 42)
+scale = Vector2(0.08587719, 0.0975)
+texture = ExtResource("6_335i2")
+
+[node name="Circuito4" type="Sprite2D" parent="Circuitos" unique_id=1415218052]
+position = Vector2(211.51251, 193.50002)
+scale = Vector2(0.09293859, 0.10749996)
+texture = ExtResource("6_335i2")
+
+[node name="Clasificador" type="Node2D" parent="." unique_id=1483339006]
+
+[node name="Clasificador" type="Sprite2D" parent="Clasificador" unique_id=686980431]
+position = Vector2(11, 137)
+scale = Vector2(0.08833333, 0.0863347)
+texture = ExtResource("7_vnedh")
+
+[node name="Clasificador2" type="Sprite2D" parent="Clasificador" unique_id=1395911795]
+position = Vector2(-323, 88)
+scale = Vector2(0.08833335, 0.080174536)
+texture = ExtResource("7_vnedh")
+
+[node name="Clasificador3" type="Sprite2D" parent="Clasificador" unique_id=1479304734]
+position = Vector2(-59.000004, -249)
+scale = Vector2(0.08166666, 0.080174565)
+texture = ExtResource("7_vnedh")
+
+[node name="Clasificador4" type="Sprite2D" parent="Clasificador" unique_id=1197447725]
+position = Vector2(139, 138)
+scale = Vector2(0.094166666, 0.094502054)
+texture = ExtResource("7_vnedh")
+
+[node name="Direccion" type="Sprite2D" parent="." unique_id=105282595]
+position = Vector2(-274, 12.999994)
+rotation = 0.5846853
+scale = Vector2(0.08666667, 0.08652672)
+texture = ExtResource("8_sw0x0")
+
+[node name="Examen" type="Sprite2D" parent="." unique_id=673460219]
+position = Vector2(438, -110)
+scale = Vector2(0.10104163, 0.11881189)
+texture = ExtResource("9_p7ery")

@@ -63,17 +63,17 @@ var mapa_casillas: Dictionary = {
 # La primera posición de esta curva es la Casilla 12 (ratio 0.0), avanzando hacia la nave (ratio 1.0)
 var mapa_casillas_derecha: Dictionary = {
 	12: {"ratio": 0.0000, "tipo": "piloto_nave"},
-	13: {"ratio": 0.1094, "tipo": "asteroides"},
-	14: {"ratio": 0.1979, "tipo": "buscador_cajas"},
-	15: {"ratio": 0.2758, "tipo": "laboratorio"},
-	16: {"ratio": 0.3643, "tipo": "balanza"},
-	17: {"ratio": 0.4528, "tipo": "clasificador"},
-	18: {"ratio": 0.5518, "tipo": "circuitos"},
-	19: {"ratio": 0.6403, "tipo": "asteroides"},
-	20: {"ratio": 0.7184, "tipo": "buscador_cajas"},
-	21: {"ratio": 0.7788, "tipo": "laboratorio"},
-	22: {"ratio": 0.8569, "tipo": "balanza"},
-	23: {"ratio": 0.935, "tipo": "clasificador"},
+	13: {"ratio": 0.1094, "tipo": "circuitos"},
+	14: {"ratio": 0.1979, "tipo": "asteroides"},
+	15: {"ratio": 0.2758, "tipo": "buscador_cajas"},
+	16: {"ratio": 0.3643, "tipo": "laboratorio"},
+	17: {"ratio": 0.4528, "tipo": "balanza"},
+	18: {"ratio": 0.5518, "tipo": "clasificador"},
+	19: {"ratio": 0.6403, "tipo": "circuitos"},
+	20: {"ratio": 0.7184, "tipo": "asteroides"},
+	21: {"ratio": 0.7788, "tipo": "buscador_cajas"},
+	22: {"ratio": 0.8569, "tipo": "laboratorio"},
+	23: {"ratio": 0.935, "tipo": "balanza"},
 	24: {"ratio": 1.0000, "tipo": "examen"} # Meta final del atajo
 }
 
