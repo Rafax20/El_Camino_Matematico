@@ -117,9 +117,9 @@ func iniciar_minijuego(_tema: String = "espacio"):
 		luz_iluminacion_global.color = Color(0.08, 0.08, 0.15, 1.0)
 	
 	_configurar_controles_tactiles()
-	_mostrar_banner_instrucciones("Muevete con WASD / Flechas y presiona E (o el boton tactil) para abrir las cajas.")
+	_mostrar_banner_instrucciones("Muevete con WASD / Flechas y presiona E (o el boton tactil) para abrir las cajas.", "Buscador")
 
-func _mostrar_banner_instrucciones(texto: String, audio_nombre: String = "Instrucciones/como_jugar_buscador"):
+func _mostrar_banner_instrucciones(texto: String, audio_nombre: String = "Buscador"):
 	if not HUD: return
 	var banner_previo = HUD.get_node_or_null("BannerInstrucciones")
 	if banner_previo:
@@ -1253,7 +1253,35 @@ func _configurar_controles_tactiles():
 	var debe_mostrar_tactil = es_movil_nativo or es_web_movil
 	controles_tactiles.visible = debe_mostrar_tactil
 	
+	# Asegurar etiquetas WASD y E centradas y con mouse_filter IGNORE (para no bloquear el clic/toque)
+	_configurar_label_boton_tactil(controles_tactiles.get_node_or_null("DPad/BtnArriba"), "W")
+	_configurar_label_boton_tactil(controles_tactiles.get_node_or_null("DPad/BtnIzquierda"), "A")
+	_configurar_label_boton_tactil(controles_tactiles.get_node_or_null("DPad/BtnAbajo"), "S")
+	_configurar_label_boton_tactil(controles_tactiles.get_node_or_null("DPad/BtnDerecha"), "D")
+	_configurar_label_boton_tactil(controles_tactiles.get_node_or_null("BtnInteractuar"), "E")
+	
 	# 🔒 Ocultar explícitamente el botón de interacción al arrancar el minijuego
 	var hud_touch = get_tree().get_nodes_in_group("boton_interactuar_touch")
 	if not hud_touch.is_empty():
 		hud_touch[0].visible = false
+
+func _configurar_label_boton_tactil(btn: TouchScreenButton, letra: String):
+	if not btn: return
+	var lbl = btn.get_node_or_null("Label")
+	if not lbl:
+		lbl = Label.new()
+		lbl.name = "Label"
+		btn.add_child(lbl)
+		
+	lbl.text = letra
+	lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	lbl.offset_left = 0.0
+	lbl.offset_top = 0.0
+	lbl.offset_right = 709.0
+	lbl.offset_bottom = 709.0
+	lbl.add_theme_font_size_override("font_size", 280)
+	lbl.add_theme_color_override("font_color", Color(1.0, 1.0, 1.0, 1.0))
+	lbl.add_theme_color_override("font_outline_color", Color(0.0, 0.0, 0.0, 0.85))
+	lbl.add_theme_constant_override("outline_size", 32)

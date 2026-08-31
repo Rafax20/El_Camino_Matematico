@@ -269,10 +269,10 @@ func iniciar_minijuego(_tema: String = "espacio"):
 	
 	_ajustar_velocidad_segun_dificultad()
 	_actualizar_ui_header()
-	_mostrar_banner_instrucciones("Calcula la operacion del paquete y presiona el boton con el color correcto.")
+	_mostrar_banner_instrucciones("Calcula la operacion del paquete y presiona el boton con el color correcto.", "Clasificador")
 	_cargar_siguiente_caja()
 
-func _mostrar_banner_instrucciones(texto: String, audio_nombre: String = "Instrucciones/como_jugar_clasificador"):
+func _mostrar_banner_instrucciones(texto: String, audio_nombre: String = "Clasificador"):
 	if not panel_contenedor: return
 	var banner_previo = panel_contenedor.get_node_or_null("BannerInstrucciones")
 	if banner_previo:

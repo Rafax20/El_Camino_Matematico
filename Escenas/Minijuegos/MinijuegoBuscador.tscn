@@ -18737,11 +18737,36 @@ texture_normal = ExtResource("38_4humt")
 texture_pressed = ExtResource("39_cjkih")
 action = "mover_arriba"
 
+[node name="Label" type="Label" parent="ControlesTactiles/DPad/BtnArriba"]
+offset_right = 709.0
+offset_bottom = 709.0
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 0.8)
+theme_override_constants/outline_size = 32
+theme_override_font_sizes/font_size = 280
+text = "W"
+horizontal_alignment = 1
+vertical_alignment = 1
+
 [node name="BtnIzquierda" type="TouchScreenButton" parent="ControlesTactiles/DPad" unique_id=924155521]
 position = Vector2(20, 50)
 scale = Vector2(0.07, 0.07)
 texture_normal = ExtResource("38_4humt")
+texture_pressed = ExtResource("39_cjkih")
 action = "mover_izquierda"
+
+[node name="Label" type="Label" parent="ControlesTactiles/DPad/BtnIzquierda"]
+offset_right = 709.0
+offset_bottom = 709.0
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 0.8)
+theme_override_constants/outline_size = 32
+theme_override_font_sizes/font_size = 280
+text = "A"
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="BtnAbajo" type="TouchScreenButton" parent="ControlesTactiles/DPad" unique_id=728354194]
 position = Vector2(70, 50)
@@ -18750,6 +18775,18 @@ texture_normal = ExtResource("38_4humt")
 texture_pressed = ExtResource("39_cjkih")
 action = "mover_abajo"
 
+[node name="Label" type="Label" parent="ControlesTactiles/DPad/BtnAbajo"]
+offset_right = 709.0
+offset_bottom = 709.0
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 0.8)
+theme_override_constants/outline_size = 32
+theme_override_font_sizes/font_size = 280
+text = "S"
+horizontal_alignment = 1
+vertical_alignment = 1
+
 [node name="BtnDerecha" type="TouchScreenButton" parent="ControlesTactiles/DPad" unique_id=1086068087]
 position = Vector2(120, 50)
 scale = Vector2(0.07, 0.07)
@@ -18757,12 +18794,36 @@ texture_normal = ExtResource("38_4humt")
 texture_pressed = ExtResource("39_cjkih")
 action = "mover_derecha"
 
+[node name="Label" type="Label" parent="ControlesTactiles/DPad/BtnDerecha"]
+offset_right = 709.0
+offset_bottom = 709.0
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 0.8)
+theme_override_constants/outline_size = 32
+theme_override_font_sizes/font_size = 280
+text = "D"
+horizontal_alignment = 1
+vertical_alignment = 1
+
 [node name="BtnInteractuar" type="TouchScreenButton" parent="ControlesTactiles" unique_id=531561721]
 position = Vector2(1019, 579)
 scale = Vector2(0.07, 0.07)
 texture_normal = ExtResource("38_4humt")
 texture_pressed = ExtResource("39_cjkih")
 action = "interactuar"
+
+[node name="Label" type="Label" parent="ControlesTactiles/BtnInteractuar"]
+offset_right = 709.0
+offset_bottom = 709.0
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 0.8)
+theme_override_constants/outline_size = 32
+theme_override_font_sizes/font_size = 280
+text = "E"
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [connection signal="body_entered" from="Nivel/MesaGenerador" to="." method="_on_mesa_generador_body_entered"]
 [connection signal="pressed" from="HUD/InterfazPregunta/BotonBorradorRaiz" to="." method="AbrirCerrar_Pizarra"]

@@ -442,10 +442,10 @@ func iniciar_minijuego(_tema: String = "espacio"):
 	aciertos_actuales = 0
 	juego_activo = true
 	_actualizar_ui_header()
-	_mostrar_banner_instrucciones("Calcula la operacion y presiona el boton con el resultado correcto para equilibrar la balanza.")
+	_mostrar_banner_instrucciones("Calcula la operacion y presiona el boton con el resultado correcto para equilibrar la balanza.", "Balanza")
 	_cargar_siguiente_pregunta()
 
-func _mostrar_banner_instrucciones(texto: String, audio_nombre: String = "Instrucciones/como_jugar_balanza"):
+func _mostrar_banner_instrucciones(texto: String, audio_nombre: String = "Balanza"):
 	if not panel_contenedor: return
 	var banner_previo = panel_contenedor.get_node_or_null("BannerInstrucciones")
 	if banner_previo:

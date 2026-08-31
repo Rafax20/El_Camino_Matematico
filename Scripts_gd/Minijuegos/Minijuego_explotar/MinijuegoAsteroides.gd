@@ -80,10 +80,10 @@ func iniciar_minijuego(tema: String = "espacio"):
 	juego_activo = true
 	visible = true
 	
-	_mostrar_banner_instrucciones("Haz clic o toca sobre el asteroide con el resultado correcto.")
+	_mostrar_banner_instrucciones("Haz clic o toca sobre el asteroide con el resultado correcto.", "Asteroide")
 	_cargar_siguiente_pregunta()
 
-func _mostrar_banner_instrucciones(texto: String, audio_nombre: String = "Instrucciones/como_jugar_asteroides"):
+func _mostrar_banner_instrucciones(texto: String, audio_nombre: String = "Asteroide"):
 	if not Fondo: return
 	var banner_previo = Fondo.get_node_or_null("BannerInstrucciones")
 	if banner_previo:

@@ -249,10 +249,10 @@ func iniciar_minijuego(_tema: String = "espacio"):
 	juego_activo = true
 	_recargar_cola_preguntas()
 	_actualizar_ui_header()
-	_mostrar_banner_instrucciones("Conecta la energia: Toca una terminal izquierda y conectala con su respuesta en la derecha.")
+	_mostrar_banner_instrucciones("Conecta la energia: Toca una terminal izquierda y conectala con su respuesta en la derecha.", "Circuitos")
 	_cargar_nuevo_panel_circuitos()
 
-func _mostrar_banner_instrucciones(texto: String, audio_nombre: String = "Instrucciones/como_jugar_circuitos"):
+func _mostrar_banner_instrucciones(texto: String, audio_nombre: String = "Circuitos"):
 	if not panel_contenedor: return
 	var banner_previo = panel_contenedor.get_node_or_null("BannerInstrucciones")
 	if banner_previo:

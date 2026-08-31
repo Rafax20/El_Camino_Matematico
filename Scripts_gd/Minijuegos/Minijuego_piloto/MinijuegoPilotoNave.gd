@@ -152,10 +152,10 @@ func iniciar_minijuego():
 	if panel_resultado: panel_resultado.visible = false
 	_actualizar_corazones()
 	_actualizar_aciertos()
-	_mostrar_banner_instrucciones("Calcula la operacion y elige el portal con la respuesta correcta.")
+	_mostrar_banner_instrucciones("Calcula la operacion y elige el portal con la respuesta correcta.", "Piloto")
 	_cargar_siguiente_pregunta()
 
-func _mostrar_banner_instrucciones(texto: String, audio_nombre: String = "Instrucciones/como_jugar_piloto"):
+func _mostrar_banner_instrucciones(texto: String, audio_nombre: String = "Piloto"):
 	if not canvas_ui: return
 	var banner_previo = canvas_ui.get_node_or_null("BannerInstrucciones")
 	if banner_previo:
