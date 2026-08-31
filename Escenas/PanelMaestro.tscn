@@ -132,7 +132,7 @@ custom_minimum_size = Vector2(200, 36)
 layout_mode = 2
 mouse_default_cursor_shape = 2
 selected = 0
-item_count = 5
+item_count = 6
 popup/item_0/text = "Todas las Operaciones"
 popup/item_0/id = 0
 popup/item_1/text = "Suma"
@@ -143,6 +143,8 @@ popup/item_3/text = "Multiplicación"
 popup/item_3/id = 3
 popup/item_4/text = "División"
 popup/item_4/id = 4
+popup/item_5/text = "Regla de Tres"
+popup/item_5/id = 5
 
 [node name="BtnActualizar" type="Button" parent="VBoxPrincipal/BarraFiltros" unique_id=1455383696]
 custom_minimum_size = Vector2(150, 36)

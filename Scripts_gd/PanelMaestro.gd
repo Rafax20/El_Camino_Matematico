@@ -34,7 +34,8 @@ var stats_categorias: Dictionary = {
 	"suma": {"aciertos": 0, "fallas": 0, "tiempos": [], "tiempo_prom": 0.0, "pct": 0.0},
 	"resta": {"aciertos": 0, "fallas": 0, "tiempos": [], "tiempo_prom": 0.0, "pct": 0.0},
 	"multiplicacion": {"aciertos": 0, "fallas": 0, "tiempos": [], "tiempo_prom": 0.0, "pct": 0.0},
-	"division": {"aciertos": 0, "fallas": 0, "tiempos": [], "tiempo_prom": 0.0, "pct": 0.0}
+	"division": {"aciertos": 0, "fallas": 0, "tiempos": [], "tiempo_prom": 0.0, "pct": 0.0},
+	"regla_de_tres": {"aciertos": 0, "fallas": 0, "tiempos": [], "tiempo_prom": 0.0, "pct": 0.0}
 }
 
 var ArbolDecision = preload("res://Scripts_gd/Globales/ArbolDecisionMaestro.gd").new()
@@ -44,6 +45,16 @@ func _ready():
 	if label_maestro:
 		var nombre_doc = DatosUsuario.nombre_usuario if DatosUsuario.nombre_usuario != "" else "Docente"
 		label_maestro.text = "Docente: %s" % nombre_doc
+		
+	# Configurar selector de categorías con Regla de Tres
+	if selector_categoria:
+		selector_categoria.clear()
+		selector_categoria.add_item("Todas las Operaciones", 0)
+		selector_categoria.add_item("Suma", 1)
+		selector_categoria.add_item("Resta", 2)
+		selector_categoria.add_item("Multiplicación", 3)
+		selector_categoria.add_item("División", 4)
+		selector_categoria.add_item("Regla de Tres", 5)
 		
 	# Conexión de señales de filtros
 	if selector_estudiantes:
@@ -129,6 +140,7 @@ func _procesar_y_actualizar_ui():
 			2: cat_filtro = "resta"
 			3: cat_filtro = "multiplicacion"
 			4: cat_filtro = "division"
+			5: cat_filtro = "regla_de_tres"
 			
 	datos_filtrados.clear()
 	var total_preguntas_global = 0
@@ -142,7 +154,8 @@ func _procesar_y_actualizar_ui():
 		var tiempo = float(reg.get("tiempo_tardado", 0.0))
 		
 		# Normalizar categoría
-		if "suma" in cat or "+" in cat: cat = "suma"
+		if "regla" in cat or "tres" in cat or "proporc" in cat or "laboratorio" in cat: cat = "regla_de_tres"
+		elif "suma" in cat or "+" in cat: cat = "suma"
 		elif "resta" in cat or "-" in cat: cat = "resta"
 		elif "multi" in cat or "x" in cat or "*" in cat: cat = "multiplicacion"
 		elif "div" in cat or "/" in cat: cat = "division"
@@ -198,6 +211,15 @@ func _procesar_y_actualizar_ui():
 	# 5. Rellenar Tabla de Historial
 	_actualizar_tabla_historial()
 
+func _formatear_nombre_cat(cat_key: String) -> String:
+	match cat_key:
+		"regla_de_tres": return "Regla de 3"
+		"multiplicacion": return "Multiplicación"
+		"division": return "División"
+		"suma": return "Suma"
+		"resta": return "Resta"
+	return cat_key.capitalize()
+
 func _determinar_categoria_destacada() -> String:
 	var mejor_cat = ""
 	var mejor_pct = -1.0
@@ -216,10 +238,10 @@ func _determinar_categoria_destacada() -> String:
 				peor_cat = cat
 				
 	if peor_cat != "" and peor_pct < 60.0:
-		return "Reforzar %s (%.0f%%)" % [peor_cat.capitalize(), peor_pct]
+		return "Reforzar %s (%.0f%%)" % [_formatear_nombre_cat(peor_cat), peor_pct]
 	elif mejor_cat != "":
-		return "Destacado: %s (%.0f%%)" % [mejor_cat.capitalize(), mejor_pct]
-	return "En evaluacion"
+		return "Destacado: %s (%.0f%%)" % [_formatear_nombre_cat(mejor_cat), mejor_pct]
+	return "En evaluación"
 
 func _actualizar_diagnostico_pedagogico(aciertos: int, fallas: int, tiempo_prom: float):
 	var diag = ArbolDecision.procesar_diagnostico_global(aciertos, fallas, tiempo_prom, stats_categorias)
@@ -257,11 +279,11 @@ func _dibujar_grafico_desempeno():
 	var font = ThemeDB.fallback_font
 	var font_size = 12
 	
-	var categorias = ["suma", "resta", "multiplicacion", "division"]
-	var nombres_cat = ["SUMA", "RESTA", "MULTI", "DIVISION"]
+	var categorias = ["suma", "resta", "multiplicacion", "division", "regla_de_tres"]
+	var nombres_cat = ["SUMA", "RESTA", "MULTI", "DIVISIÓN", "REGLA 3"]
 	var num_cats = categorias.size()
 	var slot_w = chart_w / float(num_cats)
-	var bar_w = min(slot_w * 0.45, 45.0)
+	var bar_w = min(slot_w * 0.45, 38.0)
 	
 	# -------------------------------------------------------------
 	# MODO 0 O MODO 2: GRAFICO DE BARRAS (PRECISION %)
@@ -308,7 +330,7 @@ func _dibujar_grafico_desempeno():
 				lienzo_grafico.draw_string(font, Vector2(center_x - 24, chart_bottom - 15), "S/D", HORIZONTAL_ALIGNMENT_CENTER, 48, font_size, Color("#64748b"))
 				
 			# Etiqueta de Categoría debajo
-			lienzo_grafico.draw_string(font, Vector2(center_x - 30, chart_bottom + 22), nombres_cat[i], HORIZONTAL_ALIGNMENT_CENTER, 60, font_size + 1, Color.WHITE)
+			lienzo_grafico.draw_string(font, Vector2(center_x - 36, chart_bottom + 22), nombres_cat[i], HORIZONTAL_ALIGNMENT_CENTER, 72, font_size, Color.WHITE)
 
 	# -------------------------------------------------------------
 	# MODO 1 O MODO 2: GRAFICO DE LINEAS (TIEMPO EN SEGUNDOS)
@@ -336,7 +358,7 @@ func _dibujar_grafico_desempeno():
 			
 			if modo_grafico == 1:
 				# Dibujar etiquetas de categoría abajo si no están las barras
-				lienzo_grafico.draw_string(font, Vector2(center_x - 30, chart_bottom + 22), nombres_cat[i], HORIZONTAL_ALIGNMENT_CENTER, 60, font_size + 1, Color.WHITE)
+				lienzo_grafico.draw_string(font, Vector2(center_x - 36, chart_bottom + 22), nombres_cat[i], HORIZONTAL_ALIGNMENT_CENTER, 72, font_size, Color.WHITE)
 
 		# Polígono translúcido bajo la curva
 		if puntos_tiempo.size() > 1 and modo_grafico == 1:
@@ -406,12 +428,24 @@ func _actualizar_tabla_historial():
 		panel_fila.add_child(hbox)
 		
 		# Categoría
-		var cat_name = str(reg.get("categoria", "Matematicas")).capitalize()
+		var cat_raw = str(reg.get("categoria", "matematicas")).to_lower().strip_edges()
+		if "regla" in cat_raw or "tres" in cat_raw or "proporc" in cat_raw or "laboratorio" in cat_raw: cat_raw = "regla_de_tres"
+		elif "suma" in cat_raw or "+" in cat_raw: cat_raw = "suma"
+		elif "resta" in cat_raw or "-" in cat_raw: cat_raw = "resta"
+		elif "multi" in cat_raw or "x" in cat_raw or "*" in cat_raw: cat_raw = "multiplicacion"
+		elif "div" in cat_raw or "/" in cat_raw: cat_raw = "division"
+		
+		var cat_name = _formatear_nombre_cat(cat_raw)
 		var lbl_cat = Label.new()
 		lbl_cat.text = "[%s]" % cat_name
-		lbl_cat.custom_minimum_size = Vector2(100, 0)
+		lbl_cat.custom_minimum_size = Vector2(110, 0)
 		lbl_cat.add_theme_font_size_override("font_size", 13)
-		lbl_cat.add_theme_color_override("font_color", Color("#38bdf8"))
+		var color_cat = Color("#38bdf8")
+		if cat_raw == "regla_de_tres": color_cat = Color("#c084fc") # Morado brillante para Regla de 3
+		elif cat_raw == "multiplicacion": color_cat = Color("#f472b6") # Rosa
+		elif cat_raw == "division": color_cat = Color("#fb923c") # Naranja
+		elif cat_raw == "resta": color_cat = Color("#34d399") # Esmeralda
+		lbl_cat.add_theme_color_override("font_color", color_cat)
 		hbox.add_child(lbl_cat)
 		
 		# Resultado Correcto / Error

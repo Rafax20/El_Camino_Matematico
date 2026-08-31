@@ -191,8 +191,13 @@ func determinar_categoria(datos_pregunta: Dictionary) -> String:
 	if datos_pregunta.has("categoria") and str(datos_pregunta.get("categoria")).strip_edges() != "":
 		return str(datos_pregunta.get("categoria")).to_lower().strip_edges()
 		
+	if datos_pregunta.has("cantidad_a1") or datos_pregunta.has("objeto_a"):
+		return "regla_de_tres"
+		
 	var op_str = str(datos_pregunta.get("operacion", "")).to_lower()
-	if "+" in op_str or "más" in op_str or "mas" in op_str or "suma" in op_str:
+	if "regla" in op_str or "tres" in op_str or "proporc" in op_str:
+		return "regla_de_tres"
+	elif "+" in op_str or "más" in op_str or "mas" in op_str or "suma" in op_str:
 		return "suma"
 	elif "-" in op_str or "menos" in op_str or "resta" in op_str:
 		return "resta"

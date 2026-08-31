@@ -345,10 +345,9 @@ func _validar_respuesta():
 func _al_acertar():
 	var tiempo_tardado = (Time.get_ticks_msec() - tiempo_inicio_mision) / 1000.0
 	
-	# 📊 REGISTRO PEDAGÓGICO EN HISTORIAL DE SUPABASE
+	# 📊 REGISTRO PEDAGÓGICO EN HISTORIAL DE SUPABASE (Regla de Tres)
 	if ConexionSupabase:
-		var cat = ConexionSupabase.determinar_categoria(datos_pregunta_actual)
-		ConexionSupabase.registrar_en_historial(cat, true, tiempo_tardado)
+		ConexionSupabase.registrar_en_historial("regla_de_tres", true, tiempo_tardado)
 	
 	aciertos += 1
 	_actualizar_ui_header()
@@ -361,10 +360,9 @@ func _al_acertar():
 func _al_fallar():
 	var tiempo_tardado = (Time.get_ticks_msec() - tiempo_inicio_mision) / 1000.0
 	
-	# 📊 REGISTRO PEDAGÓGICO EN HISTORIAL DE SUPABASE
+	# 📊 REGISTRO PEDAGÓGICO EN HISTORIAL DE SUPABASE (Regla de Tres)
 	if ConexionSupabase:
-		var cat = ConexionSupabase.determinar_categoria(datos_pregunta_actual)
-		ConexionSupabase.registrar_en_historial(cat, false, tiempo_tardado)
+		ConexionSupabase.registrar_en_historial("regla_de_tres", false, tiempo_tardado)
 		
 	vidas -= 1
 	_sacudir_panel()

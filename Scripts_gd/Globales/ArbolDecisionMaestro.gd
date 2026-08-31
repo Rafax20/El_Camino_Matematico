@@ -85,7 +85,8 @@ func procesar_diagnostico_global(aciertos: int, fallas: int, tiempo_promedio: fl
 			if total_c >= 2:
 				var pct_c = (float(cat_data.get("aciertos", 0)) / float(total_c)) * 100.0
 				if pct_c < 50.0:
-					debilidades.append(cat.capitalize())
+					var nombre_formateado = "Regla de 3" if cat == "regla_de_tres" else cat.capitalize()
+					debilidades.append(nombre_formateado)
 					
 		if debilidades.size() > 0:
 			res["recomendacion"] += " [Refuerzo prioritario detectado en: " + ", ".join(debilidades) + "]"
