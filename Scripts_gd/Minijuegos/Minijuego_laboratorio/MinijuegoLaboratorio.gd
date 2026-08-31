@@ -552,7 +552,7 @@ func _configurar_sistema_pistas():
 	if not root_mc.has_node("BotonPistas"):
 		btn_pistas_toggle = Button.new()
 		btn_pistas_toggle.name = "BotonPistas"
-		btn_pistas_toggle.text = "💡 Pista"
+		btn_pistas_toggle.text = "Pista"
 		btn_pistas_toggle.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 		btn_pistas_toggle.anchors_preset = Control.PRESET_TOP_RIGHT
 		btn_pistas_toggle.anchor_left = 1.0
@@ -640,7 +640,7 @@ func _configurar_sistema_pistas():
 	
 	# Título
 	var lbl_tit = Label.new()
-	lbl_tit.text = "💡 ¿Cómo calcular la Regla de Tres?"
+	lbl_tit.text = "¿Como calcular la Regla de Tres?"
 	lbl_tit.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	lbl_tit.add_theme_font_size_override("font_size", 20)
 	lbl_tit.add_theme_color_override("font_color", Color(1.0, 0.85, 0.2))
@@ -699,9 +699,9 @@ func toggle_pistas():
 func _actualizar_contenido_pistas(a1: int, b1: int, a2: int, obj_a: String, obj_b: String, res: int):
 	var mult = a2 * b1
 	if label_pista_paso1:
-		label_pista_paso1.text = "1️⃣  1er Paso (Multiplicar en cruz):\nMultiplica los 2 valores que están en diagonal:\n👉  %d × %d = %d" % [a2, b1, mult]
+		label_pista_paso1.text = "1. Multiplicar en cruz:\nMultiplica los 2 valores conocidos en diagonal:\n->  %d x %d = %d" % [a2, b1, mult]
 	if label_pista_paso2:
-		label_pista_paso2.text = "2️⃣  2do Paso (Dividir entre el restante):\nDivide el resultado de la multiplicación entre el número que falta (%d %s):\n👉  %d ÷ %d = %d" % [a1, obj_a, mult, a1, res]
+		label_pista_paso2.text = "2. Dividir entre el restante:\nDivide el resultado de la multiplicacion entre el numero restante (%d %s):\n->  %d / %d = %d" % [a1, obj_a, mult, a1, res]
 	if label_pista_paso3:
-		label_pista_paso3.text = "🎯  3er Paso (Respuesta):\n¡El resultado es %d %s! Colócalo en la probeta y presiona Comprobar." % [res, obj_b]
+		label_pista_paso3.text = "3. Respuesta final:\nEl resultado es %d %s. Colocalo en la probeta y presiona Comprobar." % [res, obj_b]
 	

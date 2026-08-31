@@ -117,7 +117,7 @@ func iniciar_minijuego(_tema: String = "espacio"):
 		luz_iluminacion_global.color = Color(0.08, 0.08, 0.15, 1.0)
 	
 	_configurar_controles_tactiles()
-	_mostrar_banner_instrucciones("🎮 Muévete con WASD / Flechas y presiona E (o el botón táctil) para abrir las cajas.")
+	_mostrar_banner_instrucciones("Muevete con WASD / Flechas y presiona E (o el boton tactil) para abrir las cajas.")
 
 func _mostrar_banner_instrucciones(texto: String, audio_nombre: String = "Instrucciones/como_jugar_buscador"):
 	if not HUD: return
@@ -794,13 +794,13 @@ func _procesar_acierto():
 		_activar_generador()
 
 func _activar_generador():
-	print("⚡ Generador activado - El jugador debe ir a la mesa para restaurar la energía.")
+	print("Generador activado - El jugador debe ir a la mesa para restaurar la energia.")
 	if collision_mesa:
 		collision_mesa.set_deferred("disabled", false)
 	if label_mensaje:
-		label_mensaje.text = "¡Gemas recolectadas! Ve a la Mesa del Generador."
+		label_mensaje.text = "Gemas recolectadas: Ve a la Mesa del Generador."
 		label_mensaje.visible = true
-	_mostrar_banner_instrucciones("⚡ ¡Gemas recolectadas! Ve a la Mesa del Generador para restaurar la energía.")
+	_mostrar_banner_instrucciones("Gemas recolectadas: Ve a la Mesa del Generador para restaurar la energia.")
 
 func _procesar_error(_ingresado: String, _esperado: String):
 	# ⏱️ 2. Calcular tiempo tardado antes del error

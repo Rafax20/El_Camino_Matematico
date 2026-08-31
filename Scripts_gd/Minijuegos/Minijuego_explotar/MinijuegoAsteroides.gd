@@ -80,7 +80,7 @@ func iniciar_minijuego(tema: String = "espacio"):
 	juego_activo = true
 	visible = true
 	
-	_mostrar_banner_instrucciones("🎯 ¡Haz clic o toca sobre el asteroide con el resultado correcto!")
+	_mostrar_banner_instrucciones("Haz clic o toca sobre el asteroide con el resultado correcto.")
 	_cargar_siguiente_pregunta()
 
 func _mostrar_banner_instrucciones(texto: String, audio_nombre: String = "Instrucciones/como_jugar_asteroides"):

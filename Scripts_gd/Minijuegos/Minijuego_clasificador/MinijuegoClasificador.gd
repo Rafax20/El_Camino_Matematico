@@ -269,7 +269,7 @@ func iniciar_minijuego(_tema: String = "espacio"):
 	
 	_ajustar_velocidad_segun_dificultad()
 	_actualizar_ui_header()
-	_mostrar_banner_instrucciones("📦 ¡Calcula la operación del paquete y presiona el botón con el color correcto!")
+	_mostrar_banner_instrucciones("Calcula la operacion del paquete y presiona el boton con el color correcto.")
 	_cargar_siguiente_caja()
 
 func _mostrar_banner_instrucciones(texto: String, audio_nombre: String = "Instrucciones/como_jugar_clasificador"):
