@@ -87,6 +87,7 @@ func _ready():
 		
 	globo_dialogo.visible = false
 	UI.visible = false
+	_configurar_sistema_pistas()
 
 func _cargar_aliens_disponibles():
 	for ruta in _rutas_aliens_extra:
@@ -190,6 +191,9 @@ func _cargar_nueva_mision(datos: Dictionary):
 	# Preparar las casillas para la entrada numérica
 	_preparar_casillas_respuestas()
 	_generar_fichas_digitos_combinadas([resultado_final_str])
+	
+	# Actualizar pistas pedagógicas paso a paso
+	_actualizar_contenido_pistas(a1, b1, a2, obj_a, obj_b, resp_calculada)
 
 func _actualizar_textos_panel(target_panel: Panel, a1: int, b1: int, a2: int, obj_a: String, obj_b: String):
 	# Fila Base (Información conocida)
@@ -255,7 +259,7 @@ func iniciar_minijuego(tema: String = "espacio"):
 	aciertos = 0
 	bloqueado = false # REINICIAMOS EL CANDADO
 	_actualizar_ui_header()
-	_mostrar_banner_instrucciones("🧪 ¡Calcula la regla de tres y arrastra los números para resolver la fórmula!")
+	_mostrar_banner_instrucciones("🧪 Regla de 3: Multiplica en cruz y divide el resultado. ¡Pulsa 💡 Pista si necesitas ayuda!")
 	obtener_siguiente_pregunta()
 	iniciar_secuencia_alien()
 
@@ -519,7 +523,8 @@ func _finalizar_minijuego(es_exito: bool):
 	if contenedor_fichas: contenedor_fichas.visible = false
 	if pizarra_borrador: pizarra_borrador.visible = false
 	
-	if has_node("PistasHelper"): $PistasHelper.visible = false
+	if has_node("MinijuegoCompleto/PistasHelper"): $MinijuegoCompleto/PistasHelper.visible = false
+	if has_node("MinijuegoCompleto/BotonPistas"): $MinijuegoCompleto/BotonPistas.visible = false
 	
 	minijuego_finalizado.emit(es_exito)
 
@@ -529,4 +534,174 @@ func AbrirCerrar_Pizarra():
 			#minimizar_panel()
 		pizarra_borrador.toggle_pizarra()
 		pizarra_borrador.z_index = 20
+
+# =====================================================================
+# 💡 SISTEMA DE PISTAS Y EXPLICACIÓN DE REGLA DE TRES (PistasHelper)
+# =====================================================================
+var panel_pistas_ui: PanelContainer = null
+var label_pista_paso1: Label = null
+var label_pista_paso2: Label = null
+var label_pista_paso3: Label = null
+var btn_pistas_toggle: Button = null
+
+func _configurar_sistema_pistas():
+	var root_mc = $MinijuegoCompleto
+	if not root_mc: return
+	
+	# 1. Botón flotante para pedir pista
+	if not root_mc.has_node("BotonPistas"):
+		btn_pistas_toggle = Button.new()
+		btn_pistas_toggle.name = "BotonPistas"
+		btn_pistas_toggle.text = "💡 Pista"
+		btn_pistas_toggle.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+		btn_pistas_toggle.anchors_preset = Control.PRESET_TOP_RIGHT
+		btn_pistas_toggle.anchor_left = 1.0
+		btn_pistas_toggle.anchor_right = 1.0
+		btn_pistas_toggle.offset_left = -140.0
+		btn_pistas_toggle.offset_top = 135.0
+		btn_pistas_toggle.offset_right = -20.0
+		btn_pistas_toggle.offset_bottom = 180.0
+		
+		var st_btn = StyleBoxFlat.new()
+		st_btn.bg_color = Color(0.1, 0.15, 0.3, 0.9)
+		st_btn.border_color = Color(0.95, 0.75, 0.15, 1.0)
+		st_btn.set_border_width_all(2)
+		st_btn.set_corner_radius_all(10)
+		st_btn.content_margin_left = 10
+		st_btn.content_margin_right = 10
+		btn_pistas_toggle.add_theme_stylebox_override("normal", st_btn)
+		
+		var st_btn_hov = StyleBoxFlat.new()
+		st_btn_hov.bg_color = Color(0.2, 0.25, 0.45, 0.95)
+		st_btn_hov.border_color = Color(1.0, 0.9, 0.3, 1.0)
+		st_btn_hov.set_border_width_all(2)
+		st_btn_hov.set_corner_radius_all(10)
+		btn_pistas_toggle.add_theme_stylebox_override("hover", st_btn_hov)
+		
+		btn_pistas_toggle.add_theme_font_size_override("font_size", 16)
+		btn_pistas_toggle.add_theme_color_override("font_color", Color(1.0, 0.95, 0.5))
+		btn_pistas_toggle.pressed.connect(toggle_pistas)
+		root_mc.add_child(btn_pistas_toggle)
+	
+	# 2. Panel modal de PistasHelper
+	var helper_node = root_mc.get_node_or_null("PistasHelper")
+	if not helper_node:
+		helper_node = Control.new()
+		helper_node.name = "PistasHelper"
+		root_mc.add_child(helper_node)
+		
+	helper_node.anchors_preset = Control.PRESET_FULL_RECT
+	helper_node.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	helper_node.z_index = 25
+	helper_node.visible = false
+	
+	# Fondo oscuro bloqueante
+	for ch in helper_node.get_children():
+		ch.queue_free()
+		
+	var fondo_oscuro = ColorRect.new()
+	fondo_oscuro.color = Color(0.0, 0.0, 0.0, 0.65)
+	fondo_oscuro.set_anchors_preset(Control.PRESET_FULL_RECT)
+	fondo_oscuro.gui_input.connect(func(ev):
+		if ev is InputEventMouseButton and ev.pressed:
+			toggle_pistas()
+	)
+	helper_node.add_child(fondo_oscuro)
+	
+	# Ventana central
+	panel_pistas_ui = PanelContainer.new()
+	panel_pistas_ui.anchors_preset = Control.PRESET_CENTER
+	panel_pistas_ui.anchor_left = 0.5
+	panel_pistas_ui.anchor_top = 0.5
+	panel_pistas_ui.anchor_right = 0.5
+	panel_pistas_ui.anchor_bottom = 0.5
+	panel_pistas_ui.offset_left = -340.0
+	panel_pistas_ui.offset_top = -210.0
+	panel_pistas_ui.offset_right = 340.0
+	panel_pistas_ui.offset_bottom = 210.0
+	panel_pistas_ui.grow_horizontal = Control.GROW_DIRECTION_BOTH
+	panel_pistas_ui.grow_vertical = Control.GROW_DIRECTION_BOTH
+	
+	var st_p = StyleBoxFlat.new()
+	st_p.bg_color = Color(0.06, 0.09, 0.18, 0.96)
+	st_p.border_color = Color(0.3, 0.7, 1.0, 0.9)
+	st_p.set_border_width_all(3)
+	st_p.set_corner_radius_all(16)
+	st_p.content_margin_left = 24
+	st_p.content_margin_right = 24
+	st_p.content_margin_top = 20
+	st_p.content_margin_bottom = 20
+	panel_pistas_ui.add_theme_stylebox_override("panel", st_p)
+	helper_node.add_child(panel_pistas_ui)
+	
+	var vbox = VBoxContainer.new()
+	vbox.add_theme_constant_override("separation", 14)
+	panel_pistas_ui.add_child(vbox)
+	
+	# Título
+	var lbl_tit = Label.new()
+	lbl_tit.text = "💡 ¿Cómo calcular la Regla de Tres?"
+	lbl_tit.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	lbl_tit.add_theme_font_size_override("font_size", 20)
+	lbl_tit.add_theme_color_override("font_color", Color(1.0, 0.85, 0.2))
+	vbox.add_child(lbl_tit)
+	
+	# Paso 1: Multiplicación
+	label_pista_paso1 = Label.new()
+	label_pista_paso1.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	label_pista_paso1.add_theme_font_size_override("font_size", 15)
+	label_pista_paso1.add_theme_color_override("font_color", Color("#38bdf8"))
+	vbox.add_child(label_pista_paso1)
+	
+	# Paso 2: División
+	label_pista_paso2 = Label.new()
+	label_pista_paso2.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	label_pista_paso2.add_theme_font_size_override("font_size", 15)
+	label_pista_paso2.add_theme_color_override("font_color", Color("#fb923c"))
+	vbox.add_child(label_pista_paso2)
+	
+	# Paso 3: Resultado / Conclusión
+	label_pista_paso3 = Label.new()
+	label_pista_paso3.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	label_pista_paso3.add_theme_font_size_override("font_size", 15)
+	label_pista_paso3.add_theme_color_override("font_color", Color("#4ade80"))
+	vbox.add_child(label_pista_paso3)
+	
+	# Botón Cerrar
+	var btn_cerrar = Button.new()
+	btn_cerrar.text = "¡Entendido!"
+	btn_cerrar.custom_minimum_size = Vector2(160, 38)
+	btn_cerrar.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	btn_cerrar.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+	
+	var st_bc = StyleBoxFlat.new()
+	st_bc.bg_color = Color(0.12, 0.55, 0.45, 0.9)
+	st_bc.set_corner_radius_all(8)
+	btn_cerrar.add_theme_stylebox_override("normal", st_bc)
+	btn_cerrar.add_theme_font_size_override("font_size", 16)
+	btn_cerrar.pressed.connect(toggle_pistas)
+	vbox.add_child(btn_cerrar)
+
+func toggle_pistas():
+	var helper_node = $MinijuegoCompleto.get_node_or_null("PistasHelper")
+	if not helper_node: return
+	
+	if helper_node.visible:
+		var tw = create_tween()
+		tw.tween_property(helper_node, "modulate:a", 0.0, 0.2)
+		tw.chain().tween_callback(func(): helper_node.visible = false)
+	else:
+		helper_node.visible = true
+		helper_node.modulate.a = 0.0
+		var tw = create_tween()
+		tw.tween_property(helper_node, "modulate:a", 1.0, 0.2)
+
+func _actualizar_contenido_pistas(a1: int, b1: int, a2: int, obj_a: String, obj_b: String, res: int):
+	var mult = a2 * b1
+	if label_pista_paso1:
+		label_pista_paso1.text = "1️⃣  1er Paso (Multiplicar en cruz):\nMultiplica los 2 valores que están en diagonal:\n👉  %d × %d = %d" % [a2, b1, mult]
+	if label_pista_paso2:
+		label_pista_paso2.text = "2️⃣  2do Paso (Dividir entre el restante):\nDivide el resultado de la multiplicación entre el número que falta (%d %s):\n👉  %d ÷ %d = %d" % [a1, obj_a, mult, a1, res]
+	if label_pista_paso3:
+		label_pista_paso3.text = "🎯  3er Paso (Respuesta):\n¡El resultado es %d %s! Colócalo en la probeta y presiona Comprobar." % [res, obj_b]
 	
