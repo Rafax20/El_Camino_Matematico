@@ -336,13 +336,31 @@ func _dibujar_grafico_desempeno():
 	# MODO 1 O MODO 2: GRAFICO DE LINEAS (TIEMPO EN SEGUNDOS)
 	# -------------------------------------------------------------
 	if modo_grafico == 1 or modo_grafico == 2:
+		# 1. Calcular el tiempo máximo real de las categorías para ajustar la escala dinámicamente
+		var max_tiempo_registrado: float = 0.0
+		for cat_key in categorias:
+			var d = stats_categorias[cat_key]
+			if (d["aciertos"] + d["fallas"]) > 0:
+				if d["tiempo_prom"] > max_tiempo_registrado:
+					max_tiempo_registrado = d["tiempo_prom"]
+		
+		# Escala dinámica: base mínima de 16s, o escala superior si el alumno tardó más (ej: 25s -> escala a 32s con líneas cada 8s)
+		var max_seg = _calcular_escala_max_tiempo(max_tiempo_registrado)
+		var paso_seg = max_seg / 4.0
+
 		# Líneas de cuadrícula de segundos (si solo se ve la línea)
 		if modo_grafico == 1:
 			for i in range(5):
-				var seg_val = i * 4.0 # 0s, 4s, 8s, 12s, 16s
-				var y = chart_bottom - (chart_h * (seg_val / 16.0))
+				var seg_val = i * paso_seg
+				var y = chart_bottom - (chart_h * (float(i) / 4.0))
 				lienzo_grafico.draw_line(Vector2(margin_left, y), Vector2(g_size.x - margin_right, y), Color(1, 1, 1, 0.08), 1.0)
 				lienzo_grafico.draw_string(font, Vector2(10, y + 4), "%.0fs" % seg_val, HORIZONTAL_ALIGNMENT_RIGHT, -1, font_size, Color("#38bdf8"))
+		elif modo_grafico == 2:
+			# En Modo 2 (Barras % + Línea Tiempo), mostrar el eje de segundos en el lateral derecho
+			for i in range(5):
+				var seg_val = i * paso_seg
+				var y = chart_bottom - (chart_h * (float(i) / 4.0))
+				lienzo_grafico.draw_string(font, Vector2(g_size.x - margin_right + 8, y + 4), "%.0fs" % seg_val, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size, Color("#38bdf8"))
 
 		var puntos_tiempo: PackedVector2Array = []
 		
@@ -351,9 +369,9 @@ func _dibujar_grafico_desempeno():
 			var data = stats_categorias[cat_key]
 			var center_x = margin_left + (i * slot_w) + (slot_w / 2.0)
 			
-			var max_seg = 16.0 if modo_grafico == 1 else 15.0
-			var t_prom = clampf(data["tiempo_prom"], 0.0, max_seg)
-			var y_tiempo = chart_bottom - (chart_h * (t_prom / max_seg))
+			var t_prom = data["tiempo_prom"]
+			# Altura proporcional real sin topar artificialmente a 16s
+			var y_tiempo = chart_bottom - (chart_h * (t_prom / max_seg)) if max_seg > 0.0 else chart_bottom
 			puntos_tiempo.append(Vector2(center_x, y_tiempo))
 			
 			if modo_grafico == 1:
@@ -379,11 +397,11 @@ func _dibujar_grafico_desempeno():
 			var data = stats_categorias[categorias[i]]
 			var total_cat = data["aciertos"] + data["fallas"]
 			
-			# Halo y circulo cian
-			lienzo_grafico.draw_circle(p, 7.0, Color("#38bdf8"))
-			lienzo_grafico.draw_circle(p, 3.5, Color.WHITE)
-			
 			if total_cat > 0:
+				# Halo y circulo cian
+				lienzo_grafico.draw_circle(p, 7.0, Color("#38bdf8"))
+				lienzo_grafico.draw_circle(p, 3.5, Color.WHITE)
+				
 				var str_val = "%.1f s" % data["tiempo_prom"]
 				# Placa oscura de fondo para contraste total
 				var offset_y = -26.0 if modo_grafico == 1 else -32.0
@@ -392,6 +410,19 @@ func _dibujar_grafico_desempeno():
 				lienzo_grafico.draw_rect(pill_rect, Color("#0f172a"), true)
 				lienzo_grafico.draw_rect(pill_rect, Color("#38bdf8"), false, 1.5)
 				lienzo_grafico.draw_string(font, Vector2(p.x - 22, p.y + offset_y + 13), str_val, HORIZONTAL_ALIGNMENT_CENTER, 44, font_size, Color("#38bdf8"))
+
+func _calcular_escala_max_tiempo(tiempo_max: float) -> float:
+	if tiempo_max <= 14.0:
+		return 16.0
+	var target = tiempo_max * 1.15
+	if target <= 20.0: return 20.0
+	if target <= 24.0: return 24.0
+	if target <= 32.0: return 32.0
+	if target <= 40.0: return 40.0
+	if target <= 60.0: return 60.0
+	if target <= 80.0: return 80.0
+	if target <= 100.0: return 100.0
+	return ceilf(target / 20.0) * 20.0
 
 # =====================================================================
 # TABLA DETALLADA DE HISTORIAL DE RESPUESTAS

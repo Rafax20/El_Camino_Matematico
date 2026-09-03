@@ -226,6 +226,7 @@ grow_horizontal = 2
 grow_vertical = 2
 size_flags_vertical = 3
 expand = true
+buffering_msec = 1500
 
 [node name="BtnCerrar" type="TextureButton" parent="ReproductorCanvas/ModalVideo" unique_id=304578414]
 layout_mode = 0

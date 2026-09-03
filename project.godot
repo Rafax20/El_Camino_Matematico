@@ -75,3 +75,9 @@ Enviar(Enter)={
 rendering_device/driver.windows="d3d12"
 renderer/rendering_method="gl_compatibility"
 renderer/rendering_method.mobile="gl_compatibility"
+
+[audio]
+
+general/output_latency=30
+general/output_latency.web=50
+

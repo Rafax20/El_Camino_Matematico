@@ -38,6 +38,8 @@ func _ready():
 	# Iniciar oculto el popup de video
 	modal_video.visible = false
 	modal_video.modulate.a = 0.0
+	if video_player:
+		video_player.buffering_msec = 1500
 
 	# Conexión de botones del menú
 	if btn_suma: btn_suma.pressed.connect(func(): abrir_video("suma"))
