@@ -20,6 +20,7 @@ signal minijuego_finalizado(es_correcto)
 @onready var controles_tactiles = $ControlesTactiles
 
 @onready var label_gemas = get_node_or_null("HUD/ContenedorGemas/LabelGemas") if has_node("HUD/ContenedorGemas/LabelGemas") else get_node_or_null("HUD/LabelGemas")
+@onready var icono_gema = get_node_or_null("HUD/ContenedorGemas/IconoGema") if has_node("HUD/ContenedorGemas/IconoGema") else get_node_or_null("HUD/IconoGema")
 @onready var contenedor_corazones = $HUD/ContenedorCorazones
 @onready var luz_iluminacion_global = $Nivel/CanvasModulate
 
@@ -84,6 +85,7 @@ const POSICION_INICIAL: Vector2 = Vector2(376, 249)
 
 func _ready():
 	controles_tactiles.visible = false
+	_configurar_icono_y_label_gemas()
 	_crear_indicador_flecha()
 	
 	if get_tree().current_scene == self:
@@ -93,6 +95,7 @@ func _process(_delta: float):
 	_actualizar_indicador_flecha()
 
 func iniciar_minijuego(_tema: String = "espacio"):
+	_configurar_icono_y_label_gemas()
 	_crear_indicador_flecha()
 	if jugador:
 		jugador.position = POSICION_INICIAL
@@ -1024,7 +1027,8 @@ func _disposicion_division_galera(dividendo: int, divisor: int):
 	_crear_boton_comprobar(y_casillas + 80.0)
 
 func _actualizar_hud_gemas():
-	if label_gemas: label_gemas.text = str(gemas_obtenidas) + " / " + str(gemas_requeridas)
+	if label_gemas:
+		label_gemas.text = "Gemas: " + str(gemas_obtenidas) + " / " + str(gemas_requeridas)
 
 func _actualizar_interfaz_corazones():
 	if not contenedor_corazones: return
@@ -1399,3 +1403,29 @@ func _actualizar_indicador_flecha():
 			flecha_poly.color = Color("#f59e0b") if es_hacia_generador else Color("#10b981")
 	else:
 		indicador_flecha.visible = false
+
+# 💎 Configuración para asegurar que el icono de esmeralda siempre esté a la izquierda del label
+func _configurar_icono_y_label_gemas():
+	if not HUD: return
+	if has_node("HUD/ContenedorGemas"):
+		var cont = $HUD/ContenedorGemas
+		var icono = cont.get_node_or_null("IconoGema")
+		var lbl = cont.get_node_or_null("LabelGemas")
+		if icono and lbl:
+			# Asegurar que el icono siempre esté a la izquierda del label (hijo índice 0)
+			cont.move_child(icono, 0)
+			cont.move_child(lbl, 1)
+	elif has_node("HUD/LabelGemas"):
+		var lbl = $HUD/LabelGemas
+		var icono = HUD.get_node_or_null("IconoGema")
+		if not icono:
+			icono = TextureRect.new()
+			icono.name = "IconoGema"
+			icono.texture = preload("res://assets/Minijuegos/minijuego Buscador/Gema_Esmeralda.png")
+			icono.custom_minimum_size = Vector2(36, 36)
+			icono.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+			icono.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+			HUD.add_child(icono)
+		if lbl.position.x < 50.0:
+			lbl.position.x = 55.0
+		icono.position = Vector2(lbl.position.x - 42.0, lbl.position.y - 4.0)
