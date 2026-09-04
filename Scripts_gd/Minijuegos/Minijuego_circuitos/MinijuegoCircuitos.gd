@@ -550,7 +550,6 @@ func _seleccionar_nodo_derecho(btn_der: Button):
 		ConexionSupabase.registrar_en_historial(cat, es_correcto, tiempo_tardado)
 	
 	if es_correcto:
-		_reproducir_sonido("Correcto")
 		nodo_izq_seleccionado.set_meta("resuelto", true)
 		btn_der.set_meta("resuelto", true)
 		nodo_izq_seleccionado.modulate = Color("#4ade80") # Verde neón
@@ -562,19 +561,32 @@ func _seleccionar_nodo_derecho(btn_der: Button):
 		conexiones_completadas += 1
 		if conexiones_completadas >= total_conexiones_panel:
 			aciertos_actuales += 1
+			
+			# 🔔 Sonido de acierto estilo programa de TV al completar los 3 cables del circuito
+			if GestionAudio:
+				GestionAudio.reproducir_sfx("acierto_tv")
+				await get_tree().create_timer(0.7).timeout
+				GestionAudio.reproducir_audio_local("Elogios/" + ["elogio1", "elogio2", "elogio3"].pick_random())
+				
 			var dif_ant = DatosUsuario.dificultad_actual if DatosUsuario else 0
 			if SistemaExperto and SistemaExperto.has_method("evaluar_desempeno"):
 				var nd = SistemaExperto.evaluar_desempeno(dif_ant, true, tiempo_tardado)
 				if DatosUsuario: DatosUsuario.dificultad_actual = nd
 			_actualizar_ui_header()
 			if aciertos_actuales >= META_ACIERTOS:
-				await get_tree().create_timer(1.0).timeout
+				await get_tree().create_timer(1.8).timeout
 				_finalizar_minijuego(true)
 			else:
-				await get_tree().create_timer(1.0).timeout
+				await get_tree().create_timer(1.8).timeout
 				_cargar_nuevo_panel_circuitos()
+		else:
+			# Sonido de conexión de cable individual antes de completar los 3
+			if GestionAudio:
+				GestionAudio.reproducir_sfx("laser_espacial")
 	else:
-		_reproducir_sonido("Incorrecto")
+		# 🔊 Mensaje de ánimo al equivocarse en la conexión
+		if GestionAudio:
+			GestionAudio.reproducir_audio_local("Animos/" + ["animo1", "animo2", "animo3"].pick_random())
 		vidas_actuales -= 1
 		var cable_error = _trazar_cable_realista(nodo_izq_seleccionado, btn_der, false)
 		var dif_ant = DatosUsuario.dificultad_actual if DatosUsuario else 0
@@ -675,13 +687,6 @@ func _actualizar_ui_header():
 			var c = contenedor_corazones.get_child(i)
 			if c is TextureRect:
 				c.texture = textura_corazon_lleno if i < vidas_actuales else textura_corazon_vacio
-
-func _reproducir_sonido(tipo: String):
-	if GestionAudio and GestionAudio.has_method("reproducir_audio_local"):
-		if tipo == "Correcto":
-			GestionAudio.reproducir_audio_local("Minijuegos/Minijuego_explotar/" + ["Correcto_1", "Correcto_2", "Correcto_3"].pick_random())
-		else:
-			GestionAudio.reproducir_audio_local("Minijuegos/Minijuego_explotar/" + ["Incorrecto_1", "Incorrecto_2", "Incorrecto_3"].pick_random())
 
 func _finalizar_minijuego(es_exito: bool):
 	juego_activo = false

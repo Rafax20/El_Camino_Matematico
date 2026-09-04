@@ -9,6 +9,8 @@ const VOICE_ID : String = "vAcVPeEOlCrOxhRoCXb8"
 
 var http_request : HTTPRequest
 var audio_player : AudioStreamPlayer
+var sfx_player : AudioStreamPlayer
+var musica_player : AudioStreamPlayer
 
 func _ready():
 	http_request = HTTPRequest.new()
@@ -16,26 +18,104 @@ func _ready():
 	http_request.request_completed.connect(_on_request_completed)
 	
 	audio_player = AudioStreamPlayer.new()
+	audio_player.name = "VozPlayer"
 	add_child(audio_player)
-	# Opcional: Conectar cuando el audio termine por si necesitas activar algo en la interfaz
 	audio_player.finished.connect(func(): audio_finalizado.emit())
+	
+	sfx_player = AudioStreamPlayer.new()
+	sfx_player.name = "SFXPlayer"
+	add_child(sfx_player)
+	
+	musica_player = AudioStreamPlayer.new()
+	musica_player.name = "MusicaPlayer"
+	add_child(musica_player)
 
-## 🔊 NUEVO MÉTODO: Para reproducir frases fijas descargadas localmente
+## 🔊 Para reproducir frases fijas descargadas localmente (Voz de July)
 func reproducir_audio_local(nombre_archivo: String) -> void:
-	# Si ya estaba sonando algo, lo detenemos
+	# Si ya estaba sonando algo en la voz, lo detenemos
 	if audio_player.playing:
 		audio_player.stop()
 		
-	var ruta = "res://Audios/" + nombre_archivo + ".mp3"
+	var posibles_rutas = [
+		"res://Audios/" + nombre_archivo + ".mp3",
+		"res://Audios/" + nombre_archivo + ".wav",
+		"res://Audios/" + nombre_archivo + ".ogg",
+		"res://Audios/Sonidos/" + nombre_archivo + ".wav",
+		"res://Audios/Sonidos/" + nombre_archivo + ".mp3"
+	]
 	
-	# Verificamos si el archivo realmente existe en las carpetas para evitar crasheos
-	if ResourceLoader.exists(ruta):
-		var stream = load(ruta)
+	var ruta_encontrada = ""
+	for r in posibles_rutas:
+		if ResourceLoader.exists(r):
+			ruta_encontrada = r
+			break
+	
+	if ruta_encontrada != "":
+		var stream = load(ruta_encontrada)
 		audio_player.stream = stream
 		audio_player.play()
 		print("🔊 Reproduciendo audio local: ", nombre_archivo)
 	else:
-		print("❌ Error: El archivo de audio local no existe en la ruta: ", ruta)
+		print("❌ Error: El archivo de audio local no existe en la ruta: ", nombre_archivo)
+
+## 💥 Para reproducir efectos de sonido (láser, aciertos, clics) sin interrumpir la voz
+func reproducir_sfx(nombre_archivo: String, volumen_db: float = 0.0) -> void:
+	var posibles_rutas = [
+		"res://Audios/Sonidos/" + nombre_archivo + ".wav",
+		"res://Audios/Sonidos/" + nombre_archivo + ".mp3",
+		"res://Audios/" + nombre_archivo + ".wav",
+		"res://Audios/" + nombre_archivo + ".mp3"
+	]
+	
+	var ruta_encontrada = ""
+	for r in posibles_rutas:
+		if ResourceLoader.exists(r):
+			ruta_encontrada = r
+			break
+			
+	if ruta_encontrada != "":
+		var stream = load(ruta_encontrada)
+		sfx_player.stream = stream
+		sfx_player.volume_db = volumen_db
+		sfx_player.play()
+		print("🔊 SFX reproducido: ", nombre_archivo)
+	else:
+		print("❌ Error: SFX no encontrado: ", nombre_archivo)
+
+## 🎵 Para reproducir música o sonido ambiental en bucle
+func reproducir_musica(nombre_archivo: String, volumen_db: float = -12.0) -> void:
+	var posibles_rutas = [
+		"res://Audios/Sonidos/" + nombre_archivo + ".wav",
+		"res://Audios/Sonidos/" + nombre_archivo + ".mp3",
+		"res://Audios/Sonidos/" + nombre_archivo + ".ogg",
+		"res://Audios/" + nombre_archivo + ".wav",
+		"res://Audios/" + nombre_archivo + ".mp3",
+		"res://Audios/" + nombre_archivo + ".ogg"
+	]
+	
+	var ruta_encontrada = ""
+	for r in posibles_rutas:
+		if ResourceLoader.exists(r):
+			ruta_encontrada = r
+			break
+			
+	if ruta_encontrada != "":
+		var stream = load(ruta_encontrada)
+		if stream is AudioStreamWAV:
+			stream.loop_mode = AudioStreamWAV.LOOP_FORWARD
+			stream.loop_begin = 0
+			stream.loop_end = stream.data.size() / 2
+		musica_player.stream = stream
+		musica_player.volume_db = volumen_db
+		musica_player.play()
+		print("🎵 Música en bucle iniciada: ", nombre_archivo)
+	else:
+		print("❌ Error: Música no encontrada: ", nombre_archivo)
+
+func detener_musica() -> void:
+	if musica_player and musica_player.playing:
+		musica_player.stop()
+		print("🎵 Música detenida.")
 
 ## Método global para enviar cualquier texto dinámico a la API (se queda igual)
 func decir_frase(texto: String) -> void:

@@ -1,7 +1,7 @@
 # res://Escenas/Minijuegos/ObjetoFlotante.gd
 extends Area2D
 
-signal objeto_tocado(valor)
+signal objeto_tocado(valor, pos_tocado)
 
 @export var velocidad: float = 140.0
 var valor_numero: int = 0
@@ -84,5 +84,5 @@ func _on_input_event(_viewport: Node, event: InputEvent, _shape_idx: int):
 		_explotar()
 
 func _explotar():
-	objeto_tocado.emit(valor_numero)
+	objeto_tocado.emit(valor_numero, global_position)
 	queue_free()

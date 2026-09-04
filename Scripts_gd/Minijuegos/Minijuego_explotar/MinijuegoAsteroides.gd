@@ -252,8 +252,12 @@ func _on_timer_spawn_timeout():
 	var textura_a_usar = texturas_tableros.get(tema_actual)
 	nuevo_objeto.configurar(numero_a_mostrar, textura_a_usar, randf_range(120.0, 180.0), tema_actual)
 
-func _on_objeto_tocado(valor_tocado: int):
+func _on_objeto_tocado(valor_tocado: int, pos_tocado: Vector2 = Vector2.ZERO):
 	if not juego_activo: return
+	
+	# 💥 Efecto de sonido láser "fiun" y líneas verdes hacia el asteroide
+	var target_pos = pos_tocado if pos_tocado != Vector2.ZERO else get_viewport().get_mouse_position()
+	_disparar_laser_visual(target_pos)
 	
 	var tiempo_tardado = (Time.get_ticks_msec() - tiempo_inicio_pregunta) / 1000.0
 	var es_correcto = (valor_tocado == respuesta_correcta)
@@ -268,7 +272,9 @@ func _on_objeto_tocado(valor_tocado: int):
 		_limpiar_asteroides_pantalla()
 		
 		aciertos_actuales += 1
-		GestionAudio.reproducir_audio_local("Minijuegos/Minijuego_explotar/" + ["Correcto_1", "Correcto_2", "Correcto_3"].pick_random())
+		# 🔊 Elogio al acertar
+		if GestionAudio:
+			GestionAudio.reproducir_audio_local("Elogios/" + ["elogio1", "elogio2", "elogio3"].pick_random())
 		_actualizar_ui_aciertos()
 		
 		var dif_anterior = DatosUsuario.dificultad_actual
@@ -283,7 +289,9 @@ func _on_objeto_tocado(valor_tocado: int):
 			_cargar_siguiente_pregunta()
 	else:
 		vidas_actuales -= 1
-		GestionAudio.reproducir_audio_local("Minijuegos/Minijuego_explotar/" + ["Incorrecto_1", "Incorrecto_2", "Incorrecto_3"].pick_random())
+		# 🔊 Ánimo al fallar
+		if GestionAudio:
+			GestionAudio.reproducir_audio_local("Animos/" + ["animo1", "animo2", "animo3"].pick_random())
 		_actualizar_interfaz_corazones()
 		
 		var nueva_dif = SistemaExperto.evaluar_desempeno(DatosUsuario.dificultad_actual, false, tiempo_tardado)
@@ -291,6 +299,44 @@ func _on_objeto_tocado(valor_tocado: int):
 		
 		if vidas_actuales <= 0:
 			_finalizar_juego(false)
+
+# 🟢 Disparo visual de láseres verdes espaciales con sonido "fiun"
+func _disparar_laser_visual(pos_destino: Vector2):
+	if GestionAudio:
+		GestionAudio.reproducir_sfx("laser_espacial")
+		
+	var vp_size = get_viewport_rect().size
+	var origen = Vector2(vp_size.x * 0.5, vp_size.y)
+	var dir = (pos_destino - origen).normalized()
+	var normal = Vector2(-dir.y, dir.x)
+	
+	# Doble rayo láser verde con núcleo brillante
+	for offset_lado in [-16.0, 16.0]:
+		var p_origen = origen + (normal * offset_lado)
+		var p_fin = pos_destino + (normal * (offset_lado * 0.25))
+		
+		var laser = Line2D.new()
+		laser.width = 4.5
+		laser.default_color = Color("#22c55e") # Verde neón brillante
+		laser.points = PackedVector2Array([p_origen, p_fin])
+		laser.begin_cap_mode = Line2D.LINE_CAP_ROUND
+		laser.end_cap_mode = Line2D.LINE_CAP_ROUND
+		laser.z_index = 20
+		
+		var laser_core = Line2D.new()
+		laser_core.width = 2.0
+		laser_core.default_color = Color(0.95, 1.0, 0.95, 0.95) # Núcleo blanco
+		laser_core.points = laser.points
+		laser.add_child(laser_core)
+		
+		if $CanvasLayer:
+			$CanvasLayer.add_child(laser)
+		else:
+			add_child(laser)
+			
+		var tw = create_tween()
+		tw.tween_property(laser, "modulate:a", 0.0, 0.18)
+		tw.tween_callback(laser.queue_free)
 
 func _actualizar_ui_aciertos():
 	if label_aciertos:

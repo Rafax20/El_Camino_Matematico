@@ -131,6 +131,10 @@ func iniciar_minijuego(_tema: String = "espacio"):
 	
 	_configurar_controles_tactiles()
 	_mostrar_banner_instrucciones("Muevete con WASD / Flechas y presiona E (o el boton tactil) para abrir las cajas.", "Buscador")
+	
+	# 🎵 Música o sonido ambiental de espacio en bucle
+	if GestionAudio:
+		GestionAudio.reproducir_musica("ambiente_espacio", -14.0)
 
 func _mostrar_banner_instrucciones(texto: String, audio_nombre: String = "Buscador"):
 	if not HUD: return
@@ -1047,8 +1051,11 @@ func _notification(what):
 		if not visible:
 			if HUD: HUD.visible = false
 			if controles_tactiles: controles_tactiles.visible = false
+			if GestionAudio: GestionAudio.detener_musica()
 
 func _finalizar_juego(es_exito: bool):
+	if GestionAudio:
+		GestionAudio.detener_musica()
 	if indicador_flecha:
 		indicador_flecha.visible = false
 	if jugador and jugador.has_method("desactivar_movimiento"):

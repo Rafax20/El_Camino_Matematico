@@ -546,10 +546,10 @@ func _evaluar_respuesta(valor_elegido: int):
 		_actualizar_ui_header()
 
 		if aciertos_actuales >= META_ACIERTOS:
-			await get_tree().create_timer(0.8).timeout
+			await get_tree().create_timer(1.6).timeout
 			_finalizar_minijuego(true)
 		else:
-			await get_tree().create_timer(0.8).timeout
+			await get_tree().create_timer(1.6).timeout
 			_ajustar_velocidad_segun_dificultad()
 			_cargar_siguiente_caja()
 	else:
@@ -568,15 +568,14 @@ func _evaluar_respuesta(valor_elegido: int):
 		_actualizar_ui_header()
 
 		if vidas_actuales <= 0:
-			await get_tree().create_timer(0.8).timeout
 			_finalizar_minijuego(false)
 		else:
-			await get_tree().create_timer(0.8).timeout
+			await get_tree().create_timer(1.0).timeout
 			_cargar_siguiente_caja()
 
 func _actualizar_ui_header():
 	if label_aciertos:
-		label_aciertos.text = "Aciertos: " + str(aciertos_actuales) + "/" + str(META_ACIERTOS)
+		label_aciertos.text = "Paquetes Clasificados: " + str(aciertos_actuales) + "/" + str(META_ACIERTOS)
 	if label_dificultad:
 		var dif = DatosUsuario.dificultad_actual if DatosUsuario else 0
 		var nombres = ["Fácil", "Media", "Difícil"]
@@ -588,11 +587,16 @@ func _actualizar_ui_header():
 				corazones[i].texture = textura_corazon_lleno if i < vidas_actuales else textura_corazon_vacio
 
 func _reproducir_sonido(tipo: String):
-	if GestionAudio and GestionAudio.has_method("reproducir_audio_local"):
-		if tipo == "Correcto":
-			GestionAudio.reproducir_audio_local("Minijuegos/Minijuego_explotar/" + ["Correcto_1", "Correcto_2", "Correcto_3"].pick_random())
-		else:
-			GestionAudio.reproducir_audio_local("Minijuegos/Minijuego_explotar/" + ["Incorrecto_1", "Incorrecto_2", "Incorrecto_3"].pick_random())
+	if not GestionAudio: return
+	if tipo == "Correcto":
+		# 🔔 Sonido de acierto estilo programa de televisión
+		GestionAudio.reproducir_sfx("acierto_tv")
+		# 🔊 Voz de elogio de July tras sonar el chime (sin sobreponerse)
+		await get_tree().create_timer(0.7).timeout
+		GestionAudio.reproducir_audio_local("Elogios/" + ["elogio1", "elogio2", "elogio3"].pick_random())
+	else:
+		# 🔊 Mensaje de ánimo de July al fallar
+		GestionAudio.reproducir_audio_local("Animos/" + ["animo1", "animo2", "animo3"].pick_random())
 
 func _finalizar_minijuego(es_exito: bool):
 	juego_activo = false
