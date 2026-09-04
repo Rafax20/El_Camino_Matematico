@@ -353,6 +353,10 @@ func _al_acertar():
 	if ConexionSupabase:
 		ConexionSupabase.registrar_en_historial("regla_de_tres", true, tiempo_tardado)
 	
+	# 🔊 Mensaje de ánimo / elogio al acertar
+	if GestionAudio:
+		GestionAudio.reproducir_audio_local("Elogios/" + ["elogio1", "elogio2", "elogio3"].pick_random())
+	
 	aciertos += 1
 	_actualizar_ui_header()
 	if aciertos >= 3:
@@ -372,11 +376,6 @@ func _al_fallar():
 	_sacudir_panel()
 	_actualizar_ui_header()
 	
-	if vidas == 2:
-		_reproducir_voz("res://assets/Audio/juli_casi.ogg")
-	elif vidas == 1:
-		_reproducir_voz("res://assets/Audio/juli_ultimo_intento.ogg")
-	
 	for i in range(valores_paso_1.size()):
 		valores_paso_1[i] = ""
 	_sincronizar_casillas()
@@ -387,6 +386,9 @@ func _al_fallar():
 		aciertos = 0
 		_finalizar_minijuego(false)
 	else:
+		# 🔊 Mensaje de ánimo al fallar
+		if GestionAudio:
+			GestionAudio.reproducir_audio_local("Animos/" + ["animo1", "animo2", "animo3"].pick_random())
 		bloqueado = false # DESBLOQUEA para que pueda intentar de nuevo
 
 func _reproducir_voz(ruta_stream: String):

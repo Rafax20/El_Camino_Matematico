@@ -19,9 +19,14 @@ signal minijuego_finalizado(es_correcto)
 @onready var pizarra_borrador = $HUD/InterfazPregunta/PizarraBorrador
 @onready var controles_tactiles = $ControlesTactiles
 
-@onready var label_gemas = $HUD/LabelGemas
+@onready var label_gemas = get_node_or_null("HUD/ContenedorGemas/LabelGemas") if has_node("HUD/ContenedorGemas/LabelGemas") else get_node_or_null("HUD/LabelGemas")
 @onready var contenedor_corazones = $HUD/ContenedorCorazones
 @onready var luz_iluminacion_global = $Nivel/CanvasModulate
+
+# 🧭 Flecha indicadora de navegación (Cofres / Generador)
+var indicador_flecha: Node2D = null
+var flecha_poly: Polygon2D = null
+var flecha_linea: Line2D = null
 
 @export var escena_caja: PackedScene
 @export var escena_ficha: PackedScene
@@ -79,11 +84,16 @@ const POSICION_INICIAL: Vector2 = Vector2(376, 249)
 
 func _ready():
 	controles_tactiles.visible = false
+	_crear_indicador_flecha()
 	
 	if get_tree().current_scene == self:
 		iniciar_minijuego("espacio")
 
+func _process(_delta: float):
+	_actualizar_indicador_flecha()
+
 func iniciar_minijuego(_tema: String = "espacio"):
+	_crear_indicador_flecha()
 	if jugador:
 		jugador.position = POSICION_INICIAL
 		var cam_jugador = $Nivel/Jugador/Camera2D
@@ -782,6 +792,10 @@ func _procesar_acierto():
 	gemas_obtenidas += 1
 	_actualizar_hud_gemas()
 	
+	# 🔊 Mensaje de ánimo / elogio al acertar
+	if GestionAudio:
+		GestionAudio.reproducir_audio_local("Elogios/" + ["elogio1", "elogio2", "elogio3"].pick_random())
+	
 	caja_actual_interactuando.abrir_caja()
 	interfaz_pregunta.visible = false
 	pregunta_abierta = false
@@ -800,7 +814,12 @@ func _activar_generador():
 	if label_mensaje:
 		label_mensaje.text = "Gemas recolectadas: Ve a la Mesa del Generador."
 		label_mensaje.visible = true
-	_mostrar_banner_instrucciones("Gemas recolectadas: Ve a la Mesa del Generador para restaurar la energia.")
+	_mostrar_banner_instrucciones("Gemas recolectadas: Ve a la Mesa del Generador para restaurar la energia.", "")
+	
+	# 🔊 Reproducir voz con July indicando dirigirse al generador de energía
+	if GestionAudio:
+		await get_tree().create_timer(1.2).timeout
+		GestionAudio.reproducir_audio_local("generador_energia")
 
 func _procesar_error(_ingresado: String, _esperado: String):
 	# ⏱️ 2. Calcular tiempo tardado antes del error
@@ -825,6 +844,10 @@ func _procesar_error(_ingresado: String, _esperado: String):
 		interfaz_pregunta.visible = false
 		pregunta_abierta = false
 		_finalizar_juego(false)
+	else:
+		# 🔊 Mensaje de ánimo al fallar
+		if GestionAudio:
+			GestionAudio.reproducir_audio_local("Animos/" + ["animo1", "animo2", "animo3"].pick_random())
 
 # 🛠️ Métodos Auxiliares
 func _instanciar_casillas(cant: int, x_base: float, sep_x: float, pos_y: float, dict_destino: Dictionary, offset_idx: int = 0) -> Array:
@@ -1001,7 +1024,7 @@ func _disposicion_division_galera(dividendo: int, divisor: int):
 	_crear_boton_comprobar(y_casillas + 80.0)
 
 func _actualizar_hud_gemas():
-	if label_gemas: label_gemas.text = "Gemas: " + str(gemas_obtenidas) + "/" + str(gemas_requeridas)
+	if label_gemas: label_gemas.text = str(gemas_obtenidas) + " / " + str(gemas_requeridas)
 
 func _actualizar_interfaz_corazones():
 	if not contenedor_corazones: return
@@ -1022,6 +1045,8 @@ func _notification(what):
 			if controles_tactiles: controles_tactiles.visible = false
 
 func _finalizar_juego(es_exito: bool):
+	if indicador_flecha:
+		indicador_flecha.visible = false
 	if jugador and jugador.has_method("desactivar_movimiento"):
 		jugador.desactivar_movimiento()
 		
@@ -1285,3 +1310,92 @@ func _configurar_label_boton_tactil(btn: TouchScreenButton, letra: String):
 	lbl.add_theme_color_override("font_color", Color(1.0, 1.0, 1.0, 1.0))
 	lbl.add_theme_color_override("font_outline_color", Color(0.0, 0.0, 0.0, 0.85))
 	lbl.add_theme_constant_override("outline_size", 32)
+
+# 🧭 Indicador Dinámico de Navegación (Flecha hacia Cofre más cercano / Generador)
+func _crear_indicador_flecha():
+	if indicador_flecha and is_instance_valid(indicador_flecha):
+		return
+	indicador_flecha = Node2D.new()
+	indicador_flecha.name = "IndicadorFlecha"
+	indicador_flecha.z_index = 25
+	indicador_flecha.visible = false
+
+	# Material unshaded para que resalte y no se oscurezca por el CanvasModulate
+	var mat_unshaded = CanvasItemMaterial.new()
+	mat_unshaded.light_mode = CanvasItemMaterial.LIGHT_MODE_UNSHADED
+
+	# Polígono base de la flecha (apunta hacia la derecha: Vector2.RIGHT)
+	flecha_poly = Polygon2D.new()
+	flecha_poly.name = "FlechaPoly"
+	flecha_poly.material = mat_unshaded
+	flecha_poly.polygon = PackedVector2Array([
+		Vector2(22, 0), Vector2(-12, -12), Vector2(-4, 0), Vector2(-12, 12)
+	])
+	flecha_poly.color = Color("#10b981")
+	indicador_flecha.add_child(flecha_poly)
+
+	# Borde estilizado para contraste
+	flecha_linea = Line2D.new()
+	flecha_linea.name = "FlechaBorde"
+	flecha_linea.material = mat_unshaded
+	flecha_linea.points = PackedVector2Array([
+		Vector2(22, 0), Vector2(-12, -12), Vector2(-4, 0), Vector2(-12, 12), Vector2(22, 0)
+	])
+	flecha_linea.width = 2.5
+	flecha_linea.default_color = Color(0.04, 0.08, 0.14, 0.95)
+	indicador_flecha.add_child(flecha_linea)
+
+	# Centro brillante
+	var flecha_centro = Polygon2D.new()
+	flecha_centro.name = "FlechaCentro"
+	flecha_centro.material = mat_unshaded
+	flecha_centro.polygon = PackedVector2Array([
+		Vector2(15, 0), Vector2(-6, -6), Vector2(-1, 0), Vector2(-6, 6)
+	])
+	flecha_centro.color = Color(1.0, 1.0, 1.0, 0.85)
+	indicador_flecha.add_child(flecha_centro)
+
+	$Nivel.add_child(indicador_flecha)
+
+func _actualizar_indicador_flecha():
+	if not indicador_flecha or not is_instance_valid(indicador_flecha):
+		return
+	if not juego_activo or not jugador or not is_instance_valid(jugador) or pregunta_abierta:
+		indicador_flecha.visible = false
+		return
+
+	var target_pos = Vector2.ZERO
+	var hay_target = false
+	var es_hacia_generador = false
+
+	if gemas_obtenidas < gemas_requeridas:
+		var min_dist = INF
+		if contenedor_cajas:
+			for caja in contenedor_cajas.get_children():
+				if is_instance_valid(caja) and not caja.is_queued_for_deletion() and not caja.get("ya_abierta"):
+					var d = jugador.global_position.distance_to(caja.global_position)
+					if d < min_dist:
+						min_dist = d
+						target_pos = caja.global_position
+						hay_target = true
+	else:
+		if mesa_generador and is_instance_valid(mesa_generador):
+			target_pos = mesa_generador.global_position
+			hay_target = true
+			es_hacia_generador = true
+
+	if hay_target:
+		var diff = target_pos - jugador.global_position
+		if diff.length() < 35.0:
+			indicador_flecha.visible = false
+			return
+		indicador_flecha.visible = true
+		var dir = diff.normalized()
+		var pulso = sin(Time.get_ticks_msec() * 0.007) * 5.0
+		var radio = 52.0 + pulso
+		indicador_flecha.global_position = jugador.global_position + (dir * radio)
+		indicador_flecha.rotation = dir.angle()
+		if flecha_poly:
+			flecha_poly.color = Color("#f59e0b") if es_hacia_generador else Color("#10b981")
+	else:
+		indicador_flecha.visible = false

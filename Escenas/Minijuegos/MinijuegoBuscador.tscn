@@ -39,6 +39,7 @@
 [ext_resource type="Texture2D" uid="uid://dky0pc1mfk1o4" path="res://assets/Minijuegos/minijuego Laboratorio/Cuaderno.png" id="37_p0mpy"]
 [ext_resource type="Texture2D" uid="uid://cip4j7faev5mp" path="res://assets/Minijuegos/minijuego Laboratorio/Digito.png" id="38_4humt"]
 [ext_resource type="Texture2D" uid="uid://bfahcll5l1ltu" path="res://assets/Minijuegos/minijuego Laboratorio/Digito_Presionado.png" id="39_cjkih"]
+[ext_resource type="Texture2D" path="res://assets/Minijuegos/minijuego Buscador/Gema_Esmeralda.png" id="40_esmeralda"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_tos66"]
 texture = ExtResource("5_06tuf")
@@ -18665,10 +18666,30 @@ texture = ExtResource("2_t5ej4")
 layout_mode = 2
 texture = ExtResource("2_t5ej4")
 
-[node name="LabelGemas" type="Label" parent="HUD" unique_id=1265858052]
-offset_right = 40.0
-offset_bottom = 23.0
-theme_override_font_sizes/font_size = 20
+[node name="ContenedorGemas" type="HBoxContainer" parent="HUD" unique_id=1265858052]
+offset_left = 20.0
+offset_top = 18.0
+offset_right = 160.0
+offset_bottom = 58.0
+theme_override_constants/separation = 8
+
+[node name="IconoGema" type="TextureRect" parent="HUD/ContenedorGemas"]
+custom_minimum_size = Vector2(36, 36)
+layout_mode = 2
+texture = ExtResource("40_esmeralda")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="LabelGemas" type="Label" parent="HUD/ContenedorGemas"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.25, 0.95, 0.6, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.85)
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 2
+theme_override_constants/outline_size = 3
+theme_override_font_sizes/font_size = 22
+text = "0 / 3"
+vertical_alignment = 1
 
 [node name="LABELS PARA BORRADOR" type="Node2D" parent="." unique_id=1338452870]
 visible = false
