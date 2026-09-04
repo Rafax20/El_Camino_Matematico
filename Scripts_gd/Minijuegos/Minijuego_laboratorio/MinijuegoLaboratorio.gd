@@ -355,7 +355,7 @@ func _al_acertar():
 	
 	# 🔊 Mensaje de ánimo / elogio al acertar
 	if GestionAudio:
-		GestionAudio.reproducir_audio_local("Elogios/" + ["elogio1", "elogio2", "elogio3"].pick_random())
+		GestionAudio.reproducir_elogio()
 	
 	aciertos += 1
 	_actualizar_ui_header()
@@ -388,7 +388,7 @@ func _al_fallar():
 	else:
 		# 🔊 Mensaje de ánimo al fallar
 		if GestionAudio:
-			GestionAudio.reproducir_audio_local("Animos/" + ["animo1", "animo2", "animo3"].pick_random())
+			GestionAudio.reproducir_animo()
 		bloqueado = false # DESBLOQUEA para que pueda intentar de nuevo
 
 func _reproducir_voz(ruta_stream: String):

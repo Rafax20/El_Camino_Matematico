@@ -30,6 +30,32 @@ func _ready():
 	musica_player.name = "MusicaPlayer"
 	add_child(musica_player)
 
+# 🌟 Catálogo de frases de elogio y ánimo de July
+const LISTA_ELOGIOS: Array[String] = [
+	"Elogios/elogio1",
+	"Elogios/elogio2",
+	"Elogios/elogio3",
+	"Elogios/elogio4",
+	"Elogios/elogio5",
+	"Elogios/elogio6",
+	"Elogios/elogio7",
+	"Elogios/elogio8"
+]
+
+const LISTA_ANIMOS: Array[String] = [
+	"Animos/animo1",
+	"Animos/animo2",
+	"Animos/animo3"
+]
+
+## 🌟 Reproduce un elogio aleatorio de July (1 al 8)
+func reproducir_elogio() -> void:
+	reproducir_audio_local(LISTA_ELOGIOS.pick_random())
+
+## 💙 Reproduce una frase de ánimo aleatoria de July (1 al 3)
+func reproducir_animo() -> void:
+	reproducir_audio_local(LISTA_ANIMOS.pick_random())
+
 ## 🔊 Para reproducir frases fijas descargadas localmente (Voz de July)
 func reproducir_audio_local(nombre_archivo: String) -> void:
 	# Si ya estaba sonando algo en la voz, lo detenemos

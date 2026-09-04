@@ -566,7 +566,7 @@ func _seleccionar_nodo_derecho(btn_der: Button):
 			if GestionAudio:
 				GestionAudio.reproducir_sfx("acierto_tv")
 				await get_tree().create_timer(0.7).timeout
-				GestionAudio.reproducir_audio_local("Elogios/" + ["elogio1", "elogio2", "elogio3"].pick_random())
+				GestionAudio.reproducir_elogio()
 				
 			var dif_ant = DatosUsuario.dificultad_actual if DatosUsuario else 0
 			if SistemaExperto and SistemaExperto.has_method("evaluar_desempeno"):
@@ -586,7 +586,7 @@ func _seleccionar_nodo_derecho(btn_der: Button):
 	else:
 		# 🔊 Mensaje de ánimo al equivocarse en la conexión
 		if GestionAudio:
-			GestionAudio.reproducir_audio_local("Animos/" + ["animo1", "animo2", "animo3"].pick_random())
+			GestionAudio.reproducir_animo()
 		vidas_actuales -= 1
 		var cable_error = _trazar_cable_realista(nodo_izq_seleccionado, btn_der, false)
 		var dif_ant = DatosUsuario.dificultad_actual if DatosUsuario else 0

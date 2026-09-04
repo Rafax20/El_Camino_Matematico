@@ -801,7 +801,7 @@ func _procesar_acierto():
 	
 	# 🔊 Mensaje de ánimo / elogio al acertar
 	if GestionAudio:
-		GestionAudio.reproducir_audio_local("Elogios/" + ["elogio1", "elogio2", "elogio3"].pick_random())
+		GestionAudio.reproducir_elogio()
 	
 	caja_actual_interactuando.abrir_caja()
 	interfaz_pregunta.visible = false
@@ -854,7 +854,7 @@ func _procesar_error(_ingresado: String, _esperado: String):
 	else:
 		# 🔊 Mensaje de ánimo al fallar
 		if GestionAudio:
-			GestionAudio.reproducir_audio_local("Animos/" + ["animo1", "animo2", "animo3"].pick_random())
+			GestionAudio.reproducir_animo()
 
 # 🛠️ Métodos Auxiliares
 func _instanciar_casillas(cant: int, x_base: float, sep_x: float, pos_y: float, dict_destino: Dictionary, offset_idx: int = 0) -> Array:

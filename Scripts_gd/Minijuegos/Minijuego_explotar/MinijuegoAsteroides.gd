@@ -274,7 +274,7 @@ func _on_objeto_tocado(valor_tocado: int, pos_tocado: Vector2 = Vector2.ZERO):
 		aciertos_actuales += 1
 		# 🔊 Elogio al acertar
 		if GestionAudio:
-			GestionAudio.reproducir_audio_local("Elogios/" + ["elogio1", "elogio2", "elogio3"].pick_random())
+			GestionAudio.reproducir_elogio()
 		_actualizar_ui_aciertos()
 		
 		var dif_anterior = DatosUsuario.dificultad_actual
@@ -291,7 +291,7 @@ func _on_objeto_tocado(valor_tocado: int, pos_tocado: Vector2 = Vector2.ZERO):
 		vidas_actuales -= 1
 		# 🔊 Ánimo al fallar
 		if GestionAudio:
-			GestionAudio.reproducir_audio_local("Animos/" + ["animo1", "animo2", "animo3"].pick_random())
+			GestionAudio.reproducir_animo()
 		_actualizar_interfaz_corazones()
 		
 		var nueva_dif = SistemaExperto.evaluar_desempeno(DatosUsuario.dificultad_actual, false, tiempo_tardado)

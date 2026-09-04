@@ -295,7 +295,8 @@ func _on_camino_seleccionado(lado: String):
 		_animar_efecto_error(lado)
 
 func _animar_efecto_correcto(lado: String):
-	GestionAudio.reproducir_audio_local("Elogios/" + ["elogio1", "elogio2", "elogio3"].pick_random())
+	if GestionAudio:
+		GestionAudio.reproducir_elogio()
 	
 	if flash_retroalimentacion:
 		flash_retroalimentacion.color = Color(0.1, 0.9, 0.4, 0.35)
@@ -323,7 +324,8 @@ func _animar_efecto_correcto(lado: String):
 		_cargar_siguiente_pregunta()
 
 func _animar_efecto_error(_lado: String):
-	GestionAudio.reproducir_audio_local("Animos/" + ["animo1", "animo2", "animo3"].pick_random())
+	if GestionAudio:
+		GestionAudio.reproducir_animo()
 	
 	if flash_retroalimentacion:
 		flash_retroalimentacion.color = Color(0.9, 0.1, 0.2, 0.45)

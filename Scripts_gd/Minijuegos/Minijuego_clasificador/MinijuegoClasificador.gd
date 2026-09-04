@@ -593,10 +593,10 @@ func _reproducir_sonido(tipo: String):
 		GestionAudio.reproducir_sfx("acierto_tv")
 		# 🔊 Voz de elogio de July tras sonar el chime (sin sobreponerse)
 		await get_tree().create_timer(0.7).timeout
-		GestionAudio.reproducir_audio_local("Elogios/" + ["elogio1", "elogio2", "elogio3"].pick_random())
+		GestionAudio.reproducir_elogio()
 	else:
 		# 🔊 Mensaje de ánimo de July al fallar
-		GestionAudio.reproducir_audio_local("Animos/" + ["animo1", "animo2", "animo3"].pick_random())
+		GestionAudio.reproducir_animo()
 
 func _finalizar_minijuego(es_exito: bool):
 	juego_activo = false

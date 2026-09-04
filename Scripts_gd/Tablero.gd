@@ -158,7 +158,7 @@ func _on_interfaz_respuesta_completada(es_correcta: bool, tiempo_tardado: float)
 	# 3. 💾 MANEJO DE RESPUESTA, AUDIOS Y FLUJO VISUAL
 	if es_correcta:
 		print("🎯 ¡Correcta! El niño tardó: ", tiempo_tardado, " segundos.")
-		GestionAudio.reproducir_audio_local("Elogios/" + ["elogio1", "elogio2", "elogio3"].pick_random())
+		GestionAudio.reproducir_elogio()
 		
 		# --- SISTEMA DE PREMIACIÓN VISUAL ---
 		# --- SISTEMA DE PREMIACIÓN VISUAL ---

@@ -475,7 +475,7 @@ func _finalizar_examen(superado: bool):
 		ConexionSupabase.actualizar_progreso_en_nube(0, false)
 		
 		# 🏆 Reproducir voz/elogio de victoria
-		GestionAudio.reproducir_audio_local("Elogios/" + ["elogio1", "elogio2", "elogio3"].pick_random())
+		GestionAudio.reproducir_elogio()
 		
 		# 🌟 Desplegar pantalla de felicitaciones centrada durante 6 segundos y volver al menú
 		await _mostrar_pantalla_felicitaciones_victoria(es_nuevo_logro)
@@ -620,7 +620,7 @@ func _procesar_respuesta_casilla_normal(es_correcta: bool, tiempo_tardado: float
 				path_follow.visible = false
 			print("🌟 ¡Casilla 12 Superada! Se ha activado el Atajo Derecho ($Path2D_Derecha) desde ratio 0.0.")
 		
-		GestionAudio.reproducir_audio_local("Elogios/" + ["elogio1", "elogio2", "elogio3"].pick_random())
+		GestionAudio.reproducir_elogio()
 		
 		if randf() < 0.80:
 			var id_ganado = randi_range(1, 38) 
