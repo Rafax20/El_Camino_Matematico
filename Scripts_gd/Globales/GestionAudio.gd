@@ -45,14 +45,19 @@ const LISTA_ELOGIOS: Array[String] = [
 const LISTA_ANIMOS: Array[String] = [
 	"Animos/animo1",
 	"Animos/animo2",
-	"Animos/animo3"
+	"Animos/animo3",
+	"Animos/animo4",
+	"Animos/animo5",
+	"Animos/animo6",
+	"Animos/animo7",
+	"Animos/animo8"
 ]
 
 ## 🌟 Reproduce un elogio aleatorio de July (1 al 8)
 func reproducir_elogio() -> void:
 	reproducir_audio_local(LISTA_ELOGIOS.pick_random())
 
-## 💙 Reproduce una frase de ánimo aleatoria de July (1 al 3)
+## 💙 Reproduce una frase de ánimo aleatoria de July (1 al 8)
 func reproducir_animo() -> void:
 	reproducir_audio_local(LISTA_ANIMOS.pick_random())
 
