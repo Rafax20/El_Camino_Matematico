@@ -207,6 +207,7 @@ func _on_request_completed(result, response_code, headers, body):
 			print("🆕 Inicializando tabla de progreso...")
 			var es_migracion = (DatosUsuario.casilla_actual_db > 0 or DatosUsuario.laminas_poseidas.size() > 0 or DatosUsuario.monedas > 0)
 			ConexionSupabase.inicializar_progreso_nuevo_usuario(es_migracion)
+			ConexionSupabase.cargar_album_nube()
 			_abrir_interfaz_bienvenida()
 
 	elif operacion_actual == "REGISTRO":

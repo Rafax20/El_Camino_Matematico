@@ -139,8 +139,7 @@ func actualizar_progreso_en_nube(casilla: int, pendiente: bool):
 		"en_examen_final": DatosUsuario.en_examen_final,
 		"examen_correctas": DatosUsuario.examen_correctas,
 		"examen_preguntas_respondidas": DatosUsuario.examen_preguntas_respondidas,
-		"tomo_camino_corto": DatosUsuario.tomo_camino_corto,
-		"ruta_actual": "derecha" if DatosUsuario.tomo_camino_corto else "izquierda"
+		"tomo_camino_corto": DatosUsuario.tomo_camino_corto
 	}
 	
 	var url_final = _build_url("progreso?usuario_id=eq." + str(DatosUsuario.usuario_id_db))
@@ -177,8 +176,7 @@ func inicializar_progreso_nuevo_usuario(es_migracion: bool = false):
 		"en_examen_final": DatosUsuario.en_examen_final,
 		"examen_correctas": DatosUsuario.examen_correctas,
 		"examen_preguntas_respondidas": DatosUsuario.examen_preguntas_respondidas,
-		"tomo_camino_corto": DatosUsuario.tomo_camino_corto,
-		"ruta_actual": "derecha" if DatosUsuario.tomo_camino_corto else "izquierda"
+		"tomo_camino_corto": DatosUsuario.tomo_camino_corto
 	}
 	
 	var url_final = _build_url("progreso")
@@ -492,7 +490,7 @@ func actualizar_monedas_en_nube(nuevas_monedas: int):
 	var datos_a_guardar = {
 		"monedas": DatosUsuario.monedas
 	}
-	var url_final = SUPABASE_URL + "progreso?usuario_id=eq." + str(DatosUsuario.usuario_id_db)
+	var url_final = _build_url("progreso?usuario_id=eq." + str(DatosUsuario.usuario_id_db))
 	var headers = _obtener_cabeceras(true)
 	headers.append("Prefer: return=minimal")
 	
