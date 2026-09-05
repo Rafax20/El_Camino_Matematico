@@ -132,7 +132,7 @@ func actualizar_progreso_en_nube(casilla: int, pendiente: bool):
 	
 	var datos_a_guardar = {
 		"casilla_actual": casilla,
-		"tablero_actual": "Tablero_2",
+		"tablero_actual": "Tablero_1",
 		"pregunta_pendiente": pendiente,
 		"dificultad": DatosUsuario.dificultad_actual,
 		"monedas": DatosUsuario.monedas,
