@@ -286,18 +286,22 @@ func _abrir_tienda_sobres():
 			var id_inicio = p_info["inicio"]
 			var id_fin = p_info["fin"]
 			
+			var hubo_nuevas = false
 			for i in range(5):
 				var lamina_id = randi_range(id_inicio, id_fin)
 				var es_nueva = not DatosUsuario.laminas_poseidas.has(lamina_id)
 				if es_nueva:
 					DatosUsuario.laminas_poseidas.append(lamina_id)
-					DatosUsuario.laminas_poseidas.sort()
-					ConexionSupabase.registrar_lamina_ganada(lamina_id)
+					hubo_nuevas = true
 					
 				resultado_apertura.append({
 					"id": lamina_id,
 					"es_nueva": es_nueva
 				})
+			
+			if hubo_nuevas:
+				DatosUsuario.laminas_poseidas.sort()
+				ConexionSupabase.guardar_laminas_poseidas_en_nube()
 				
 			capa_tienda.queue_free()
 			_mostrar_unboxing_sobre(p_info["pais"], resultado_apertura)
@@ -439,8 +443,8 @@ func _mostrar_unboxing_sobre(nombre_pais: String, cartas: Array):
 			
 			panel_carta.add_child(hbox_nuevo)
 			
-			# Animación pulsante para el badge de NUEVO
-			var tw_pulse = create_tween().set_loops()
+			# Animación pulsante para el badge de NUEVO (vinculada al nodo para que muera con él)
+			var tw_pulse = hbox_nuevo.create_tween().set_loops()
 			tw_pulse.tween_property(hbox_nuevo, "scale", Vector2(1.15, 1.15), 0.5)
 			tw_pulse.tween_property(hbox_nuevo, "scale", Vector2.ONE, 0.5)
 		else:
@@ -465,8 +469,19 @@ func _mostrar_unboxing_sobre(nombre_pais: String, cartas: Array):
 	btn_volver_album.add_theme_font_size_override("font_size", 16)
 	
 	btn_volver_album.pressed.connect(func():
+		btn_volver_album.disabled = true
 		capa_unboxing.queue_free()
-		# Actualizamos la página actual del álbum para que las nuevas láminas se muestren a color al instante
+		
+		# Navegamos a la página del país del sobre que se abrió si existe
+		var idx_pais = _obtener_indice_pais(nombre_pais)
+		if idx_pais != -1:
+			pagina_actual_indice = idx_pais
 		_mostrar_pagina(pagina_actual_indice, "derecha")
 	)
 	vbox.add_child(btn_volver_album)
+
+func _obtener_indice_pais(nombre: String) -> int:
+	for i in range(paginas_mundial.size()):
+		if str(paginas_mundial[i]["pais"]).to_lower() == nombre.to_lower():
+			return i
+	return -1

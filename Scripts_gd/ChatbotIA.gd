@@ -15,6 +15,11 @@ var API_KEY_LOCAL: String = ""
 # Fuente principal para el chat
 const FUENTE_FREDOKA = preload("res://Fuentes/Fredoka/static/Fredoka-Bold.ttf")
 
+# Variables para indicador de carga de July
+var burbuja_pensando: PanelContainer = null
+var timer_pensando: Timer = null
+var contador_puntos: int = 0
+
 func _ready():
 	# 1. Verificar si podemos usar el entorno local directo
 	_configurar_entorno()
@@ -64,14 +69,16 @@ func _enviar_mensaje():
 	var texto = line_edit.text.strip_edges()
 	if texto == "": return
 	
-	# 🔒 Bloquear botón mientras Render responde
+	# 🔒 Bloquear controles mientras responde July
 	$VBoxContainer/HBoxContainer/Button.disabled = true
+	$VBoxContainer/HBoxContainer/Button.text = "..."
+	line_edit.editable = false
+	line_edit.placeholder_text = "July está pensando..."
 	
 	agregar_mensaje_a_pantalla("Niño: " + texto)
 	line_edit.text = ""
 	
-	# Mantiene el cursor activo dentro del LineEdit para seguir escribiendo
-	line_edit.grab_focus()
+	_mostrar_indicador_pensando()
 	
 	var headers = ["Content-Type: application/json"]
 	var payload_string = ""
@@ -98,8 +105,13 @@ func _enviar_mensaje():
 	http_request.request(URL, headers, HTTPClient.METHOD_POST, payload_string)
 
 func _on_request_completed(_result, response_code, _headers, body):
-	# 🔓 Desbloquear botón al recibir respuesta de Render
+	# 🔓 Desbloquear controles al recibir respuesta de Render
+	_ocultar_indicador_pensando()
 	$VBoxContainer/HBoxContainer/Button.disabled = false
+	$VBoxContainer/HBoxContainer/Button.text = "Enviar"
+	line_edit.editable = true
+	line_edit.placeholder_text = "Haz una pregunta"
+	line_edit.grab_focus()
 	if response_code == 200:
 		var texto_crudo = body.get_string_from_utf8().strip_edges()
 		
@@ -243,3 +255,64 @@ func _procesar_texto_y_emojis(texto_original: String) -> String:
 
 func _on_texture_button_pressed() -> void:
 	NavegacionGlobal.volver_a_pantalla_previa()
+
+func _mostrar_indicador_pensando() -> void:
+	_ocultar_indicador_pensando()
+	
+	burbuja_pensando = PanelContainer.new()
+	var estilo = StyleBoxFlat.new()
+	estilo.corner_radius_top_left = 15
+	estilo.corner_radius_top_right = 15
+	estilo.corner_radius_bottom_left = 15
+	estilo.corner_radius_bottom_right = 15
+	estilo.content_margin_left = 14
+	estilo.content_margin_right = 14
+	estilo.content_margin_top = 10
+	estilo.content_margin_bottom = 10
+	estilo.bg_color = Color("fff9c4") # Crema suave para July
+	burbuja_pensando.add_theme_stylebox_override("panel", estilo)
+	burbuja_pensando.size_flags_horizontal = Control.SIZE_SHRINK_END
+	
+	var label = RichTextLabel.new()
+	label.bbcode_enabled = true
+	label.fit_content = true
+	label.custom_minimum_size.x = 220
+	if FUENTE_FREDOKA:
+		label.add_theme_font_override("normal_font", FUENTE_FREDOKA)
+	label.add_theme_color_override("default_color", Color("5d4037"))
+	label.text = "[b]July está pensando[/b] ."
+	burbuja_pensando.add_child(label)
+	
+	vbox_mensajes.add_child(burbuja_pensando)
+	
+	# Auto-scroll hacia abajo
+	await get_tree().process_frame
+	if has_node("VBoxContainer/ScrollContainer"):
+		$VBoxContainer/ScrollContainer.scroll_vertical = $VBoxContainer/ScrollContainer.get_v_scroll_bar().max_value
+	
+	# Timer para animar los puntos suspensivos (...)
+	contador_puntos = 1
+	timer_pensando = Timer.new()
+	timer_pensando.wait_time = 0.45
+	timer_pensando.autostart = true
+	timer_pensando.timeout.connect(func():
+		if not is_instance_valid(burbuja_pensando) or not is_instance_valid(label):
+			return
+		contador_puntos = (contador_puntos % 3) + 1
+		var puntos = ""
+		for p in range(contador_puntos):
+			puntos += " ."
+		label.text = "[b]July está pensando[/b]" + puntos
+	)
+	add_child(timer_pensando)
+
+func _ocultar_indicador_pensando() -> void:
+	if timer_pensando != null and is_instance_valid(timer_pensando):
+		timer_pensando.stop()
+		timer_pensando.queue_free()
+		timer_pensando = null
+		
+	if burbuja_pensando != null and is_instance_valid(burbuja_pensando):
+		burbuja_pensando.queue_free()
+		burbuja_pensando = null
+

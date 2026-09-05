@@ -404,15 +404,12 @@ func crear_fila_album_inicial(uuid_usuario: String):
 
 func registrar_lamina_ganada(id_lamina: int):
 	var id_entero = int(id_lamina)
-	
-	# 1. Agregamos al inventario si no existe (Control local de seguridad)
 	if not DatosUsuario.laminas_poseidas.has(id_entero):
 		DatosUsuario.laminas_poseidas.append(id_entero)
-		
-	# ⚡ MULTIPLICADOR DE INGENIERÍA: Ordenamiento automático de menor a mayor
-	# Esto acomoda instantáneamente [1, 3, 23, 35, 27...] a [1, 3, 20, 21, 23, 27...]
 	DatosUsuario.laminas_poseidas.sort()
-		
+	guardar_laminas_poseidas_en_nube()
+
+func guardar_laminas_poseidas_en_nube():
 	if not DatosUsuario.esta_conectado_a_la_nube or DatosUsuario.usuario_uuid in ["", "0"]:
 		return
 		
@@ -422,14 +419,14 @@ func registrar_lamina_ganada(id_lamina: int):
 	
 	http_update_album.request_completed.connect(func(result, response_code, headers, body):
 		if response_code in [200, 204]:
-			print("🎉 ¡Nube sincronizada! Láminas ordenadas y guardadas. Última añadida: ", id_entero)
+			print("🎉 ¡Nube sincronizada! Láminas ordenadas y guardadas.")
 		else:
-			print("❌ Error al actualizar lámina: ", body.get_string_from_utf8())
+			print("❌ Error al actualizar láminas: ", body.get_string_from_utf8())
 		http_update_album.queue_free()
 	)
 	
 	# CONCATENACIÓN DINÁMICA
-	var url_final = SUPABASE_URL + "progreso_album?user_id=eq." + DatosUsuario.usuario_uuid
+	var url_final = _build_url("progreso_album?user_id=eq." + DatosUsuario.usuario_uuid)
 	var headers = _obtener_cabeceras(true)
 	headers.append("Prefer: return=minimal")
 	
