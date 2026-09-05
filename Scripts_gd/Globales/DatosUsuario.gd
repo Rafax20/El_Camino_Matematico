@@ -25,6 +25,9 @@ var logros_poseidos: Array = []
 var monedas: int = 0
 # 🪐 Indica si el niño desbloqueó el atajo derecho en la casilla 12
 var tomo_camino_corto: bool = false
+# 🎲 Registro de tiro previo y valor del dado para retrocesos y sincronización
+var casilla_anterior: int = 0
+var ultimo_dado: int = 0
 
 # ⚡ CATALOGO_LAMINAS OPTIMIZADO: Almacena directamente la textura en RAM
 var CATALOGO_LAMINAS: Dictionary = {
@@ -155,6 +158,15 @@ func cerrar_sesion():
 	usuario_uuid = ""
 	nombre_usuario = ""
 	monedas = 0
+	casilla_actual_db = 0
+	casilla_anterior = 0
+	ultimo_dado = 0
+	pregunta_pendiente_db = false
+	pregunta_actual_guardada.clear()
+	en_examen_final = false
+	examen_correctas = 0
+	examen_preguntas_respondidas = 0
+	historial_examen.clear()
 	laminas_poseidas.clear()
 	logros_poseidos.clear()
 	tomo_camino_corto = false

@@ -91,7 +91,10 @@ func _ready():
 	
 	# 🧭 CONTROL GLOBAL: Leemos los datos que cargó el menú directamente de la memoria RAM
 	casilla_actual = DatosUsuario.casilla_actual_db
-	casilla_anterior = casilla_actual
+	if DatosUsuario.casilla_anterior > 0:
+		casilla_anterior = DatosUsuario.casilla_anterior
+	else:
+		casilla_anterior = casilla_actual
 	
 	# Teletransportamos la ficha de golpe a donde le corresponde estar
 	print("CASILLA CARGADA DONDE DEBERA ESTAR: ", casilla_actual)
@@ -116,14 +119,20 @@ func _on_preguntas_cargadas(lista):
 	lista_preguntas.shuffle()
 	servidor_listo = true
 	
-	if DatosUsuario.pregunta_pendiente_db:
+	var max_casillas = _obtener_total_casillas()
+	var esta_en_examen = DatosUsuario.en_examen_final or casilla_actual >= max_casillas
+	
+	if esta_en_examen:
+		print("🚨 [Tablero] Reanudando Examen Final (Pregunta ", DatosUsuario.examen_preguntas_respondidas + 1, " de 5)...")
+		DatosUsuario.en_examen_final = true
+		boton_dado.disabled = true
+		boton_chat.disabled = true
+		mostrar_pregunta_en_pantalla()
+	elif DatosUsuario.pregunta_pendiente_db:
 		print("🚨 El usuario tenía un minijuego o pregunta pendiente en casilla: ", casilla_actual)
 		boton_dado.disabled = true
 		boton_chat.disabled = true
-		if casilla_actual == total_casillas or DatosUsuario.en_examen_final:
-			mostrar_pregunta_en_pantalla()
-		else:
-			lanzar_minijuego_casilla()
+		lanzar_minijuego_casilla()
 	else:
 		print("✅ Camino libre. ¡Desbloqueando botón del dado!")
 		boton_dado.disabled = false
@@ -137,10 +146,12 @@ func _on_boton_dado_pressed():
 	boton_dado.disabled = true
 	Menu_Volver.disabled = true
 	casilla_anterior = casilla_actual
+	DatosUsuario.casilla_anterior = casilla_anterior
 	
 	# 1. Calculamos el resultado de Supabase / Random
 	var resultado = randi_range(1, 6)
-	print("🎲 Salió un: ", resultado)
+	DatosUsuario.ultimo_dado = resultado
+	print("🎲 Salió un: ", resultado, " (desde casilla anterior: ", casilla_anterior, ")")
 	
 	# 2. 🎲 LANZAR Y MOSTRAR EL DADO EN PANTALLA
 	await _animar_lanzamiento_dado(resultado)
@@ -161,6 +172,16 @@ func _on_boton_dado_pressed():
 	
 	DatosUsuario.casilla_actual_db = casilla_actual
 	DatosUsuario.pregunta_pendiente_db = true
+	
+	# 🎯 ACTIVAR VARIABLES DE EXAMEN DE INMEDIATO SI CAYÓ EN CASILLA FINAL:
+	var es_examen = (casilla_actual >= max_casillas)
+	if es_examen:
+		DatosUsuario.en_examen_final = true
+		DatosUsuario.examen_correctas = 0
+		DatosUsuario.examen_preguntas_respondidas = 0
+		print("📝 [Tablero] ¡Llegó al Examen Final! Guardando en_examen_final = true en Supabase...")
+	
+	# Sincronizamos de inmediato con Supabase justo al arrancar el avance
 	ConexionSupabase.actualizar_progreso_en_nube(casilla_actual, true)
 	
 	# 4. Continuación de animaciones de mapa
@@ -172,7 +193,10 @@ func _on_boton_dado_pressed():
 		await anim_activa.Animar_Caida(true)
 	await get_tree().create_timer(0.3).timeout
 	
-	if casilla_actual >= max_casillas:
+	# Confirmamos sincronización en Supabase al terminar de moverse
+	ConexionSupabase.actualizar_progreso_en_nube(casilla_actual, true)
+	
+	if es_examen or DatosUsuario.en_examen_final:
 		mostrar_pregunta_en_pantalla()
 	else:
 		boton_chat.disabled = true
@@ -443,13 +467,12 @@ func _mostrar_resumen_y_evaluar_examen():
 
 
 func _finalizar_examen(superado: bool):
-	var aciertos = DatosUsuario.examen_correctas
-	
 	# Limpiamos el estado del examen en la RAM local
 	DatosUsuario.en_examen_final = false
 	DatosUsuario.examen_preguntas_respondidas = 0
 	DatosUsuario.examen_correctas = 0
-	DatosUsuario.pregunta_pendiente_db = false # 👈 Limpiar aquí antes de evaluar
+	DatosUsuario.pregunta_pendiente_db = false
+	DatosUsuario.pregunta_actual_guardada = {}
 
 	if superado:
 		# 🛑 Bloqueo total e inmediato de controles para evitar re-pulsaciones
@@ -469,6 +492,8 @@ func _finalizar_examen(superado: bool):
 		# 🔄 RESET TOTAL DE CASILLA A 0 (Local, Global y en Base de Datos)
 		casilla_actual = 0
 		casilla_anterior = 0
+		DatosUsuario.casilla_anterior = 0
+		DatosUsuario.ultimo_dado = 0
 		DatosUsuario.casilla_actual_db = 0
 		DatosUsuario.pregunta_pendiente_db = false
 		DatosUsuario.tomo_camino_corto = false
@@ -481,14 +506,28 @@ func _finalizar_examen(superado: bool):
 		await _mostrar_pantalla_felicitaciones_victoria(es_nuevo_logro)
 	else:
 		# Retrocede a la casilla anterior directamente por no aprobar las 5
-		casilla_actual = casilla_anterior
+		var retroceso = casilla_anterior
+		if retroceso <= 0 or retroceso >= casilla_actual:
+			if DatosUsuario.ultimo_dado > 0:
+				retroceso = maxi(0, casilla_actual - DatosUsuario.ultimo_dado)
+			else:
+				retroceso = maxi(0, casilla_actual - 3)
+		
+		casilla_actual = retroceso
+		casilla_anterior = casilla_actual
+		DatosUsuario.casilla_anterior = casilla_anterior
 		DatosUsuario.casilla_actual_db = casilla_actual
 		
+		# Sincronizamos la nueva posición de retroceso en Supabase
 		ConexionSupabase.actualizar_progreso_en_nube(casilla_actual, false)
 		_mover_ficha_visualmente(casilla_actual, true)
 		
+		var animos = ["animo1", "animo2", "animo3"]
+		GestionAudio.reproducir_audio_local("Animos/" + animos.pick_random())
+		
 		boton_dado.disabled = false
 		Menu_Volver.disabled = false
+
 
 func _mostrar_pantalla_felicitaciones_victoria(es_nuevo_logro: bool = true):
 	var capa_victoria = CanvasLayer.new()
@@ -665,8 +704,18 @@ func _procesar_respuesta_casilla_normal(es_correcta: bool, tiempo_tardado: float
 		await get_tree().create_timer(2.0).timeout
 		
 		$Interfaz.visible = false
-		casilla_actual = casilla_anterior
+		var retroceso = casilla_anterior
+		if retroceso < 0 or retroceso >= casilla_actual:
+			if DatosUsuario.ultimo_dado > 0:
+				retroceso = maxi(0, casilla_actual - DatosUsuario.ultimo_dado)
+			else:
+				retroceso = maxi(0, casilla_actual - 1)
+		
+		casilla_actual = retroceso
+		casilla_anterior = casilla_actual
+		DatosUsuario.casilla_anterior = casilla_anterior
 		DatosUsuario.casilla_actual_db = casilla_actual
+		DatosUsuario.pregunta_pendiente_db = false
 		
 		ConexionSupabase.actualizar_progreso_en_nube(casilla_actual, false)
 		_mover_ficha_visualmente(casilla_actual, true)
@@ -704,6 +753,9 @@ func lanzar_minijuego_casilla():
 
 		"piloto_nave":
 			lanzar_minijuego_piloto()
+			
+		"examen":
+			mostrar_pregunta_en_pantalla()
 
 
 func _obtener_pregunta_actual() -> Dictionary:
@@ -750,6 +802,10 @@ func _on_minijuego_resuelto(es_correcto: bool):
 				path_follow.visible = false
 			print("🌟 ¡Minijuego de Casilla 12 Ganado! Atajo Derecho ($Path2D_Derecha) Activado desde su inicio (0.0).")
 			
+		# Fijar casilla previa actualizada para el próximo tiro
+		casilla_anterior = casilla_actual
+		DatosUsuario.casilla_anterior = casilla_anterior
+		
 		DatosUsuario.pregunta_pendiente_db = false
 		ConexionSupabase.actualizar_progreso_en_nube(casilla_actual, false)
 		
@@ -789,7 +845,16 @@ func _on_minijuego_resuelto(es_correcto: bool):
 		await get_tree().create_timer(2.0).timeout
 		
 		$Interfaz.visible = false
-		casilla_actual = casilla_anterior
+		var retroceso = casilla_anterior
+		if retroceso < 0 or retroceso >= casilla_actual:
+			if DatosUsuario.ultimo_dado > 0:
+				retroceso = maxi(0, casilla_actual - DatosUsuario.ultimo_dado)
+			else:
+				retroceso = maxi(0, casilla_actual - 1)
+		
+		casilla_actual = retroceso
+		casilla_anterior = casilla_actual
+		DatosUsuario.casilla_anterior = casilla_anterior
 		DatosUsuario.casilla_actual_db = casilla_actual
 		DatosUsuario.pregunta_pendiente_db = false
 		
@@ -798,6 +863,7 @@ func _on_minijuego_resuelto(es_correcto: bool):
 		
 		boton_dado.disabled = false
 		Menu_Volver.disabled = false
+
 
 	boton_chat.disabled = false
 	visible = true

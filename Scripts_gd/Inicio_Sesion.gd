@@ -176,39 +176,79 @@ func _on_request_completed(result, response_code, headers, body):
 	elif operacion_actual == "PROGRESO":
 		if datos_recibidos is Array and datos_recibidos.size() > 0:
 			var progreso_data = datos_recibidos[0]
-			DatosUsuario.pregunta_pendiente_db = bool(progreso_data.get("pregunta_pendiente", false))
-			DatosUsuario.casilla_actual_db = int(progreso_data.get("casilla_actual", 0))
-			DatosUsuario.dificultad_actual = int(progreso_data.get("dificultad", 0))
 			
-			# 🪙 Sincronización de monedas: Si acumuló monedas como invitado antes de loguearse, se conservan y suman
-			var monedas_db = int(progreso_data.get("monedas", 0))
-			var monedas_invitado = DatosUsuario.monedas
-			DatosUsuario.monedas = monedas_db + monedas_invitado
+			var db_casilla = int(progreso_data.get("casilla_actual", 0))
+			var db_pendiente = bool(progreso_data.get("pregunta_pendiente", false))
+			var db_dificultad = int(progreso_data.get("dificultad", 0))
+			var db_monedas = int(progreso_data.get("monedas", 0))
+			var db_en_examen = bool(progreso_data.get("en_examen_final", false))
+			var db_correctas = int(progreso_data.get("examen_correctas", 0))
+			var db_respondidas = int(progreso_data.get("examen_preguntas_respondidas", 0))
+			var db_camino_corto = bool(progreso_data.get("tomo_camino_corto", false))
+			if not progreso_data.has("tomo_camino_corto"):
+				if progreso_data.has("ruta_actual"):
+					db_camino_corto = (str(progreso_data.get("ruta_actual", "")).to_lower() == "derecha")
+				elif progreso_data.has("camino_actual"):
+					db_camino_corto = (str(progreso_data.get("camino_actual", "")).to_lower() == "derecha")
 			
-			DatosUsuario.en_examen_final = bool(progreso_data.get("en_examen_final", false))
-			DatosUsuario.examen_correctas = int(progreso_data.get("examen_correctas", 0))
-			DatosUsuario.examen_preguntas_respondidas = int(progreso_data.get("examen_preguntas_respondidas", 0))
+			# Estado local previo a iniciar sesión (modo invitado)
+			var local_casilla = DatosUsuario.casilla_actual_db
+			var local_monedas = DatosUsuario.monedas
+			var local_en_examen = DatosUsuario.en_examen_final
+			var local_correctas = DatosUsuario.examen_correctas
+			var local_respondidas = DatosUsuario.examen_preguntas_respondidas
+			var local_camino_corto = DatosUsuario.tomo_camino_corto
+			var local_pendiente = DatosUsuario.pregunta_pendiente_db
+			var local_dificultad = DatosUsuario.dificultad_actual
 			
-			# 🪐 Restaurar ruta/camino de Saturno
-			if progreso_data.has("tomo_camino_corto"):
-				DatosUsuario.tomo_camino_corto = bool(progreso_data.get("tomo_camino_corto", false))
-			elif progreso_data.has("ruta_actual"):
-				DatosUsuario.tomo_camino_corto = (str(progreso_data.get("ruta_actual", "")).to_lower() == "derecha")
-			elif progreso_data.has("camino_actual"):
-				DatosUsuario.tomo_camino_corto = (str(progreso_data.get("camino_actual", "")).to_lower() == "derecha")
+			# 🪙 Sincronización de monedas: se conservan y suman
+			DatosUsuario.monedas = db_monedas + local_monedas
 			
-			# Si traía monedas como invitado, actualizamos la base de datos con el nuevo saldo combinado
-			if monedas_invitado > 0:
-				ConexionSupabase.actualizar_monedas_en_nube(DatosUsuario.monedas)
-				
+			# 🧠 Dificultad combinada (la mayor alcanzada)
+			DatosUsuario.dificultad_actual = maxi(local_dificultad, db_dificultad)
+			
+			# 🪐 Sincronización inteligente de progreso en el tablero:
+			# Si el usuario avanzó en local (invitado) y la nube estaba en 0 o local está más adelante:
+			var usar_progreso_local = false
+			if local_casilla > 0 or local_en_examen:
+				if db_casilla == 0 and not db_en_examen:
+					usar_progreso_local = true
+				elif local_en_examen and not db_en_examen:
+					usar_progreso_local = true
+				elif local_casilla >= db_casilla and (local_en_examen or not db_en_examen):
+					usar_progreso_local = true
+			
+			if usar_progreso_local:
+				print("🚀 [Fusión] Preservando progreso local de invitado: Casilla ", local_casilla, " | Examen: ", local_en_examen)
+				DatosUsuario.casilla_actual_db = local_casilla
+				DatosUsuario.tomo_camino_corto = local_camino_corto
+				DatosUsuario.en_examen_final = local_en_examen
+				DatosUsuario.examen_correctas = local_correctas
+				DatosUsuario.examen_preguntas_respondidas = local_respondidas
+				DatosUsuario.pregunta_pendiente_db = local_pendiente
+				# Guardamos de inmediato el progreso local combinado en Supabase
+				ConexionSupabase.actualizar_progreso_en_nube(DatosUsuario.casilla_actual_db, DatosUsuario.pregunta_pendiente_db)
+			else:
+				print("☁️ [Nube] Restaurando progreso desde Supabase: Casilla ", db_casilla, " | Examen: ", db_en_examen)
+				DatosUsuario.casilla_actual_db = db_casilla
+				DatosUsuario.tomo_camino_corto = db_camino_corto
+				DatosUsuario.en_examen_final = db_en_examen
+				DatosUsuario.examen_correctas = db_correctas
+				DatosUsuario.examen_preguntas_respondidas = db_respondidas
+				DatosUsuario.pregunta_pendiente_db = db_pendiente
+				# Si sumó monedas como invitado, actualizamos saldo en la nube
+				if local_monedas > 0:
+					ConexionSupabase.actualizar_monedas_en_nube(DatosUsuario.monedas)
+			
 			ConexionSupabase.cargar_album_nube()
 			_abrir_interfaz_bienvenida()
 		else:
 			print("🆕 Inicializando tabla de progreso...")
-			var es_migracion = (DatosUsuario.casilla_actual_db > 0 or DatosUsuario.laminas_poseidas.size() > 0 or DatosUsuario.monedas > 0)
+			var es_migracion = (DatosUsuario.casilla_actual_db > 0 or DatosUsuario.laminas_poseidas.size() > 0 or DatosUsuario.monedas > 0 or DatosUsuario.en_examen_final)
 			ConexionSupabase.inicializar_progreso_nuevo_usuario(es_migracion)
 			ConexionSupabase.cargar_album_nube()
 			_abrir_interfaz_bienvenida()
+
 
 	elif operacion_actual == "REGISTRO":
 		print("🎉 ¡Registro exitoso en la nube!")
