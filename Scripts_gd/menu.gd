@@ -4,6 +4,11 @@ extends Node2D
 @onready var ventana_como_jugar = $CanvasLayer/Menu/VentanaComoJugar
 @onready var ventana_logros = $CanvasLayer/Menu/Ventana_Logros
 
+func _ready() -> void:
+	# 🌌 Iniciar música de fondo global al entrar al menú (persiste entre escenas vía autoload)
+	if GestionAudio:
+		GestionAudio.iniciar_musica_global(-18.0)
+
 func _on_boton_jugar_pressed():
 	NavegacionGlobal.cambiar_escena_con_carga("res://Escenas/Tablero2.tscn")
 

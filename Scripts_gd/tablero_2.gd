@@ -109,6 +109,10 @@ func _ready():
 		if not ConexionSupabase.preguntas_descargadas.is_connected(_on_preguntas_cargadas):
 			ConexionSupabase.preguntas_descargadas.connect(_on_preguntas_cargadas)
 		ConexionSupabase.descargar_preguntas()
+	
+	# 🌌 Asegurar que la música de fondo global esté sonando en el tablero
+	if GestionAudio:
+		GestionAudio.iniciar_musica_global(-18.0)
 
 func _on_preguntas_cargadas(lista):
 	# duplicate() crea una copia de trabajo local para poder hacer .shuffle() 

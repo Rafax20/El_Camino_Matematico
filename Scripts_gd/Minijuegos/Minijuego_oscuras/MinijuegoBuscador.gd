@@ -132,9 +132,13 @@ func iniciar_minijuego(_tema: String = "espacio"):
 	_configurar_controles_tactiles()
 	_mostrar_banner_instrucciones("Muevete con WASD / Flechas y presiona E (o el boton tactil) para abrir las cajas.", "Buscador")
 	
-	# 🎵 Música o sonido ambiental de espacio en bucle
+	# 🎵 Música o sonido ambiental de espacio en bucle (Buscador)
 	if GestionAudio:
+		# Bajar temporalmente la música de fondo global para que no compita
+		if GestionAudio.musica_fondo_player and GestionAudio.musica_fondo_player.playing:
+			GestionAudio.musica_fondo_player.volume_db = -40.0
 		GestionAudio.reproducir_musica("ambiente_espacio", -14.0)
+
 
 func _mostrar_banner_instrucciones(texto: String, audio_nombre: String = "Buscador"):
 	if not HUD: return
@@ -1051,11 +1055,18 @@ func _notification(what):
 		if not visible:
 			if HUD: HUD.visible = false
 			if controles_tactiles: controles_tactiles.visible = false
-			if GestionAudio: GestionAudio.detener_musica()
+			if GestionAudio:
+				GestionAudio.detener_musica()
+				# Restaurar el volumen de la música de fondo global
+				if GestionAudio.musica_fondo_player and is_instance_valid(GestionAudio.musica_fondo_player):
+					GestionAudio.musica_fondo_player.volume_db = -18.0
 
 func _finalizar_juego(es_exito: bool):
 	if GestionAudio:
 		GestionAudio.detener_musica()
+		# Restaurar el volumen de la música de fondo global
+		if GestionAudio.musica_fondo_player and is_instance_valid(GestionAudio.musica_fondo_player):
+			GestionAudio.musica_fondo_player.volume_db = -18.0
 	if indicador_flecha:
 		indicador_flecha.visible = false
 	if jugador and jugador.has_method("desactivar_movimiento"):

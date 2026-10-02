@@ -11,6 +11,7 @@ var http_request : HTTPRequest
 var audio_player : AudioStreamPlayer
 var sfx_player : AudioStreamPlayer
 var musica_player : AudioStreamPlayer
+var musica_fondo_player : AudioStreamPlayer
 
 func _ready():
 	http_request = HTTPRequest.new()
@@ -29,6 +30,12 @@ func _ready():
 	musica_player = AudioStreamPlayer.new()
 	musica_player.name = "MusicaPlayer"
 	add_child(musica_player)
+	
+	# 🌌 Player dedicado para la música de fondo global (independiente de musica_player)
+	musica_fondo_player = AudioStreamPlayer.new()
+	musica_fondo_player.name = "MusicaFondoPlayer"
+	musica_fondo_player.bus = "Master"
+	add_child(musica_fondo_player)
 
 # 🌟 Catálogo de frases de elogio y ánimo de July
 const LISTA_ELOGIOS: Array[String] = [
@@ -148,7 +155,34 @@ func detener_musica() -> void:
 		musica_player.stop()
 		print("🎵 Música detenida.")
 
-## Método global para enviar cualquier texto dinámico a la API (se queda igual)
+## 🌌 Inicia la música de fondo global en bucle (no interfiere con musica_player del Buscador)
+func iniciar_musica_global(volumen_db: float = -18.0) -> void:
+	if musica_fondo_player == null or not is_instance_valid(musica_fondo_player):
+		return
+	# Evitar reiniciar si ya está sonando
+	if musica_fondo_player.playing:
+		return
+	var ruta = "res://Audios/Sonidos/musica_fondo_global.wav"
+	if not ResourceLoader.exists(ruta):
+		print("❌ musica_fondo_global.wav no encontrado")
+		return
+	var stream = load(ruta)
+	if stream is AudioStreamWAV:
+		stream.loop_mode = AudioStreamWAV.LOOP_FORWARD
+		stream.loop_begin = 0
+		stream.loop_end = stream.data.size() / 2
+	musica_fondo_player.stream = stream
+	musica_fondo_player.volume_db = volumen_db
+	musica_fondo_player.play()
+	print("🌌 Música de fondo global iniciada.")
+
+## 🌌 Detiene la música de fondo global
+func detener_musica_global() -> void:
+	if musica_fondo_player and musica_fondo_player.playing:
+		musica_fondo_player.stop()
+		print("🌌 Música de fondo global detenida.")
+
+
 func decir_frase(texto: String) -> void:
 	if audio_player.playing:
 		audio_player.stop()
