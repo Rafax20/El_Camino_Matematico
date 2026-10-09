@@ -30,9 +30,19 @@ func _ready():
 	posicion_original_x = grid_laminas.position.x
 	
 	actualizar_ui_monedas()
-	await ConexionSupabase.cargar_album_nube()
+	if ConexionSupabase.has_signal("album_y_logros_actualizados"):
+		if not ConexionSupabase.album_y_logros_actualizados.is_connected(_on_album_y_logros_actualizados):
+			ConexionSupabase.album_y_logros_actualizados.connect(_on_album_y_logros_actualizados)
+	if ConexionSupabase.has_method("cargar_album_nube"):
+		ConexionSupabase.cargar_album_nube()
 	actualizar_ui_monedas()
 	_mostrar_pagina(pagina_actual_indice, "derecha")
+
+func _on_album_y_logros_actualizados():
+	actualizar_ui_monedas()
+	for hijo in grid_laminas.get_children():
+		if hijo.has_method("actualizar_estado"):
+			hijo.actualizar_estado()
 
 func actualizar_ui_monedas():
 	if label_monedas:

@@ -3,6 +3,9 @@ extends Node
 signal preguntas_descargadas(lista)
 signal progreso_recibido(datos)
 signal progreso_creado_exito()
+signal album_y_logros_actualizados()
+
+const RUTA_ALBUM_LOCAL: String = "user://progreso_album_local.json"
 
 # 🛠️ CAMBIO AQUÍ: Usamos los nombres estandarizados que busca la interfaz de login
 var SUPABASE_URL = ""
@@ -12,6 +15,9 @@ var descargando_preguntas: bool = false
 
 func _ready():
 	await get_tree().process_frame
+	
+	# 🏆 Cargar logros y láminas locales de inmediato para acceso offline/invitado
+	cargar_album_y_logros_local()
 	
 	SUPABASE_URL = GlobalConfig.SUPABASE_URL
 	SUPABASE_ANON_KEY = GlobalConfig.SUPABASE_ANON_KEY
@@ -38,6 +44,29 @@ func _obtener_cabeceras(incluir_json: bool = false) -> Array:
 		headers.append("Content-Type: application/json")
 	return headers
 
+func cargar_banco_preguntas_local_fallback() -> void:
+	if DatosUsuario.banco_preguntas.size() > 0:
+		print("ℹ️ [API Fallback] Preguntas ya disponibles en memoria global.")
+		preguntas_descargadas.emit(DatosUsuario.banco_preguntas)
+		return
+		
+	var ruta_json = "res://Datos/banco_preguntas_default.json"
+	if FileAccess.file_exists(ruta_json):
+		var file = FileAccess.open(ruta_json, FileAccess.READ)
+		if file:
+			var json_str = file.get_as_text()
+			file.close()
+			var json = JSON.new()
+			var err = json.parse(json_str)
+			if err == OK and json.data is Array:
+				var lista = json.data.duplicate()
+				lista.shuffle()
+				DatosUsuario.banco_preguntas = lista
+				print("🛡️ [API Fallback] Banco de preguntas local cargado con éxito. Total: ", lista.size())
+				preguntas_descargadas.emit(lista)
+				return
+	print("❌ [API Fallback Error] No se pudo cargar el archivo local de preguntas.")
+
 func descargar_preguntas(forzar: bool = false):
 	# Si ya están descargadas y no se fuerza la recarga, emitimos directamente
 	if not forzar and DatosUsuario.banco_preguntas.size() > 0:
@@ -50,17 +79,19 @@ func descargar_preguntas(forzar: bool = false):
 		return
 		
 	descargando_preguntas = true
-	print("⏳ [API] Descargando banco de preguntas...")
+	print("⏳ [API] Descargando banco de preguntas de Supabase...")
 	var cliente_http = HTTPRequest.new()
 	add_child(cliente_http)
 	cliente_http.accept_gzip = false
+	cliente_http.timeout = 3.0 # Límite de 3 segundos para evitar bloqueos si no hay red
 	
 	cliente_http.request_completed.connect(func(result, response_code, headers, body):
-		if response_code == 200:
+		var exito = false
+		if result == HTTPRequest.RESULT_SUCCESS and response_code == 200:
 			var json = JSON.new()
 			var error = json.parse(body.get_string_from_utf8())
-			if error == OK:
-				print("✅ [API] Preguntas descargadas. Total: ", json.data.size())
+			if error == OK and json.data is Array and json.data.size() > 0:
+				print("✅ [API] Preguntas descargadas de Supabase. Total: ", json.data.size())
 				
 				# 🔀 MEZCLAMOS AQUÍ UNA SOLA VEZ
 				var preguntas_aleatorias = json.data.duplicate()
@@ -69,17 +100,27 @@ func descargar_preguntas(forzar: bool = false):
 				# 🔑 GUARDAMOS EL BANCO YA MEZCLADO EN LA RAM GLOBAL
 				DatosUsuario.banco_preguntas = preguntas_aleatorias
 				preguntas_descargadas.emit(preguntas_aleatorias)
+				exito = true
 			else:
-				print("❌ ERROR: No se pudo parsear el JSON de preguntas.")
+				print("❌ ERROR: No se pudo parsear el JSON de preguntas de Supabase.")
 		else:
-			print("❌ ERROR: Servidor respondió con código ", response_code)
+			print("⚠️ [API] Supabase no respondió adecuadamente (Código: ", response_code, ", Result: ", result, ")")
+		
+		if not exito:
+			print("🛡️ [API] Activando respaldo automático con banco local empaquetado...")
+			cargar_banco_preguntas_local_fallback()
 		
 		descargando_preguntas = false
 		cliente_http.queue_free()
 	)
 	
 	var url_final = _build_url("preguntas?select=*")
-	cliente_http.request(url_final, _obtener_cabeceras(), HTTPClient.METHOD_GET)
+	var error_request = cliente_http.request(url_final, _obtener_cabeceras(), HTTPClient.METHOD_GET)
+	if error_request != OK:
+		print("⚠️ [API] Error al iniciar la petición HTTP: ", error_request, ". Usando respaldo local.")
+		cargar_banco_preguntas_local_fallback()
+		descargando_preguntas = false
+		cliente_http.queue_free()
 
 func pedir_progreso_usuario():
 	if not DatosUsuario.esta_conectado_a_la_nube: return
@@ -294,12 +335,74 @@ func obtener_historial_respuestas(usuario_id: int, callback: Callable):
 	http_historial.request(url_final, _obtener_cabeceras(), HTTPClient.METHOD_GET)
 
 # =====================================================================
-# ⚽ SISTEMA DE ÁLBUM DEL MUNDIAL
+# ⚽ SISTEMA DE ÁLBUM DEL MUNDIAL Y 🏆 LOGROS (MULTI-USUARIO CON AISLAMIENTO LOCAL)
 # =====================================================================
 
+func _obtener_ruta_album_local() -> String:
+	if DatosUsuario.esta_conectado_a_la_nube and DatosUsuario.usuario_uuid not in ["", "0"]:
+		var clean_id = DatosUsuario.usuario_uuid.replace("-", "").strip_edges()
+		return "user://progreso_album_" + clean_id + ".json"
+	return "user://progreso_album_invitado.json"
+
+func guardar_album_y_logros_local():
+	var ruta = _obtener_ruta_album_local()
+	var file = FileAccess.open(ruta, FileAccess.WRITE)
+	if file:
+		var datos = {
+			"usuario_uuid": DatosUsuario.usuario_uuid,
+			"laminas_poseidas": DatosUsuario.laminas_poseidas,
+			"logros_poseidos": DatosUsuario.logros_poseidos
+		}
+		file.store_string(JSON.stringify(datos))
+		file.close()
+
+func cargar_album_y_logros_local():
+	var ruta = _obtener_ruta_album_local()
+	if FileAccess.file_exists(ruta):
+		var file = FileAccess.open(ruta, FileAccess.READ)
+		if file:
+			var texto = file.get_as_text()
+			file.close()
+			var json = JSON.new()
+			if json.parse(texto) == OK and json.data is Dictionary:
+				var guardado_uuid = str(json.data.get("usuario_uuid", ""))
+				# 🛡️ VALIDACIÓN DE SEGURIDAD: Evitar mezclar cuentas si cambia el usuario
+				if DatosUsuario.esta_conectado_a_la_nube and guardado_uuid != DatosUsuario.usuario_uuid:
+					print("⚠️ [Seguridad Local] Datos guardados corresponden a otro usuario. Se omiten.")
+					return
+					
+				var laminas = json.data.get("laminas_poseidas", [])
+				var logros = json.data.get("logros_poseidos", [])
+				if laminas is Array:
+					for lam in laminas:
+						var id_i = int(lam)
+						if not DatosUsuario.laminas_poseidas.has(id_i):
+							DatosUsuario.laminas_poseidas.append(id_i)
+					DatosUsuario.laminas_poseidas.sort()
+				if logros is Array:
+					for log in logros:
+						var id_j = int(log)
+						if not DatosUsuario.logros_poseidos.has(id_j):
+							DatosUsuario.logros_poseidos.append(id_j)
+					DatosUsuario.logros_poseidos.sort()
+				print("💾 [Local] Álbum y logros recuperados de: ", ruta)
+
+func limpiar_sesion_local():
+	DatosUsuario.laminas_poseidas.clear()
+	DatosUsuario.logros_poseidos.clear()
+	# Eliminar archivo temporal de invitado para evitar contaminación cruzada entre sesiones
+	if FileAccess.file_exists("user://progreso_album_invitado.json"):
+		DirAccess.remove_absolute("user://progreso_album_invitado.json")
+	album_y_logros_actualizados.emit()
+	print("🧹 [Seguridad Local] Memoria y almacenamiento de sesión limpiados por completo.")
+
 func cargar_album_nube():
+	# 1. Asegurar lectura de almacenamiento local primero para disponibilidad inmediata
+	cargar_album_y_logros_local()
+	
 	if not DatosUsuario.esta_conectado_a_la_nube or DatosUsuario.usuario_uuid in ["", "0"]:
-		print("ℹ️ [Invitado] Cargando álbum y logros locales desde la RAM.")
+		print("ℹ️ [Invitado/Offline] Mostrando álbum y logros locales desde memoria/disco.")
+		album_y_logros_actualizados.emit()
 		return
 		
 	var http_get_album = HTTPRequest.new()
@@ -326,8 +429,7 @@ func cargar_album_nube():
 						for y in lista_logros:
 							if y != null: logros_nube.append(int(y))
 					
-					# 🔄 3. FUSIÓN INTELIGENTE (Invitado -> Cuenta de Usuario)
-					# Si el niño consiguió láminas o logros antes de iniciar sesión:
+					# 🔄 3. FUSIÓN INTELIGENTE (Local/Invitado -> Cuenta de Usuario)
 					var hubo_nuevas_laminas: bool = false
 					var hubo_nuevos_logros: bool = false
 					
@@ -349,9 +451,14 @@ func cargar_album_nube():
 					DatosUsuario.laminas_poseidas = laminas_nube
 					DatosUsuario.logros_poseidos = logros_nube
 					
-					# Si había láminas/logros de invitado, los guardamos en Supabase
+					# Persistir copia fusionada en archivo local
+					guardar_album_y_logros_local()
+					if FileAccess.file_exists("user://progreso_album_invitado.json"):
+						DirAccess.remove_absolute("user://progreso_album_invitado.json")
+					
+					# Si había láminas/logros locales no subidos, actualizar nube
 					if hubo_nuevas_laminas or hubo_nuevos_logros:
-						print("🚀 [Fusión] Guardando láminas y logros de invitado en Supabase...")
+						print("🚀 [Fusión] Guardando láminas y logros locales en Supabase...")
 						var http_patch = HTTPRequest.new()
 						add_child(http_patch)
 						http_patch.accept_gzip = false
@@ -366,16 +473,22 @@ func cargar_album_nube():
 						http_patch.request(url_final_patch, hdrs, HTTPClient.METHOD_PATCH, JSON.stringify(payload))
 					
 					print("⚽ Álbum y 🏆 Logros cargados y sincronizados con éxito.")
+					album_y_logros_actualizados.emit()
 				else:
 					crear_fila_album_inicial(DatosUsuario.usuario_uuid)
+					album_y_logros_actualizados.emit()
 		else:
-			print("❌ Error al verificar álbum y logros en la nube: ", response_code)
+			print("❌ Error/Sin respuesta al verificar álbum y logros en la nube: ", response_code)
+			album_y_logros_actualizados.emit()
 		http_get_album.queue_free()
 	)
 	
 	# CONCATENACIÓN DINÁMICA
 	var url_final = SUPABASE_URL + "progreso_album?user_id=eq." + DatosUsuario.usuario_uuid
-	http_get_album.request(url_final, _obtener_cabeceras(), HTTPClient.METHOD_GET)
+	var err = http_get_album.request(url_final, _obtener_cabeceras(), HTTPClient.METHOD_GET)
+	if err != OK:
+		album_y_logros_actualizados.emit()
+		http_get_album.queue_free()
 
 func crear_fila_album_inicial(uuid_usuario: String):
 	var http_crear = HTTPRequest.new()
@@ -407,6 +520,8 @@ func registrar_lamina_ganada(id_lamina: int):
 	if not DatosUsuario.laminas_poseidas.has(id_entero):
 		DatosUsuario.laminas_poseidas.append(id_entero)
 	DatosUsuario.laminas_poseidas.sort()
+	guardar_album_y_logros_local()
+	album_y_logros_actualizados.emit()
 	guardar_laminas_poseidas_en_nube()
 
 func guardar_laminas_poseidas_en_nube():
@@ -446,6 +561,8 @@ func registrar_logro_ganado(id_logro: int):
 		DatosUsuario.logros_poseidos.append(id_entero)
 		
 	DatosUsuario.logros_poseidos.sort()
+	guardar_album_y_logros_local()
+	album_y_logros_actualizados.emit()
 	print("🏆 Logro desbloqueado: ", id_entero, " | Total Logros: ", DatosUsuario.logros_poseidos)
 	
 	if not DatosUsuario.esta_conectado_a_la_nube or DatosUsuario.usuario_uuid in ["", "0"]:

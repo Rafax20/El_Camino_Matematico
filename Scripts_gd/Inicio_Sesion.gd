@@ -1,10 +1,15 @@
 extends Control
 
+signal sesion_actualizada(conectado: bool)
+
 # --- NODOS DE INTERFAZ ---
 @onready var contenedor = $ContenedorPopup
 @onready var input_usuario = $ContenedorPopup/Panel/Ventana/Fondo_Usuario/InputUsuario
 @onready var input_clave = $ContenedorPopup/Panel/Ventana/Fondo_Clave/InputClave
 @onready var texto_titulo = $ContenedorPopup/Panel/Ventana/Titulo
+@onready var boton_entrar = $ContenedorPopup/Panel/Ventana/HBoxContainer/Boton_Entrar
+@onready var boton_registrar = $ContenedorPopup/Panel/Ventana/HBoxContainer/Boton_Registrar
+@onready var boton_cerrar_sesion = $ContenedorPopup/Panel/Ventana/HBoxContainer/Boton_Cerrar_Sesion if has_node("ContenedorPopup/Panel/Ventana/HBoxContainer/Boton_Cerrar_Sesion") else null
 
 # --- REFERENCIA AL SCRIPT DE SUPABASE (CONEXIÓN NATIVA) ---
 @onready var http_request = $HTTPRequest 
@@ -30,6 +35,7 @@ func _ready():
 		print("✨ InterfazLogin: Listo para operar con URL: ", GlobalConfig.SUPABASE_URL)
 
 func aparecer():
+	_actualizar_estado_visual()
 	self.visible = true
 	var tween = create_tween().set_parallel(true)
 	tween.tween_property(self, "modulate:a", 1.0, 0.3).set_trans(Tween.TRANS_SINE)
@@ -277,8 +283,48 @@ func animar_error_infantil(mensaje: String):
 	tween_scale.tween_property(contenedor, "scale", Vector2(1.05, 1.05), 0.1).set_trans(Tween.TRANS_BACK)
 	tween_scale.tween_property(contenedor, "scale", Vector2(1.0, 1.0), 0.1)
 
+func _actualizar_estado_visual() -> void:
+	if DatosUsuario.esta_conectado_a_la_nube and DatosUsuario.nombre_usuario != "":
+		input_usuario.text = DatosUsuario.nombre_usuario
+		input_usuario.editable = false
+		input_clave.text = "••••••••"
+		input_clave.editable = false
+		texto_titulo.text = "Sesión Activa: " + DatosUsuario.nombre_usuario
+		texto_titulo.modulate = Color(0.375, 0.677, 0.218, 1.0)
+		if boton_entrar: boton_entrar.visible = false
+		if boton_registrar: boton_registrar.visible = false
+		if boton_cerrar_sesion: boton_cerrar_sesion.visible = true
+	else:
+		input_usuario.text = ""
+		input_usuario.editable = true
+		input_clave.text = ""
+		input_clave.editable = true
+		texto_titulo.text = "Ingresa tu nombre y clave"
+		texto_titulo.modulate = Color(0.784, 0.784, 0.784, 1.0)
+		if boton_entrar: boton_entrar.visible = true
+		if boton_registrar: boton_registrar.visible = true
+		if boton_cerrar_sesion: boton_cerrar_sesion.visible = false
+
 func _abrir_interfaz_bienvenida():
+	input_usuario.text = DatosUsuario.nombre_usuario
+	input_usuario.editable = false
+	input_clave.text = "••••••••"
+	input_clave.editable = false
 	texto_titulo.text = "Bienvenido de Nuevo " + str(DatosUsuario.nombre_usuario)
 	texto_titulo.modulate = Color(0.375, 0.677, 0.218, 1.0)
-	await get_tree().create_timer(2.0).timeout
+	if boton_entrar: boton_entrar.visible = false
+	if boton_registrar: boton_registrar.visible = false
+	if boton_cerrar_sesion: boton_cerrar_sesion.visible = true
+	sesion_actualizada.emit(true)
+	await get_tree().create_timer(1.8).timeout
+	_on_boton_cerrar_pressed()
+
+func _on_boton_cerrar_sesion_pressed() -> void:
+	print("🚪 [Login] Cerrando sesión de: ", DatosUsuario.nombre_usuario)
+	DatosUsuario.cerrar_sesion()
+	_actualizar_estado_visual()
+	texto_titulo.text = "¡Sesión cerrada con éxito!"
+	texto_titulo.modulate = Color(1.0, 0.8, 0.2, 1.0)
+	sesion_actualizada.emit(false)
+	await get_tree().create_timer(1.0).timeout
 	_on_boton_cerrar_pressed()

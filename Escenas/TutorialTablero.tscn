@@ -1,0 +1,238 @@
+[gd_scene format=3 uid="uid://c7m8w9p2qk3j1"]
+
+[ext_resource type="Script" uid="uid://d1sc1dj4ovx0r" path="res://Scripts_gd/TutorialTablero.gd" id="1_tut01"]
+[ext_resource type="FontFile" uid="uid://cvwfc51hrkou3" path="res://Fuentes/Fredoka/static/Fredoka-Bold.ttf" id="2_fredb"]
+[ext_resource type="FontFile" uid="uid://btqpguoupa7eh" path="res://Fuentes/Fredoka-VariableFont_wdth,wght.ttf" id="3_fredv"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_foco"]
+draw_center = false
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
+border_color = Color(0.988235, 0.764706, 0.305882, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+shadow_color = Color(0.317647, 0.698039, 0.639216, 0.6)
+shadow_size = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
+content_margin_left = 22.0
+content_margin_top = 18.0
+content_margin_right = 22.0
+content_margin_bottom = 18.0
+bg_color = Color(0.0823529, 0.0980392, 0.219608, 0.95)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.317647, 0.698039, 0.639216, 1)
+corner_radius_top_left = 18
+corner_radius_top_right = 18
+corner_radius_bottom_right = 18
+corner_radius_bottom_left = 18
+shadow_color = Color(0, 0, 0, 0.6)
+shadow_size = 15
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btnsig"]
+content_margin_left = 18.0
+content_margin_top = 8.0
+content_margin_right = 18.0
+content_margin_bottom = 8.0
+bg_color = Color(0.317647, 0.698039, 0.639216, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.988235, 0.764706, 0.305882, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btnsig_hover"]
+content_margin_left = 18.0
+content_margin_top = 8.0
+content_margin_right = 18.0
+content_margin_bottom = 8.0
+bg_color = Color(0.38, 0.78, 0.71, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(1, 0.85, 0.45, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btnsig_pressed"]
+content_margin_left = 18.0
+content_margin_top = 8.0
+content_margin_right = 18.0
+content_margin_bottom = 8.0
+bg_color = Color(0.24, 0.58, 0.52, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.988235, 0.764706, 0.305882, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btnsaltar"]
+content_margin_left = 10.0
+content_margin_top = 4.0
+content_margin_right = 10.0
+content_margin_bottom = 4.0
+bg_color = Color(0.2, 0.2, 0.3, 0.7)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.6, 0.6, 0.7, 0.8)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btnsaltar_hover"]
+content_margin_left = 10.0
+content_margin_top = 4.0
+content_margin_right = 10.0
+content_margin_bottom = 4.0
+bg_color = Color(0.3, 0.3, 0.45, 0.9)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.8, 0.8, 0.9, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[node name="TutorialTablero" type="CanvasLayer" unique_id=987123456]
+layer = 25
+script = ExtResource("1_tut01")
+
+[node name="Contenedor" type="Control" parent="." unique_id=987123450]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="FondoOscuro" type="ColorRect" parent="Contenedor" unique_id=987123457]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 0
+color = Color(0, 0, 0, 0.72)
+
+[node name="FocoResaltador" type="Panel" parent="Contenedor" unique_id=987123458]
+layout_mode = 0
+offset_left = 750.0
+offset_top = 405.0
+offset_right = 910.0
+offset_bottom = 560.0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_foco")
+
+[node name="PanelDialogo" type="PanelContainer" parent="Contenedor" unique_id=987123459]
+layout_mode = 0
+offset_left = 130.0
+offset_top = 230.0
+offset_right = 680.0
+offset_bottom = 470.0
+mouse_filter = 0
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Contenedor/PanelDialogo" unique_id=987123460]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 12
+
+[node name="HBoxHeader" type="HBoxContainer" parent="Contenedor/PanelDialogo/VBoxContainer" unique_id=987123461]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="TituloJuly" type="Label" parent="Contenedor/PanelDialogo/VBoxContainer/HBoxHeader" unique_id=987123462]
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.988235, 0.764706, 0.305882, 1)
+theme_override_fonts/font = ExtResource("2_fredb")
+theme_override_font_sizes/font_size = 22
+text = "🤖 July (Tutora Espacial)"
+
+[node name="Spacer" type="Control" parent="Contenedor/PanelDialogo/VBoxContainer/HBoxHeader" unique_id=987123463]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+
+[node name="BotonSaltar" type="Button" parent="Contenedor/PanelDialogo/VBoxContainer/HBoxHeader" unique_id=987123464]
+layout_mode = 2
+mouse_default_cursor_shape = 2
+theme_override_colors/font_color = Color(0.85, 0.85, 0.85, 1)
+theme_override_fonts/font = ExtResource("3_fredv")
+theme_override_font_sizes/font_size = 14
+theme_override_styles/normal = SubResource("StyleBoxFlat_btnsaltar")
+theme_override_styles/hover = SubResource("StyleBoxFlat_btnsaltar_hover")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_btnsaltar")
+text = "Saltar tutorial ✕"
+
+[node name="HSeparator" type="HSeparator" parent="Contenedor/PanelDialogo/VBoxContainer" unique_id=987123465]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="TextoMensaje" type="RichTextLabel" parent="Contenedor/PanelDialogo/VBoxContainer" unique_id=987123466]
+custom_minimum_size = Vector2(490, 85)
+layout_mode = 2
+size_flags_vertical = 3
+mouse_filter = 2
+theme_override_fonts/normal_font = ExtResource("3_fredv")
+theme_override_fonts/bold_font = ExtResource("2_fredb")
+theme_override_font_sizes/normal_font_size = 18
+theme_override_font_sizes/bold_font_size = 20
+bbcode_enabled = true
+text = "[b][color=#fbc34e]¡Hola, astronauta! Soy July.[/color][/b]\nPara comenzar tu aventura por el espacio, presiona el [color=#c678dd][b]botón morado del dado[/b][/color] para avanzar por las casillas del tablero."
+
+[node name="HBoxFooter" type="HBoxContainer" parent="Contenedor/PanelDialogo/VBoxContainer" unique_id=987123467]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="LabelPaso" type="Label" parent="Contenedor/PanelDialogo/VBoxContainer/HBoxFooter" unique_id=987123468]
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.48, 0.8, 0.95, 1)
+theme_override_fonts/font = ExtResource("2_fredb")
+theme_override_font_sizes/font_size = 16
+text = "Paso 1 de 2"
+
+[node name="Spacer2" type="Control" parent="Contenedor/PanelDialogo/VBoxContainer/HBoxFooter" unique_id=987123469]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+
+[node name="BotonSiguiente" type="Button" parent="Contenedor/PanelDialogo/VBoxContainer/HBoxFooter" unique_id=987123470]
+layout_mode = 2
+mouse_default_cursor_shape = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_fonts/font = ExtResource("2_fredb")
+theme_override_font_sizes/font_size = 19
+theme_override_styles/normal = SubResource("StyleBoxFlat_btnsig")
+theme_override_styles/hover = SubResource("StyleBoxFlat_btnsig_hover")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_btnsig_pressed")
+text = "Siguiente ➔"
+
+[connection signal="pressed" from="Contenedor/PanelDialogo/VBoxContainer/HBoxHeader/BotonSaltar" to="." method="_on_saltar_pressed"]
+[connection signal="pressed" from="Contenedor/PanelDialogo/VBoxContainer/HBoxFooter/BotonSiguiente" to="." method="_on_siguiente_pressed"]

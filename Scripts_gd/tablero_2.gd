@@ -16,6 +16,8 @@ extends Node2D
 @onready var minijuego_circuitos = $CapaMinijuegos/MinijuegoCircuitos
 @onready var minijuego_piloto = $CapaMinijuegos/MinijuegoPilotoNave if has_node("CapaMinijuegos/MinijuegoPilotoNave") else null
 
+const ESCENA_TUTORIAL = preload("res://Escenas/TutorialTablero.tscn")
+
 var total_casillas = 29
 var casilla_actual = 0
 var casilla_anterior = 0
@@ -109,6 +111,13 @@ func _ready():
 		if not ConexionSupabase.preguntas_descargadas.is_connected(_on_preguntas_cargadas):
 			ConexionSupabase.preguntas_descargadas.connect(_on_preguntas_cargadas)
 		ConexionSupabase.descargar_preguntas()
+		
+		# 🛡️ Temporizador de seguridad: si tras 3.5 segundos aún no hay preguntas, forzar respaldo local
+		get_tree().create_timer(3.5).timeout.connect(func():
+			if not servidor_listo and DatosUsuario.banco_preguntas.size() == 0:
+				print("⚠️ [Tablero] Tiempo de espera de red agotado. Forzando respaldo local...")
+				ConexionSupabase.cargar_banco_preguntas_local_fallback()
+		)
 	
 	# 🌌 Asegurar que la música de fondo global esté sonando en el tablero
 	if GestionAudio:
@@ -141,6 +150,32 @@ func _on_preguntas_cargadas(lista):
 		print("✅ Camino libre. ¡Desbloqueando botón del dado!")
 		boton_dado.disabled = false
 		boton_chat.disabled = false
+		_verificar_e_iniciar_tutorial()
+
+func _tutorial_ya_fue_completado() -> bool:
+	if DatosUsuario.tutorial_tablero_visto:
+		return true
+	var ruta_config = "user://config_tutorial.json"
+	if FileAccess.file_exists(ruta_config):
+		var file = FileAccess.open(ruta_config, FileAccess.READ)
+		if file:
+			var json = JSON.new()
+			if json.parse(file.get_as_text()) == OK and json.data is Dictionary:
+				var visto = bool(json.data.get("tutorial_tablero_visto", false))
+				if visto:
+					DatosUsuario.tutorial_tablero_visto = true
+				return visto
+	return false
+
+func _verificar_e_iniciar_tutorial() -> void:
+	if not _tutorial_ya_fue_completado():
+		print("🎓 [Tablero] Primera visita detectada: Iniciando tutorial guiado de bienvenida...")
+		var tutorial = ESCENA_TUTORIAL.instantiate()
+		add_child(tutorial)
+		if tutorial.has_method("iniciar"):
+			tutorial.iniciar(boton_dado, boton_chat)
+		else:
+			print("⚠️ [Tablero] Instancia de tutorial inicializada vía _ready.")
 
 func _on_boton_dado_pressed():
 	print("DEBUG: ¡El botón dado fue presionado!")
@@ -351,6 +386,14 @@ func _mover_ficha_visualmente(casilla: int, instantaneo: bool):
 # 📝 GESTIÓN DE PREGUNTAS Y EXAMEN FINAL
 # ==========================================
 func mostrar_pregunta_en_pantalla():
+	if lista_preguntas.size() == 0:
+		if DatosUsuario.banco_preguntas.size() > 0:
+			lista_preguntas = DatosUsuario.banco_preguntas.duplicate()
+			lista_preguntas.shuffle()
+		else:
+			ConexionSupabase.cargar_banco_preguntas_local_fallback()
+			lista_preguntas = DatosUsuario.banco_preguntas.duplicate()
+			lista_preguntas.shuffle()
 	if lista_preguntas.size() == 0: return
 	
 	# 🎯 Si estamos en la casilla final o reanudando un examen interrumpido
@@ -814,7 +857,9 @@ func _on_minijuego_resuelto(es_correcto: bool):
 		ConexionSupabase.actualizar_progreso_en_nube(casilla_actual, false)
 		
 		# 🏆 Otorgar logro según el tipo de minijuego superado (solo si es nuevo)
-		var datos_casilla = mapa_casillas.get(casilla_actual, {})
+		var usa_derecho = DatosUsuario.tomo_camino_corto and casilla_actual >= 12
+		var target_mapa = mapa_casillas_derecha if usa_derecho else mapa_casillas
+		var datos_casilla = target_mapa.get(casilla_actual, {})
 		var tipo_minijuego = datos_casilla.get("tipo", "")
 		var id_logro = 0
 		match tipo_minijuego:

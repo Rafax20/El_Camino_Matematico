@@ -4,7 +4,7 @@ extends Node
 signal audio_finalizado # 📢 NUEVA SEÑAL
 
 # Configuración de ElevenLabs
-const API_KEY : String = "sk_35961d2cccee5f5e52f5c760b9f52f95ebfe236a10cae5f3"
+const API_KEY : String = "sk_fbd7e6c9a5453b81a31cde55f2d66f868811ad53ced06d87"
 const VOICE_ID : String = "vAcVPeEOlCrOxhRoCXb8"  
 
 var http_request : HTTPRequest
@@ -81,6 +81,11 @@ func reproducir_audio_local(nombre_archivo: String) -> void:
 		"res://Audios/Sonidos/" + nombre_archivo + ".wav",
 		"res://Audios/Sonidos/" + nombre_archivo + ".mp3"
 	]
+	
+	if nombre_archivo == "Instrucciones/como_jugar_laboratorio":
+		posibles_rutas.append("res://Audios/Laboratorio.mp3")
+	elif nombre_archivo.to_lower() == "laboratorio":
+		posibles_rutas.append("res://Audios/Instrucciones/como_jugar_laboratorio.mp3")
 	
 	var ruta_encontrada = ""
 	for r in posibles_rutas:

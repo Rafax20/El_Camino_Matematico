@@ -54,6 +54,22 @@ scale = Vector2(0.24, 0.24)
 texture_normal = ExtResource("4_2ahv8")
 texture_hover = ExtResource("5_8shpa")
 
+[node name="Texto_Sesion" type="RichTextLabel" parent="CanvasLayer/Menu" unique_id=1995980934]
+offset_left = -590.0
+offset_top = 195.0
+offset_right = -330.0
+offset_bottom = 275.0
+mouse_filter = 2
+theme_override_colors/default_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 8
+theme_override_fonts/normal_font = ExtResource("7_arsku")
+theme_override_fonts/bold_font = ExtResource("8_bcw8w")
+theme_override_font_sizes/normal_font_size = 19
+theme_override_font_sizes/bold_font_size = 22
+bbcode_enabled = true
+text = "[center][b]Iniciar Sesión[/b][/center]"
+
 [node name="Boton_Jugar" type="TextureButton" parent="CanvasLayer/Menu" unique_id=1875968279]
 offset_left = -242.85861
 offset_top = -123.640854

@@ -28,6 +28,8 @@ var tomo_camino_corto: bool = false
 # 🎲 Registro de tiro previo y valor del dado para retrocesos y sincronización
 var casilla_anterior: int = 0
 var ultimo_dado: int = 0
+# 🎓 Estado en memoria del tutorial de bienvenida para resiliencia en sesiones web
+var tutorial_tablero_visto: bool = false
 
 # ⚡ CATALOGO_LAMINAS OPTIMIZADO: Almacena directamente la textura en RAM
 var CATALOGO_LAMINAS: Dictionary = {
@@ -170,3 +172,5 @@ func cerrar_sesion():
 	laminas_poseidas.clear()
 	logros_poseidos.clear()
 	tomo_camino_corto = false
+	if ConexionSupabase.has_method("limpiar_sesion_local"):
+		ConexionSupabase.limpiar_sesion_local()

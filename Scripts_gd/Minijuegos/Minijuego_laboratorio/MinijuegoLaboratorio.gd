@@ -259,11 +259,11 @@ func iniciar_minijuego(tema: String = "espacio"):
 	aciertos = 0
 	bloqueado = false # REINICIAMOS EL CANDADO
 	_actualizar_ui_header()
-	_mostrar_banner_instrucciones("🧪 Regla de 3: Multiplica en cruz y divide el resultado. ¡Pulsa 💡 Pista si necesitas ayuda!")
+	_mostrar_banner_instrucciones("🧪 Regla de 3: Multiplica en cruz y divide el resultado. ¡Pulsa 💡 Pista si necesitas ayuda!", "Laboratorio")
 	obtener_siguiente_pregunta()
 	iniciar_secuencia_alien()
 
-func _mostrar_banner_instrucciones(texto: String, audio_nombre: String = "Instrucciones/como_jugar_laboratorio"):
+func _mostrar_banner_instrucciones(texto: String, audio_nombre: String = "Laboratorio"):
 	var root_ui = $MinijuegoCompleto
 	if not root_ui: return
 	var banner_previo = root_ui.get_node_or_null("BannerInstrucciones")

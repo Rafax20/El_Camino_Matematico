@@ -3,6 +3,11 @@
 /android/
 
 build/
+build_windows/
 *.zip
 
 .env
+
+Tesis/
+Screenshots/
+scripts/

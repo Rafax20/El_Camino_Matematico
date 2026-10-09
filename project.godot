@@ -15,6 +15,11 @@ run/main_scene="uid://rer72pm8ucwf"
 config/features=PackedStringArray("4.6", "GL Compatibility")
 config/icon="res://icon.svg"
 
+[audio]
+
+general/output_latency=30
+general/output_latency.web=50
+
 [autoload]
 
 Supabase="*uid://du7ds4l02a4uu"
@@ -75,9 +80,3 @@ Enviar(Enter)={
 rendering_device/driver.windows="d3d12"
 renderer/rendering_method="gl_compatibility"
 renderer/rendering_method.mobile="gl_compatibility"
-
-[audio]
-
-general/output_latency=30
-general/output_latency.web=50
-
