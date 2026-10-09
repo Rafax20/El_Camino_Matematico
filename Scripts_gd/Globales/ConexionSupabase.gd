@@ -83,7 +83,7 @@ func descargar_preguntas(forzar: bool = false):
 	var cliente_http = HTTPRequest.new()
 	add_child(cliente_http)
 	cliente_http.accept_gzip = false
-	cliente_http.timeout = 3.0 # Límite de 3 segundos para evitar bloqueos si no hay red
+	cliente_http.timeout = 6.0 # Límite de 6 segundos para permitir handshake TLS inicial en redes reales
 	
 	cliente_http.request_completed.connect(func(result, response_code, headers, body):
 		var exito = false

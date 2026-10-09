@@ -112,8 +112,8 @@ func _ready():
 			ConexionSupabase.preguntas_descargadas.connect(_on_preguntas_cargadas)
 		ConexionSupabase.descargar_preguntas()
 		
-		# 🛡️ Temporizador de seguridad: si tras 3.5 segundos aún no hay preguntas, forzar respaldo local
-		get_tree().create_timer(3.5).timeout.connect(func():
+		# 🛡️ Temporizador de seguridad: si tras 6.5 segundos aún no hay preguntas, forzar respaldo local
+		get_tree().create_timer(6.5).timeout.connect(func():
 			if not servidor_listo and DatosUsuario.banco_preguntas.size() == 0:
 				print("⚠️ [Tablero] Tiempo de espera de red agotado. Forzando respaldo local...")
 				ConexionSupabase.cargar_banco_preguntas_local_fallback()
