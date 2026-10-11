@@ -1,4 +1,4 @@
-[gd_scene format=3 uid="uid://c8audioajustes12"]
+[gd_scene format=3 uid="uid://2po52xqtqnb8"]
 
 [ext_resource type="Script" uid="uid://chxaudioctrl34" path="res://Scripts_gd/VentanaAjustesAudio.gd" id="1_audio"]
 [ext_resource type="FontFile" uid="uid://cvwfc51hrkou3" path="res://Fuentes/Fredoka/static/Fredoka-Bold.ttf" id="2_font"]

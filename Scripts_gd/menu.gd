@@ -51,4 +51,3 @@ func _on_boton_como_jugar_pressed():
 func _on_boton_volumen_pressed():
 	if ventana_audio:
 		ventana_audio.aparecer()
-

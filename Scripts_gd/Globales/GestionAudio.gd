@@ -128,7 +128,7 @@ func probar_sfx() -> void:
 	reproducir_sfx("acierto_tv")
 
 
-# 🌟 Catálogo de frases de elogio y ánimo de July
+# 🌟 Catálogo de frases de elogio y ánimo de July (16 elogios y 16 ánimos con acentuación de México/Latinoamérica)
 const LISTA_ELOGIOS: Array[String] = [
 	"Elogios/elogio1",
 	"Elogios/elogio2",
@@ -137,7 +137,15 @@ const LISTA_ELOGIOS: Array[String] = [
 	"Elogios/elogio5",
 	"Elogios/elogio6",
 	"Elogios/elogio7",
-	"Elogios/elogio8"
+	"Elogios/elogio8",
+	"Elogios/elogio9",
+	"Elogios/elogio10",
+	"Elogios/elogio11",
+	"Elogios/elogio12",
+	"Elogios/elogio13",
+	"Elogios/elogio14",
+	"Elogios/elogio15",
+	"Elogios/elogio16"
 ]
 
 const LISTA_ANIMOS: Array[String] = [
@@ -148,14 +156,22 @@ const LISTA_ANIMOS: Array[String] = [
 	"Animos/animo5",
 	"Animos/animo6",
 	"Animos/animo7",
-	"Animos/animo8"
+	"Animos/animo8",
+	"Animos/animo9",
+	"Animos/animo10",
+	"Animos/animo11",
+	"Animos/animo12",
+	"Animos/animo13",
+	"Animos/animo14",
+	"Animos/animo15",
+	"Animos/animo16"
 ]
 
-## 🌟 Reproduce un elogio aleatorio de July (1 al 8)
+## 🌟 Reproduce un elogio aleatorio de July (1 al 16)
 func reproducir_elogio() -> void:
 	reproducir_audio_local(LISTA_ELOGIOS.pick_random())
 
-## 💙 Reproduce una frase de ánimo aleatoria de July (1 al 8)
+## 💙 Reproduce una frase de ánimo aleatoria de July (1 al 16)
 func reproducir_animo() -> void:
 	reproducir_audio_local(LISTA_ANIMOS.pick_random())
 
