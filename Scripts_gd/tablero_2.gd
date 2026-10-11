@@ -15,6 +15,8 @@ extends Node2D
 @onready var minijuego_clasificador = $CapaMinijuegos/MinijuegoClasificador
 @onready var minijuego_circuitos = $CapaMinijuegos/MinijuegoCircuitos
 @onready var minijuego_piloto = $CapaMinijuegos/MinijuegoPilotoNave if has_node("CapaMinijuegos/MinijuegoPilotoNave") else null
+@onready var ventana_audio = $CapaAudio/VentanaAjustesAudio if has_node("CapaAudio/VentanaAjustesAudio") else null
+
 
 const ESCENA_TUTORIAL = preload("res://Escenas/TutorialTablero.tscn")
 
@@ -79,6 +81,56 @@ var mapa_casillas_derecha: Dictionary = {
 	24: {"ratio": 1.0000, "tipo": "examen"} # Meta final del atajo
 }
 
+# 📌 DICCIONARIO ADICIONAL: Camino Largo sin Regla de Tres (Se usa si el nivel es distinto de División)
+var mapa_casillas_sin_regla_tres: Dictionary = {
+	1:  {"ratio": 0.039, "tipo": "asteroides"},
+	2:  {"ratio": 0.078, "tipo": "buscador_cajas"},
+	3:  {"ratio": 0.109, "tipo": "circuitos"}, # Sustituye laboratorio
+	4:  {"ratio": 0.137, "tipo": "balanza"},
+	5:  {"ratio": 0.174, "tipo": "clasificador"},
+	6:  {"ratio": 0.205, "tipo": "circuitos"},
+	7:  {"ratio": 0.245, "tipo": "asteroides"},
+	8:  {"ratio": 0.284, "tipo": "buscador_cajas"},
+	9:  {"ratio": 0.325, "tipo": "circuitos"}, # Sustituye laboratorio (Casilla 9)
+	10: {"ratio": 0.364, "tipo": "balanza"},
+	11: {"ratio": 0.395, "tipo": "clasificador"},
+	12: {"ratio": 0.426, "tipo": "piloto_nave"},
+	13: {"ratio": 0.465, "tipo": "asteroides"},
+	14: {"ratio": 0.504, "tipo": "buscador_cajas"},
+	15: {"ratio": 0.535, "tipo": "circuitos"}, # Sustituye laboratorio
+	16: {"ratio": 0.58,  "tipo": "balanza"},
+	17: {"ratio": 0.624, "tipo": "clasificador"},
+	18: {"ratio": 0.657, "tipo": "circuitos"},
+	19: {"ratio": 0.688, "tipo": "asteroides"},
+	20: {"ratio": 0.719, "tipo": "buscador_cajas"},
+	21: {"ratio": 0.758, "tipo": "circuitos"}, # Sustituye laboratorio
+	22: {"ratio": 0.789, "tipo": "balanza"},
+	23: {"ratio": 0.828, "tipo": "clasificador"},
+	24: {"ratio": 0.865, "tipo": "circuitos"},
+	25: {"ratio": 0.89,  "tipo": "asteroides"},
+	26: {"ratio": 0.917, "tipo": "buscador_cajas"},
+	27: {"ratio": 0.943, "tipo": "circuitos"}, # Sustituye laboratorio
+	28: {"ratio": 0.974, "tipo": "balanza"},
+	29: {"ratio": 1.000, "tipo": "examen"}
+}
+
+# 📌 DICCIONARIO ADICIONAL: Camino Corto sin Regla de Tres (Atajo Casilla 12 sin Regla de Tres)
+var mapa_casillas_derecha_sin_regla_tres: Dictionary = {
+	12: {"ratio": 0.0000, "tipo": "piloto_nave"},
+	13: {"ratio": 0.1094, "tipo": "circuitos"},
+	14: {"ratio": 0.1979, "tipo": "asteroides"},
+	15: {"ratio": 0.2758, "tipo": "buscador_cajas"},
+	16: {"ratio": 0.3643, "tipo": "circuitos"}, # Sustituye laboratorio
+	17: {"ratio": 0.4528, "tipo": "balanza"},
+	18: {"ratio": 0.5518, "tipo": "clasificador"},
+	19: {"ratio": 0.6403, "tipo": "circuitos"},
+	20: {"ratio": 0.7184, "tipo": "asteroides"},
+	21: {"ratio": 0.7788, "tipo": "buscador_cajas"},
+	22: {"ratio": 0.8569, "tipo": "circuitos"}, # Sustituye laboratorio
+	23: {"ratio": 0.935, "tipo": "balanza"},
+	24: {"ratio": 1.0000, "tipo": "examen"}
+}
+
 
 func _ready():
 	$Panel.play()
@@ -122,6 +174,32 @@ func _ready():
 	# 🌌 Asegurar que la música de fondo global esté sonando en el tablero
 	if GestionAudio:
 		GestionAudio.iniciar_musica_global(-18.0)
+		
+	# ⚗️ Sustitución pedagógica de Regla de Tres en el tablero:
+	# Si la operación es distinta de División, reemplazamos tubos de ensayo por circuitos
+	if not _permite_regla_de_tres():
+		_sustituir_tubos_ensayo_por_circuitos()
+
+func _permite_regla_de_tres() -> bool:
+	return (DatosUsuario.operacion_seleccionada == "division" or DatosUsuario.operacion_seleccionada == "todas")
+
+func _obtener_mapa_activo() -> Dictionary:
+	var usa_derecho = DatosUsuario.tomo_camino_corto and casilla_actual >= 12
+	if usa_derecho:
+		return mapa_casillas_derecha if _permite_regla_de_tres() else mapa_casillas_derecha_sin_regla_tres
+	else:
+		return mapa_casillas if _permite_regla_de_tres() else mapa_casillas_sin_regla_tres
+
+func _sustituir_tubos_ensayo_por_circuitos() -> void:
+	if not has_node("Mapa_Tablero_2/Tubos_Ensayo"):
+		return
+	var textura_circuito = preload("res://assets/Interfaz_Tablero2/Circuitos.png")
+	var contenedor_tubos = $Mapa_Tablero_2/Tubos_Ensayo
+	for tubo in contenedor_tubos.get_children():
+		if tubo is Sprite2D:
+			tubo.texture = textura_circuito
+			tubo.scale = Vector2(0.07, 0.07)
+	print("🔌 [Tablero] Operación activa: '", DatosUsuario.operacion_seleccionada, "'. Tubos de ensayo reemplazados por Circuitos en el tablero.")
 
 func _on_preguntas_cargadas(lista):
 	# duplicate() crea una copia de trabajo local para poder hacer .shuffle() 
@@ -363,7 +441,7 @@ func _mover_ficha_visualmente(casilla: int, instantaneo: bool):
 	# Determinar si se usa el atajo derecho ($Path2D_Derecha) o el camino largo ($Path2D)
 	var usa_derecho = DatosUsuario.tomo_camino_corto and path_follow_derecha != null and casilla >= 12
 	var target_follow = path_follow_derecha if usa_derecho else path_follow
-	var target_mapa = mapa_casillas_derecha if usa_derecho else mapa_casillas
+	var target_mapa = _obtener_mapa_activo()
 	
 	# Visibilidad y sincronización de nodos
 	if path_follow_derecha and path_follow:
@@ -775,8 +853,7 @@ func _obtener_total_casillas() -> int:
 
 func lanzar_minijuego_casilla():
 	# 1. Seleccionamos el diccionario del camino actual (Atajo o Principal)
-	var usa_derecho = DatosUsuario.tomo_camino_corto and casilla_actual >= 12
-	var target_mapa = mapa_casillas_derecha if usa_derecho else mapa_casillas
+	var target_mapa = _obtener_mapa_activo()
 	var datos_casilla = target_mapa.get(casilla_actual, {"tipo": "buscador_cajas"})
 	print("MINIJUEGO DETECTADO EN DATOS CASILLA (Casilla ", casilla_actual, "): ", datos_casilla["tipo"])
 	match datos_casilla["tipo"]:
@@ -941,6 +1018,11 @@ func enviar_puntuacion(nombre_jugador: String, puntos: int):
 
 func _on_preguntar_chat_box_pressed() -> void:
 	NavegacionGlobal.abrir_chatbot()
+
+func _on_boton_volumen_pressed() -> void:
+	if ventana_audio:
+		ventana_audio.aparecer()
+
 	
 # 🚀 Invocador del minijuego de asteroides
 # 🚀 Invocador del minijuego de asteroides

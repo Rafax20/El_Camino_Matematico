@@ -1,0 +1,256 @@
+[gd_scene format=3 uid="uid://c8audioajustes12"]
+
+[ext_resource type="Script" uid="uid://chxaudioctrl34" path="res://Scripts_gd/VentanaAjustesAudio.gd" id="1_audio"]
+[ext_resource type="FontFile" uid="uid://cvwfc51hrkou3" path="res://Fuentes/Fredoka/static/Fredoka-Bold.ttf" id="2_font"]
+[ext_resource type="Texture2D" uid="uid://do4xc2ec2is71" path="res://assets/Interfaz_Login/Boton_X.png" id="3_close"]
+[ext_resource type="Texture2D" uid="uid://3p2biq4ud0vf" path="res://assets/Interfaz_Login/Boton_X_Presionado.png" id="4_close_press"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_marco"]
+bg_color = Color(0.0627451, 0.12549, 0.207843, 0.941176)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.890196, 0.760784, 0.360784, 1)
+corner_radius_top_left = 24
+corner_radius_top_right = 24
+corner_radius_bottom_right = 24
+corner_radius_bottom_left = 24
+shadow_color = Color(0, 0, 0, 0.6)
+shadow_size = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn_probar"]
+bg_color = Color(0.12, 0.36, 0.52, 0.9)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.89, 0.76, 0.36, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn_listo"]
+bg_color = Color(0.18, 0.55, 0.34, 0.95)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.95, 0.85, 0.45, 1)
+corner_radius_top_left = 14
+corner_radius_top_right = 14
+corner_radius_bottom_right = 14
+corner_radius_bottom_left = 14
+
+[node name="VentanaAjustesAudio" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_audio")
+
+[node name="ColorRect" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.65)
+
+[node name="PanelMarco" type="PanelContainer" parent="."]
+custom_minimum_size = Vector2(780, 500)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -390.0
+offset_top = -250.0
+offset_right = 390.0
+offset_bottom = 250.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_marco")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="PanelMarco"]
+layout_mode = 2
+theme_override_constants/separation = 16
+alignment = 1
+
+[node name="Titulo" type="Label" parent="PanelMarco/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.96, 0.85, 1)
+theme_override_constants/outline_size = 5
+theme_override_fonts/font = ExtResource("2_font")
+theme_override_font_sizes/font_size = 30
+text = "AJUSTES DE VOLUMEN"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="HSeparator" type="HSeparator" parent="PanelMarco/VBoxContainer"]
+layout_mode = 2
+
+[node name="GridSliders" type="GridContainer" parent="PanelMarco/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_constants/h_separation = 16
+theme_override_constants/v_separation = 18
+columns = 4
+
+[node name="LblMaster" type="Label" parent="PanelMarco/VBoxContainer/GridSliders"]
+custom_minimum_size = Vector2(170, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.95, 0.95, 1)
+theme_override_constants/outline_size = 3
+theme_override_fonts/font = ExtResource("2_font")
+theme_override_font_sizes/font_size = 22
+text = "🔊 General"
+vertical_alignment = 1
+
+[node name="SliderMaster" type="HSlider" parent="PanelMarco/VBoxContainer/GridSliders"]
+custom_minimum_size = Vector2(300, 32)
+layout_mode = 2
+size_flags_vertical = 4
+value = 100.0
+
+[node name="LblValMaster" type="Label" parent="PanelMarco/VBoxContainer/GridSliders"]
+custom_minimum_size = Vector2(65, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.85, 0.4, 1)
+theme_override_constants/outline_size = 3
+theme_override_fonts/font = ExtResource("2_font")
+theme_override_font_sizes/font_size = 20
+text = "100%"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="SpacerMaster" type="Control" parent="PanelMarco/VBoxContainer/GridSliders"]
+custom_minimum_size = Vector2(105, 0)
+layout_mode = 2
+
+[node name="LblMusica" type="Label" parent="PanelMarco/VBoxContainer/GridSliders"]
+custom_minimum_size = Vector2(170, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.95, 0.95, 1)
+theme_override_constants/outline_size = 3
+theme_override_fonts/font = ExtResource("2_font")
+theme_override_font_sizes/font_size = 22
+text = "🎵 Música"
+vertical_alignment = 1
+
+[node name="SliderMusica" type="HSlider" parent="PanelMarco/VBoxContainer/GridSliders"]
+custom_minimum_size = Vector2(300, 32)
+layout_mode = 2
+size_flags_vertical = 4
+value = 80.0
+
+[node name="LblValMusica" type="Label" parent="PanelMarco/VBoxContainer/GridSliders"]
+custom_minimum_size = Vector2(65, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.85, 0.4, 1)
+theme_override_constants/outline_size = 3
+theme_override_fonts/font = ExtResource("2_font")
+theme_override_font_sizes/font_size = 20
+text = "80%"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="SpacerMusica" type="Control" parent="PanelMarco/VBoxContainer/GridSliders"]
+custom_minimum_size = Vector2(105, 0)
+layout_mode = 2
+
+[node name="LblVoz" type="Label" parent="PanelMarco/VBoxContainer/GridSliders"]
+custom_minimum_size = Vector2(170, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.95, 0.95, 1)
+theme_override_constants/outline_size = 3
+theme_override_fonts/font = ExtResource("2_font")
+theme_override_font_sizes/font_size = 22
+text = "🎙️ Voz July"
+vertical_alignment = 1
+
+[node name="SliderVoz" type="HSlider" parent="PanelMarco/VBoxContainer/GridSliders"]
+custom_minimum_size = Vector2(300, 32)
+layout_mode = 2
+size_flags_vertical = 4
+value = 100.0
+
+[node name="LblValVoz" type="Label" parent="PanelMarco/VBoxContainer/GridSliders"]
+custom_minimum_size = Vector2(65, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.85, 0.4, 1)
+theme_override_constants/outline_size = 3
+theme_override_fonts/font = ExtResource("2_font")
+theme_override_font_sizes/font_size = 20
+text = "100%"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="BtnProbarVoz" type="Button" parent="PanelMarco/VBoxContainer/GridSliders"]
+custom_minimum_size = Vector2(105, 36)
+layout_mode = 2
+theme_override_fonts/font = ExtResource("2_font")
+theme_override_font_sizes/font_size = 16
+theme_override_styles/normal = SubResource("StyleBoxFlat_btn_probar")
+text = "🔊 Probar"
+
+[node name="LblSFX" type="Label" parent="PanelMarco/VBoxContainer/GridSliders"]
+custom_minimum_size = Vector2(170, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.95, 0.95, 1)
+theme_override_constants/outline_size = 3
+theme_override_fonts/font = ExtResource("2_font")
+theme_override_font_sizes/font_size = 22
+text = "💥 Efectos"
+vertical_alignment = 1
+
+[node name="SliderSFX" type="HSlider" parent="PanelMarco/VBoxContainer/GridSliders"]
+custom_minimum_size = Vector2(300, 32)
+layout_mode = 2
+size_flags_vertical = 4
+value = 90.0
+
+[node name="LblValSFX" type="Label" parent="PanelMarco/VBoxContainer/GridSliders"]
+custom_minimum_size = Vector2(65, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.85, 0.4, 1)
+theme_override_constants/outline_size = 3
+theme_override_fonts/font = ExtResource("2_font")
+theme_override_font_sizes/font_size = 20
+text = "90%"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="BtnProbarSFX" type="Button" parent="PanelMarco/VBoxContainer/GridSliders"]
+custom_minimum_size = Vector2(105, 36)
+layout_mode = 2
+theme_override_fonts/font = ExtResource("2_font")
+theme_override_font_sizes/font_size = 16
+theme_override_styles/normal = SubResource("StyleBoxFlat_btn_probar")
+text = "🔊 Probar"
+
+[node name="HSeparator2" type="HSeparator" parent="PanelMarco/VBoxContainer"]
+layout_mode = 2
+
+[node name="BtnListo" type="Button" parent="PanelMarco/VBoxContainer"]
+custom_minimum_size = Vector2(200, 48)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_fonts/font = ExtResource("2_font")
+theme_override_font_sizes/font_size = 22
+theme_override_styles/normal = SubResource("StyleBoxFlat_btn_listo")
+text = "✓ ¡LISTO!"
+
+[node name="BtnCerrar" type="TextureButton" parent="."]
+layout_mode = 1
+offset_right = 100.0
+offset_bottom = 100.0
+texture_normal = ExtResource("3_close")
+texture_pressed = ExtResource("4_close_press")
+
+[connection signal="pressed" from="PanelMarco/VBoxContainer/BtnListo" to="." method="desaparecer"]

@@ -13,6 +13,9 @@ const RENDER_SERVER_URL = "https://july-videojuego-render.onrender.com/"
 func _ready():
 	_inicializar_configuracion()
 
+const POSTGREST_LOCAL_URL = "http://127.0.0.1:3000/"
+var modo_local_activo: bool = false
+
 func _inicializar_configuracion():
 	# 🖥️ MODO LOCAL (.env)
 	if FileAccess.file_exists("res://.env"):
@@ -29,6 +32,8 @@ func _inicializar_configuracion():
 				var valor = partes[1].strip_edges()
 				
 				match llave:
+					"MODO_LOCAL":
+						modo_local_activo = (valor.to_lower() == "true" or valor == "1")
 					"GEMINI_API_KEY":
 						GEMINI_API_KEY = valor
 						GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=" + GEMINI_API_KEY
@@ -37,6 +42,12 @@ func _inicializar_configuracion():
 					"SUPABASE_ANON_KEY":
 						SUPABASE_ANON_KEY = valor
 						
+		if modo_local_activo:
+			print("🛡️ [GlobalConfig] MODO_LOCAL=true detectado en .env. Conmutando a PostgREST local:", POSTGREST_LOCAL_URL)
+			SUPABASE_URL = POSTGREST_LOCAL_URL
+			if SUPABASE_ANON_KEY == "":
+				SUPABASE_ANON_KEY = "local_token"
+				
 		print("✅ GlobalConfig: Variables locales cargadas.")
 		_sincronizar_con_autoloads()
 

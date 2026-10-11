@@ -9,6 +9,20 @@
 [ext_resource type="Texture2D" uid="uid://cd6e3phv1v32q" path="res://assets/Interfaz_Como_Jugar/ChatBox.png" id="5_vmr0c"]
 [ext_resource type="Texture2D" uid="uid://djxl7ehfihkyc" path="res://assets/Interfaz_Como_Jugar/ChatBox_Presionado.png" id="6_ahmnm"]
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_marco"]
+bg_color = Color(0.0627451, 0.12549, 0.207843, 0.941176)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.890196, 0.760784, 0.360784, 1)
+corner_radius_top_left = 24
+corner_radius_top_right = 24
+corner_radius_bottom_right = 24
+corner_radius_bottom_left = 24
+shadow_color = Color(0, 0, 0, 0.6)
+shadow_size = 12
+
 [node name="VentanaComoJugar" type="Control" unique_id=1066670103]
 layout_mode = 3
 anchors_preset = 15
@@ -25,7 +39,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0, 0, 0, 0.58431375)
+color = Color(0, 0, 0, 0.65)
 
 [node name="PanelMarco" type="PanelContainer" parent="." unique_id=1223764361]
 custom_minimum_size = Vector2(800, 500)
@@ -41,16 +55,20 @@ offset_right = 400.0
 offset_bottom = 250.0
 grow_horizontal = 2
 grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_marco")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="PanelMarco" unique_id=2020982391]
 layout_mode = 2
+theme_override_constants/separation = 16
+alignment = 1
 
 [node name="Titulo" type="Label" parent="PanelMarco/VBoxContainer" unique_id=1833341662]
 layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.96, 0.85, 1)
 theme_override_constants/outline_size = 5
 theme_override_fonts/font = ExtResource("2_qfa5y")
 theme_override_font_sizes/font_size = 30
-text = "¿COMO QUIERES APRENDER?"
+text = "¿CÓMO QUIERES APRENDER?"
 horizontal_alignment = 1
 vertical_alignment = 1
 
@@ -59,18 +77,22 @@ layout_mode = 2
 
 [node name="HBoxContainer" type="HBoxContainer" parent="PanelMarco/VBoxContainer" unique_id=1487698883]
 layout_mode = 2
-theme_override_constants/separation = 20
+theme_override_constants/separation = 40
+alignment = 1
 
 [node name="BtnTutoriales" type="TextureButton" parent="PanelMarco/VBoxContainer/HBoxContainer" unique_id=998698309]
-custom_minimum_size = Vector2(220, 120)
+custom_minimum_size = Vector2(250, 270)
 layout_mode = 2
+ignore_texture_size = true
+stretch_mode = 5
 texture_normal = ExtResource("3_njfc0")
 texture_pressed = ExtResource("4_jvy6y")
 
 [node name="BtnChatbot" type="TextureButton" parent="PanelMarco/VBoxContainer/HBoxContainer" unique_id=279768437]
-custom_minimum_size = Vector2(220, 120)
+custom_minimum_size = Vector2(250, 270)
 layout_mode = 2
-size_flags_horizontal = 10
+ignore_texture_size = true
+stretch_mode = 5
 texture_normal = ExtResource("5_vmr0c")
 texture_pressed = ExtResource("6_ahmnm")
 

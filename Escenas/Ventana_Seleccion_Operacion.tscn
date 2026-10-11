@@ -1,0 +1,355 @@
+[gd_scene format=3 uid="uid://c3m7r1uaj4x8k"]
+
+[ext_resource type="Script" uid="uid://b8xq4d12y1u9a" path="res://Scripts_gd/VentanaSeleccionOperacion.gd" id="1_script"]
+[ext_resource type="Texture2D" uid="uid://do4xc2ec2is71" path="res://assets/Interfaz_Login/Boton_X.png" id="2_btn_x"]
+[ext_resource type="Texture2D" uid="uid://3p2biq4ud0vf" path="res://assets/Interfaz_Login/Boton_X_Presionado.png" id="3_btn_x_p"]
+[ext_resource type="FontFile" uid="uid://cvwfc51hrkou3" path="res://Fuentes/Fredoka/static/Fredoka-Bold.ttf" id="4_font"]
+[ext_resource type="Texture2D" path="res://assets/Interfaz_Modo_Juego/Boton_Fila_Sumas.png" id="5_f_sumas"]
+[ext_resource type="Texture2D" path="res://assets/Interfaz_Modo_Juego/Boton_Fila_Sumas_Presionado.png" id="6_f_sumas_p"]
+[ext_resource type="Texture2D" path="res://assets/Interfaz_Modo_Juego/Boton_Fila_Restas.png" id="7_f_restas"]
+[ext_resource type="Texture2D" path="res://assets/Interfaz_Modo_Juego/Boton_Fila_Restas_Presionado.png" id="8_f_restas_p"]
+[ext_resource type="Texture2D" path="res://assets/Interfaz_Modo_Juego/Boton_Fila_Multiplicacion.png" id="9_f_mult"]
+[ext_resource type="Texture2D" path="res://assets/Interfaz_Modo_Juego/Boton_Fila_Multiplicacion_Presionado.png" id="10_f_mult_p"]
+[ext_resource type="Texture2D" path="res://assets/Interfaz_Modo_Juego/Boton_Fila_Division.png" id="11_f_div"]
+[ext_resource type="Texture2D" path="res://assets/Interfaz_Modo_Juego/Boton_Fila_Division_Presionado.png" id="12_f_div_p"]
+[ext_resource type="Texture2D" path="res://assets/Interfaz_Modo_Juego/Boton_Solo.png" id="13_solo"]
+[ext_resource type="Texture2D" path="res://assets/Interfaz_Modo_Juego/Boton_Solo_Presionado.png" id="14_solo_p"]
+[ext_resource type="Texture2D" path="res://assets/Interfaz_Modo_Juego/Boton_Todas.png" id="15_todas"]
+[ext_resource type="Texture2D" path="res://assets/Interfaz_Modo_Juego/Boton_Todas_Presionado.png" id="16_todas_p"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_marco"]
+bg_color = Color(0.0627451, 0.12549, 0.207843, 0.941176)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.890196, 0.760784, 0.360784, 1)
+corner_radius_top_left = 24
+corner_radius_top_right = 24
+corner_radius_bottom_right = 24
+corner_radius_bottom_left = 24
+shadow_color = Color(0, 0, 0, 0.6)
+shadow_size = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_pregunta"]
+bg_color = Color(0.04, 0.08, 0.14, 0.9)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.32, 0.72, 0.95, 0.9)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn_opcion"]
+bg_color = Color(0.101961, 0.247059, 0.360784, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.85, 0.72, 0.35, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn_accion"]
+bg_color = Color(0.18, 0.5, 0.35, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.9, 0.85, 0.4, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[node name="Ventana_Seleccion_Operacion" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_script")
+
+[node name="ColorRect" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.65)
+
+[node name="PanelMarco" type="PanelContainer" parent="."]
+custom_minimum_size = Vector2(820, 530)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -410.0
+offset_top = -265.0
+offset_right = 410.0
+offset_bottom = 265.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_marco")
+
+[node name="VistaOperaciones" type="VBoxContainer" parent="PanelMarco"]
+layout_mode = 2
+theme_override_constants/separation = 10
+alignment = 1
+
+[node name="Titulo" type="Label" parent="PanelMarco/VistaOperaciones"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.96, 0.85, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.7)
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 2
+theme_override_constants/outline_size = 4
+theme_override_fonts/font = ExtResource("4_font")
+theme_override_font_sizes/font_size = 28
+text = "¿QUÉ DESEAS APRENDER HOY?"
+horizontal_alignment = 1
+
+[node name="Subtitulo" type="Label" parent="PanelMarco/VistaOperaciones"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.98, 0.82, 0.35, 1)
+theme_override_fonts/font = ExtResource("4_font")
+theme_override_font_sizes/font_size = 16
+text = "Selecciona la operación matemática para comenzar tu aventura espacial"
+horizontal_alignment = 1
+
+[node name="HSeparator" type="HSeparator" parent="PanelMarco/VistaOperaciones"]
+layout_mode = 2
+
+[node name="VBoxLista" type="VBoxContainer" parent="PanelMarco/VistaOperaciones"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_constants/separation = 8
+
+[node name="BtnSumas" type="TextureButton" parent="PanelMarco/VistaOperaciones/VBoxLista"]
+custom_minimum_size = Vector2(540, 80)
+layout_mode = 2
+ignore_texture_size = true
+stretch_mode = 5
+texture_normal = ExtResource("5_f_sumas")
+texture_pressed = ExtResource("6_f_sumas_p")
+
+[node name="BtnRestas" type="TextureButton" parent="PanelMarco/VistaOperaciones/VBoxLista"]
+custom_minimum_size = Vector2(540, 80)
+layout_mode = 2
+ignore_texture_size = true
+stretch_mode = 5
+texture_normal = ExtResource("7_f_restas")
+texture_pressed = ExtResource("8_f_restas_p")
+
+[node name="BtnMultiplicacion" type="TextureButton" parent="PanelMarco/VistaOperaciones/VBoxLista"]
+custom_minimum_size = Vector2(540, 80)
+layout_mode = 2
+ignore_texture_size = true
+stretch_mode = 5
+texture_normal = ExtResource("9_f_mult")
+texture_pressed = ExtResource("10_f_mult_p")
+
+[node name="BtnDivision" type="TextureButton" parent="PanelMarco/VistaOperaciones/VBoxLista"]
+custom_minimum_size = Vector2(540, 80)
+layout_mode = 2
+ignore_texture_size = true
+stretch_mode = 5
+texture_normal = ExtResource("11_f_div")
+texture_pressed = ExtResource("12_f_div_p")
+
+[node name="VistaSubmodo" type="VBoxContainer" parent="PanelMarco"]
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 16
+alignment = 1
+
+[node name="TituloSubmodo" type="Label" parent="PanelMarco/VistaSubmodo"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.96, 0.85, 1)
+theme_override_constants/outline_size = 4
+theme_override_fonts/font = ExtResource("4_font")
+theme_override_font_sizes/font_size = 28
+text = "¿CÓMO QUIERES PRACTICAR?"
+horizontal_alignment = 1
+
+[node name="SubtituloSubmodo" type="Label" parent="PanelMarco/VistaSubmodo"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.98, 0.82, 0.35, 1)
+theme_override_fonts/font = ExtResource("4_font")
+theme_override_font_sizes/font_size = 17
+text = "Elige si deseas practicar solo este nivel o acumular los anteriores"
+horizontal_alignment = 1
+
+[node name="HSeparator" type="HSeparator" parent="PanelMarco/VistaSubmodo"]
+layout_mode = 2
+
+[node name="HBoxSubmodo" type="HBoxContainer" parent="PanelMarco/VistaSubmodo"]
+layout_mode = 2
+theme_override_constants/separation = 40
+alignment = 1
+
+[node name="BtnSolo" type="TextureButton" parent="PanelMarco/VistaSubmodo/HBoxSubmodo"]
+custom_minimum_size = Vector2(270, 280)
+layout_mode = 2
+ignore_texture_size = true
+stretch_mode = 5
+texture_normal = ExtResource("13_solo")
+texture_pressed = ExtResource("14_solo_p")
+
+[node name="BtnTodas" type="TextureButton" parent="PanelMarco/VistaSubmodo/HBoxSubmodo"]
+custom_minimum_size = Vector2(270, 280)
+layout_mode = 2
+ignore_texture_size = true
+stretch_mode = 5
+texture_normal = ExtResource("15_todas")
+texture_pressed = ExtResource("16_todas_p")
+
+[node name="BtnVolverSubmodo" type="Button" parent="PanelMarco/VistaSubmodo"]
+custom_minimum_size = Vector2(180, 44)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_fonts/font = ExtResource("4_font")
+theme_override_font_sizes/font_size = 18
+theme_override_styles/normal = SubResource("StyleBoxFlat_btn_opcion")
+text = "⬅ Cambiar Operación"
+
+[node name="VistaDiagnostico" type="VBoxContainer" parent="PanelMarco"]
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 10
+alignment = 1
+
+[node name="TituloDiagnostico" type="Label" parent="PanelMarco/VistaDiagnostico"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.96, 0.85, 1)
+theme_override_constants/outline_size = 4
+theme_override_fonts/font = ExtResource("4_font")
+theme_override_font_sizes/font_size = 25
+text = "¡COMPROBEMOS TUS PODERES MATEMÁTICOS!"
+horizontal_alignment = 1
+
+[node name="LabelDetalle" type="Label" parent="PanelMarco/VistaDiagnostico"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.98, 0.82, 0.35, 1)
+theme_override_fonts/font = ExtResource("4_font")
+theme_override_font_sizes/font_size = 16
+text = "Responde correctamente para desbloquear la aventura"
+horizontal_alignment = 1
+
+[node name="LabelProgreso" type="Label" parent="PanelMarco/VistaDiagnostico"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.4, 0.88, 1, 1)
+theme_override_fonts/font = ExtResource("4_font")
+theme_override_font_sizes/font_size = 16
+text = "Desafío 1 de 2: Sumas"
+horizontal_alignment = 1
+
+[node name="PanelPregunta" type="PanelContainer" parent="PanelMarco/VistaDiagnostico"]
+custom_minimum_size = Vector2(500, 75)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_styles/panel = SubResource("StyleBoxFlat_pregunta")
+
+[node name="LabelPregunta" type="Label" parent="PanelMarco/VistaDiagnostico/PanelPregunta"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_fonts/font = ExtResource("4_font")
+theme_override_font_sizes/font_size = 32
+text = "25 + 15 = ?"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="GridOpciones" type="GridContainer" parent="PanelMarco/VistaDiagnostico"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_constants/h_separation = 20
+theme_override_constants/v_separation = 10
+columns = 2
+
+[node name="BtnOp1" type="Button" parent="PanelMarco/VistaDiagnostico/GridOpciones"]
+custom_minimum_size = Vector2(200, 50)
+layout_mode = 2
+theme_override_fonts/font = ExtResource("4_font")
+theme_override_font_sizes/font_size = 22
+theme_override_styles/normal = SubResource("StyleBoxFlat_btn_opcion")
+text = "40"
+
+[node name="BtnOp2" type="Button" parent="PanelMarco/VistaDiagnostico/GridOpciones"]
+custom_minimum_size = Vector2(200, 50)
+layout_mode = 2
+theme_override_fonts/font = ExtResource("4_font")
+theme_override_font_sizes/font_size = 22
+theme_override_styles/normal = SubResource("StyleBoxFlat_btn_opcion")
+text = "35"
+
+[node name="BtnOp3" type="Button" parent="PanelMarco/VistaDiagnostico/GridOpciones"]
+custom_minimum_size = Vector2(200, 50)
+layout_mode = 2
+theme_override_fonts/font = ExtResource("4_font")
+theme_override_font_sizes/font_size = 22
+theme_override_styles/normal = SubResource("StyleBoxFlat_btn_opcion")
+text = "45"
+
+[node name="BtnOp4" type="Button" parent="PanelMarco/VistaDiagnostico/GridOpciones"]
+custom_minimum_size = Vector2(200, 50)
+layout_mode = 2
+theme_override_fonts/font = ExtResource("4_font")
+theme_override_font_sizes/font_size = 22
+theme_override_styles/normal = SubResource("StyleBoxFlat_btn_opcion")
+text = "50"
+
+[node name="LabelFeedback" type="Label" parent="PanelMarco/VistaDiagnostico"]
+custom_minimum_size = Vector2(0, 36)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.9, 0.4, 1)
+theme_override_fonts/font = ExtResource("4_font")
+theme_override_font_sizes/font_size = 15
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="PanelAccionesFallo" type="HBoxContainer" parent="PanelMarco/VistaDiagnostico"]
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 20
+alignment = 1
+
+[node name="BtnRepasar" type="Button" parent="PanelMarco/VistaDiagnostico/PanelAccionesFallo"]
+custom_minimum_size = Vector2(200, 40)
+layout_mode = 2
+theme_override_fonts/font = ExtResource("4_font")
+theme_override_font_sizes/font_size = 16
+theme_override_styles/normal = SubResource("StyleBoxFlat_btn_accion")
+text = "Repasar nivel anterior"
+
+[node name="BtnReintentar" type="Button" parent="PanelMarco/VistaDiagnostico/PanelAccionesFallo"]
+custom_minimum_size = Vector2(170, 40)
+layout_mode = 2
+theme_override_fonts/font = ExtResource("4_font")
+theme_override_font_sizes/font_size = 16
+theme_override_styles/normal = SubResource("StyleBoxFlat_btn_opcion")
+text = "Intentar de nuevo"
+
+[node name="BtnVolverDiagnostico" type="Button" parent="PanelMarco/VistaDiagnostico"]
+custom_minimum_size = Vector2(160, 36)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_fonts/font = ExtResource("4_font")
+theme_override_font_sizes/font_size = 15
+theme_override_styles/normal = SubResource("StyleBoxFlat_btn_opcion")
+text = "⬅ Cancelar"
+
+[node name="BtnCerrar" type="TextureButton" parent="."]
+layout_mode = 0
+offset_right = 100.0
+offset_bottom = 100.0
+texture_normal = ExtResource("2_btn_x")
+texture_pressed = ExtResource("3_btn_x_p")

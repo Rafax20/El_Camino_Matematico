@@ -101,6 +101,10 @@
 [ext_resource type="PackedScene" uid="uid://c3jxmpani0i5q" path="res://Escenas/Minijuegos/MinijuegoCircuitos.tscn" id="98_ym5il"]
 [ext_resource type="PackedScene" uid="uid://rvsxco6dm85n" path="res://Escenas/Minijuegos/MinijuegoBalanza.tscn" id="99_e35ft"]
 [ext_resource type="PackedScene" uid="uid://c5n3v8law0x2p" path="res://Escenas/Minijuegos/MinijuegoPilotoNave.tscn" id="100_piloto"]
+[ext_resource type="PackedScene" uid="uid://c8audioajustes12" path="res://Escenas/Ventana_Ajustes_Audio.tscn" id="101_audio"]
+[ext_resource type="Texture2D" uid="uid://ctkvolnorm12" path="res://assets/Interfaz_Audio/Boton_Volumen.png" id="102_vol_norm"]
+[ext_resource type="Texture2D" uid="uid://ctkvolpress34" path="res://assets/Interfaz_Audio/Boton_Volumen_Presionado.png" id="103_vol_press"]
+
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_ipnda"]
 animations = [{
@@ -851,7 +855,25 @@ hframes = 6
 [node name="AnimationPlayer" type="AnimationPlayer" parent="ContenedorDado/DadoObjeto" unique_id=1957569067]
 libraries/ = SubResource("AnimationLibrary_ym5il")
 
+[node name="CapaAudio" type="CanvasLayer" parent="."]
+layer = 10
+
+[node name="Boton_Volumen" type="TextureButton" parent="CapaAudio"]
+offset_left = 1068.0
+offset_top = 24.0
+offset_right = 1128.0
+offset_bottom = 84.0
+ignore_texture_size = true
+stretch_mode = 5
+texture_normal = ExtResource("102_vol_norm")
+texture_pressed = ExtResource("103_vol_press")
+
+[node name="VentanaAjustesAudio" parent="CapaAudio" instance=ExtResource("101_audio")]
+visible = false
+
 [connection signal="pressed" from="Mapa_Tablero_2/Volver_Menu" to="Mapa_Tablero_2/Volver_Menu" method="_on_boton_volver_pressed"]
 [connection signal="pressed" from="Panel/BotonDado" to="." method="_on_boton_dado_pressed"]
 [connection signal="respuesta_completada" from="Interfaz" to="." method="_on_interfaz_respuesta_completada"]
 [connection signal="pressed" from="Preguntar_ChatBox" to="." method="_on_preguntar_chat_box_pressed"]
+[connection signal="pressed" from="CapaAudio/Boton_Volumen" to="." method="_on_boton_volumen_pressed"]
+

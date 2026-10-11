@@ -113,11 +113,12 @@ func enviar_peticion_supabase(url: String, metodo: int, cuerpo: String):
 	var anon_key_global = GlobalConfig.SUPABASE_ANON_KEY
 	
 	var headers = [
-		"apikey: " + anon_key_global,
-		"Authorization: Bearer " + anon_key_global,
 		"Content-Type: application/json",
 		"Prefer: return=representation"
 	]
+	if not url.begins_with("http://127.0.0.1:3000"):
+		headers.append("apikey: " + anon_key_global)
+		headers.append("Authorization: Bearer " + anon_key_global)
 	
 	var error = http_request.request(url, headers, metodo, cuerpo)
 	if error != OK:

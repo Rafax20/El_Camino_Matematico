@@ -15,6 +15,11 @@
 [ext_resource type="Texture2D" uid="uid://b5egvgrk63pp3" path="res://assets/Interfaz_Menu/Boton_Instrucciones_Presionado.png" id="11_27k2t"]
 [ext_resource type="PackedScene" uid="uid://boi5qwn0bht71" path="res://Escenas/Ventana_Como_Jugar.tscn" id="14_27k2t"]
 [ext_resource type="PackedScene" uid="uid://cr2yiblxmppsi" path="res://Escenas/Ventana_Logros.tscn" id="15_5c8jm"]
+[ext_resource type="PackedScene" uid="uid://c3m7r1t9j4x8k" path="res://Escenas/Ventana_Seleccion_Operacion.tscn" id="16_op_sel"]
+[ext_resource type="PackedScene" uid="uid://c8audioajustes12" path="res://Escenas/Ventana_Ajustes_Audio.tscn" id="17_audio"]
+[ext_resource type="Texture2D" uid="uid://ctkvolnorm12" path="res://assets/Interfaz_Audio/Boton_Volumen.png" id="18_vol_norm"]
+[ext_resource type="Texture2D" uid="uid://ctkvolpress34" path="res://assets/Interfaz_Audio/Boton_Volumen_Presionado.png" id="19_vol_press"]
+
 
 [node name="Node2D" type="Node2D" unique_id=1460850462]
 script = ExtResource("1_o2l53")
@@ -179,9 +184,31 @@ offset_top = -383.99994
 offset_right = -688.0
 offset_bottom = -384.00012
 
+[node name="Ventana_Seleccion_Operacion" parent="CanvasLayer/Menu" instance=ExtResource("16_op_sel")]
+visible = false
+offset_left = -687.9999
+offset_top = -383.99994
+offset_right = -688.0
+offset_bottom = -384.00012
+
+[node name="Boton_Volumen" type="TextureButton" parent="CanvasLayer"]
+offset_left = 1068.0
+offset_top = 24.0
+offset_right = 1128.0
+offset_bottom = 84.0
+ignore_texture_size = true
+stretch_mode = 5
+texture_normal = ExtResource("18_vol_norm")
+texture_pressed = ExtResource("19_vol_press")
+
+[node name="VentanaAjustesAudio" parent="CanvasLayer" instance=ExtResource("17_audio")]
+visible = false
+
 [node name="HTTPRequest" type="HTTPRequest" parent="." unique_id=983556898]
 
 [connection signal="pressed" from="CanvasLayer/Menu/Boton Iniciar_Sesion" to="." method="_on_boton_iniciar_sesion_pressed"]
 [connection signal="pressed" from="CanvasLayer/Menu/Boton_Jugar" to="." method="_on_boton_jugar_pressed"]
 [connection signal="pressed" from="CanvasLayer/Menu/Boton_Como_Jugar" to="." method="_on_boton_como_jugar_pressed"]
 [connection signal="pressed" from="CanvasLayer/Menu/Boton_Logros" to="." method="_on_boton_logros_pressed"]
+[connection signal="pressed" from="CanvasLayer/Boton_Volumen" to="." method="_on_boton_volumen_pressed"]
+

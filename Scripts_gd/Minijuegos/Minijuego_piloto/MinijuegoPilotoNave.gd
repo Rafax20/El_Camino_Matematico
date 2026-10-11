@@ -238,18 +238,45 @@ func _cargar_siguiente_pregunta():
 	_actualizar_corazones()
 	
 	var dif_val = DatosUsuario.dificultad_actual if DatosUsuario else 0
-	var preg_filtradas = banco_preguntas.filter(func(p):
-		return int(p.get("dificultad", 0)) == dif_val
-	)
-	if preg_filtradas.is_empty():
-		preg_filtradas = banco_preguntas
-		
-	pregunta_actual = preg_filtradas.pick_random()
-	var op_str = str(pregunta_actual.get("operacion", "2 + 2"))
-	var val_correcta = str(pregunta_actual.get("correcta", 4))
+	var op_str = "2 + 2"
+	var val_correcta = "4"
+	var val_distractor = "3"
 	
-	var arr_distractores = pregunta_actual.get("distractores", [3, 5])
-	var val_distractor = str(arr_distractores.pick_random())
+	# 🌐 1. PRIORIDAD: Usar el banco global filtrado por la operación elegida
+	if DatosUsuario and DatosUsuario.banco_preguntas.size() > 0:
+		var preg_dif = DatosUsuario.banco_preguntas.filter(func(p):
+			return int(p.get("dificultad", 0)) == dif_val
+		)
+		var pool = preg_dif if not preg_dif.is_empty() else DatosUsuario.banco_preguntas
+		pregunta_actual = pool.pick_random()
+		
+		op_str = str(pregunta_actual.get("operacion", pregunta_actual.get("pregunta", "2 + 2")))
+		val_correcta = str(pregunta_actual.get("respuesta_correcta", pregunta_actual.get("correcta", "4"))).strip_edges()
+		
+		var arr_dist: Array = []
+		if pregunta_actual.has("distractores") and pregunta_actual["distractores"] is Array:
+			arr_dist = pregunta_actual["distractores"]
+		else:
+			for key in ["opcion_falsa1", "opcion_falsa2", "opcion_falsa3"]:
+				if pregunta_actual.has(key) and str(pregunta_actual[key]).strip_edges() != "":
+					arr_dist.append(str(pregunta_actual[key]).strip_edges())
+		if arr_dist.is_empty():
+			arr_dist = [str(int(val_correcta) + 2), str(int(val_correcta) - 1)]
+		val_distractor = str(arr_dist.pick_random())
+	else:
+		# 🛡️ 2. RESPALDO: Arreglo local interno para pruebas independientes
+		var preg_filtradas = banco_preguntas.filter(func(p):
+			return int(p.get("dificultad", 0)) == dif_val
+		)
+		if preg_filtradas.is_empty():
+			preg_filtradas = banco_preguntas
+			
+		pregunta_actual = preg_filtradas.pick_random()
+		op_str = str(pregunta_actual.get("operacion", "2 + 2"))
+		val_correcta = str(pregunta_actual.get("correcta", 4))
+		
+		var arr_distractores = pregunta_actual.get("distractores", [3, 5])
+		val_distractor = str(arr_distractores.pick_random())
 	
 	if randf() < 0.5:
 		opcion_izquierda = val_correcta

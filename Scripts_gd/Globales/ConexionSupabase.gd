@@ -36,10 +36,10 @@ func _build_url(endpoint: String) -> String:
 	
 # Función auxiliar para no repetir las cabeceras en cada método
 func _obtener_cabeceras(incluir_json: bool = false) -> Array:
-	var headers = [
-		"apikey: " + SUPABASE_ANON_KEY,
-		"Authorization: Bearer " + SUPABASE_ANON_KEY
-	]
+	var headers = []
+	if not SUPABASE_URL.begins_with("http://127.0.0.1:3000"):
+		headers.append("apikey: " + SUPABASE_ANON_KEY)
+		headers.append("Authorization: Bearer " + SUPABASE_ANON_KEY)
 	if incluir_json:
 		headers.append("Content-Type: application/json")
 	return headers
@@ -61,9 +61,9 @@ func cargar_banco_preguntas_local_fallback() -> void:
 			if err == OK and json.data is Array:
 				var lista = json.data.duplicate()
 				lista.shuffle()
-				DatosUsuario.banco_preguntas = lista
+				DatosUsuario.set_banco_preguntas_maestro(lista)
 				print("🛡️ [API Fallback] Banco de preguntas local cargado con éxito. Total: ", lista.size())
-				preguntas_descargadas.emit(lista)
+				preguntas_descargadas.emit(DatosUsuario.banco_preguntas)
 				return
 	print("❌ [API Fallback Error] No se pudo cargar el archivo local de preguntas.")
 
@@ -98,8 +98,8 @@ func descargar_preguntas(forzar: bool = false):
 				preguntas_aleatorias.shuffle()
 				
 				# 🔑 GUARDAMOS EL BANCO YA MEZCLADO EN LA RAM GLOBAL
-				DatosUsuario.banco_preguntas = preguntas_aleatorias
-				preguntas_descargadas.emit(preguntas_aleatorias)
+				DatosUsuario.set_banco_preguntas_maestro(preguntas_aleatorias)
+				preguntas_descargadas.emit(DatosUsuario.banco_preguntas)
 				exito = true
 			else:
 				print("❌ ERROR: No se pudo parsear el JSON de preguntas de Supabase.")
@@ -107,8 +107,12 @@ func descargar_preguntas(forzar: bool = false):
 			print("⚠️ [API] Supabase no respondió adecuadamente (Código: ", response_code, ", Result: ", result, ")")
 		
 		if not exito:
-			print("🛡️ [API] Activando respaldo automático con banco local empaquetado...")
-			cargar_banco_preguntas_local_fallback()
+			if not SUPABASE_URL.begins_with("http://127.0.0.1:3000"):
+				print("🔄 [API Failover] Nube inaccesible. Verificando PostgREST local (puerto 3000)...")
+				_probar_conmutar_a_postgrest_local()
+			else:
+				print("🛡️ [API] Activando respaldo automático con banco local empaquetado...")
+				cargar_banco_preguntas_local_fallback()
 		
 		descargando_preguntas = false
 		cliente_http.queue_free()
@@ -117,10 +121,39 @@ func descargar_preguntas(forzar: bool = false):
 	var url_final = _build_url("preguntas?select=*")
 	var error_request = cliente_http.request(url_final, _obtener_cabeceras(), HTTPClient.METHOD_GET)
 	if error_request != OK:
-		print("⚠️ [API] Error al iniciar la petición HTTP: ", error_request, ". Usando respaldo local.")
-		cargar_banco_preguntas_local_fallback()
+		print("⚠️ [API] Error al iniciar la petición HTTP: ", error_request)
+		if not SUPABASE_URL.begins_with("http://127.0.0.1:3000"):
+			_probar_conmutar_a_postgrest_local()
+		else:
+			cargar_banco_preguntas_local_fallback()
 		descargando_preguntas = false
 		cliente_http.queue_free()
+
+func _probar_conmutar_a_postgrest_local() -> void:
+	var probe_http = HTTPRequest.new()
+	add_child(probe_http)
+	probe_http.timeout = 2.0
+	probe_http.request_completed.connect(func(res, code, hdrs, bdy):
+		if res == HTTPRequest.RESULT_SUCCESS and code == 200:
+			var json = JSON.new()
+			if json.parse(bdy.get_string_from_utf8()) == OK and json.data is Array and json.data.size() > 0:
+				print("✅ [API Failover] ¡PostgREST local activo! Conmutando automáticamente a http://127.0.0.1:3000/")
+				SUPABASE_URL = "http://127.0.0.1:3000/"
+				GlobalConfig.SUPABASE_URL = SUPABASE_URL
+				var preguntas_aleatorias = json.data.duplicate()
+				preguntas_aleatorias.shuffle()
+				DatosUsuario.set_banco_preguntas_maestro(preguntas_aleatorias)
+				preguntas_descargadas.emit(DatosUsuario.banco_preguntas)
+				probe_http.queue_free()
+				return
+		print("🛡️ [API Failover] PostgREST local no respondió. Usando respaldo JSON empaquetado...")
+		cargar_banco_preguntas_local_fallback()
+		probe_http.queue_free()
+	)
+	var err = probe_http.request("http://127.0.0.1:3000/preguntas?select=*")
+	if err != OK:
+		cargar_banco_preguntas_local_fallback()
+		probe_http.queue_free()
 
 func pedir_progreso_usuario():
 	if not DatosUsuario.esta_conectado_a_la_nube: return

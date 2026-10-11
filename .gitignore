@@ -8,6 +8,9 @@ build_windows/
 
 .env
 
+# Servicios locales
+servicios/
+
 Tesis/
 Screenshots/
 scripts/

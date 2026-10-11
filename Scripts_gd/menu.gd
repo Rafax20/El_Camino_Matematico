@@ -4,6 +4,8 @@ extends Node2D
 @onready var ventana_como_jugar = $CanvasLayer/Menu/VentanaComoJugar
 @onready var ventana_logros = $CanvasLayer/Menu/Ventana_Logros
 @onready var ventana_login = $CanvasLayer/Menu/Ventana_Autenticacion
+@onready var ventana_seleccion_operacion = $CanvasLayer/Menu/Ventana_Seleccion_Operacion if has_node("CanvasLayer/Menu/Ventana_Seleccion_Operacion") else null
+@onready var ventana_audio = $CanvasLayer/VentanaAjustesAudio if has_node("CanvasLayer/VentanaAjustesAudio") else null
 @onready var texto_sesion = $CanvasLayer/Menu/Texto_Sesion if has_node("CanvasLayer/Menu/Texto_Sesion") else null
 
 func _ready() -> void:
@@ -28,7 +30,10 @@ func _on_sesion_cambiada(_conectado: bool):
 	_actualizar_indicador_sesion()
 
 func _on_boton_jugar_pressed():
-	NavegacionGlobal.cambiar_escena_con_carga("res://Escenas/Tablero2.tscn")
+	if ventana_seleccion_operacion:
+		ventana_seleccion_operacion.aparecer()
+	else:
+		NavegacionGlobal.cambiar_escena_con_carga("res://Escenas/Tablero2.tscn")
 
 func _on_boton_iniciar_sesion_pressed():
 	$CanvasLayer/Menu/Ventana_Autenticacion.aparecer()
@@ -42,3 +47,8 @@ func _on_boton_como_jugar_pressed():
 		ventana_como_jugar.aparecer()
 	else:
 		NavegacionGlobal.abrir_chatbot()
+
+func _on_boton_volumen_pressed():
+	if ventana_audio:
+		ventana_audio.aparecer()
+

@@ -9,6 +9,20 @@
 [ext_resource type="Texture2D" uid="uid://ouch7n3h1sy6" path="res://assets/Interfaz_Logros/Ver_Album_Presionado.png" id="6_lpfcy"]
 [ext_resource type="Texture2D" uid="uid://3p2biq4ud0vf" path="res://assets/Interfaz_Login/Boton_X_Presionado.png" id="7_vcjru"]
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_marco"]
+bg_color = Color(0.0627451, 0.12549, 0.207843, 0.941176)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.890196, 0.760784, 0.360784, 1)
+corner_radius_top_left = 24
+corner_radius_top_right = 24
+corner_radius_bottom_right = 24
+corner_radius_bottom_left = 24
+shadow_color = Color(0, 0, 0, 0.6)
+shadow_size = 12
+
 [node name="Ventana_Logros" type="Control" unique_id=964414660]
 layout_mode = 3
 anchors_preset = 15
@@ -25,7 +39,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0, 0, 0, 0.58431375)
+color = Color(0, 0, 0, 0.65)
 
 [node name="PanelMarco" type="PanelContainer" parent="." unique_id=874037180]
 custom_minimum_size = Vector2(800, 500)
@@ -41,16 +55,20 @@ offset_right = 400.0
 offset_bottom = 250.0
 grow_horizontal = 2
 grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_marco")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="PanelMarco" unique_id=162355138]
 layout_mode = 2
+theme_override_constants/separation = 16
+alignment = 1
 
 [node name="Titulo" type="Label" parent="PanelMarco/VBoxContainer" unique_id=1908824311]
 layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.96, 0.85, 1)
 theme_override_constants/outline_size = 5
 theme_override_fonts/font = ExtResource("1_cpqny")
 theme_override_font_sizes/font_size = 30
-text = "¿QUE DESEAS VER?"
+text = "¿QUÉ DESEAS VER?"
 horizontal_alignment = 1
 vertical_alignment = 1
 
@@ -59,24 +77,29 @@ layout_mode = 2
 
 [node name="HBoxContainer" type="HBoxContainer" parent="PanelMarco/VBoxContainer" unique_id=577886216]
 layout_mode = 2
-theme_override_constants/separation = 20
+theme_override_constants/separation = 40
+alignment = 1
 
 [node name="BtnLogrosTablero" type="TextureButton" parent="PanelMarco/VBoxContainer/HBoxContainer" unique_id=491321722]
-custom_minimum_size = Vector2(220, 120)
+custom_minimum_size = Vector2(250, 270)
 layout_mode = 2
+ignore_texture_size = true
+stretch_mode = 5
 texture_normal = ExtResource("3_vvm1k")
 texture_pressed = ExtResource("4_b16q3")
 
 [node name="BtnAlbum" type="TextureButton" parent="PanelMarco/VBoxContainer/HBoxContainer" unique_id=1489919714]
-custom_minimum_size = Vector2(220, 120)
+custom_minimum_size = Vector2(250, 270)
 layout_mode = 2
-size_flags_horizontal = 10
+ignore_texture_size = true
+stretch_mode = 5
 texture_normal = ExtResource("5_8xi0n")
 texture_pressed = ExtResource("6_lpfcy")
 
 [node name="BtnCerrar" type="TextureButton" parent="." unique_id=442102589]
-layout_mode = 0
+layout_mode = 1
 offset_right = 100.0
 offset_bottom = 100.0
 texture_normal = ExtResource("6_jp6bv")
 texture_pressed = ExtResource("7_vcjru")
+

@@ -2,6 +2,10 @@ extends Node
 
 # --- VARIABLES GLOBALES DEL JUGADOR ---
 var banco_preguntas: Array = [] # 🧠 AQUÍ SE GUARDAN TODAS LAS PREGUNTAS EN RAM
+var banco_preguntas_maestro: Array = [] # 📚 Banco completo sin filtrar para preservar el 100% de la base de datos
+var operacion_seleccionada: String = "todas" # "suma", "resta", "multiplicacion", "division", "todas"
+var modo_operaciones: String = "todas" # "solo" o "todas" (acumulativa)
+var categorias_permitidas: Array = ["suma", "resta", "multiplicacion", "division"]
 var esta_conectado_a_la_nube: bool = false
 var usuario_id_db: int = 0
 var usuario_uuid: String = ""
@@ -174,3 +178,83 @@ func cerrar_sesion():
 	tomo_camino_corto = false
 	if ConexionSupabase.has_method("limpiar_sesion_local"):
 		ConexionSupabase.limpiar_sesion_local()
+	if SistemaExperto and SistemaExperto.has_method("reiniciar_metricas_sesion"):
+		SistemaExperto.reiniciar_metricas_sesion()
+
+# --- 🧠 MÉTODOS DE FILTRADO PEDAGÓGICO DE PREGUNTAS ---
+func set_banco_preguntas_maestro(preguntas: Array) -> void:
+	banco_preguntas_maestro = preguntas.duplicate()
+	aplicar_filtro_operaciones()
+
+func configurar_modo_operacion(op: String, modo: String) -> void:
+	operacion_seleccionada = op.to_lower().strip_edges()
+	modo_operaciones = modo.to_lower().strip_edges()
+	
+	match operacion_seleccionada:
+		"suma":
+			categorias_permitidas = ["suma"]
+		"resta":
+			if modo_operaciones == "solo":
+				categorias_permitidas = ["resta"]
+			else:
+				categorias_permitidas = ["suma", "resta"]
+		"multiplicacion":
+			if modo_operaciones == "solo":
+				categorias_permitidas = ["multiplicacion"]
+			else:
+				categorias_permitidas = ["suma", "resta", "multiplicacion"]
+		"division":
+			if modo_operaciones == "solo":
+				categorias_permitidas = ["division"]
+			else:
+				categorias_permitidas = ["suma", "resta", "multiplicacion", "division"]
+		_:
+			categorias_permitidas = ["suma", "resta", "multiplicacion", "division"]
+			
+	print("🎯 [DatosUsuario] Modo pedagógico establecido: '", operacion_seleccionada, "' (", modo_operaciones, "). Categorías activas: ", categorias_permitidas)
+	aplicar_filtro_operaciones()
+
+func aplicar_filtro_operaciones() -> void:
+	if banco_preguntas_maestro.is_empty():
+		return
+		
+	var filtradas: Array = []
+	for p in banco_preguntas_maestro:
+		var cat = str(p.get("categoria", "")).to_lower().strip_edges()
+		cat = cat.replace("ó", "o").replace("í", "i")
+		if cat in categorias_permitidas:
+			filtradas.append(p)
+			
+	if not filtradas.is_empty():
+		banco_preguntas = filtradas.duplicate()
+		print("✅ [DatosUsuario] Filtro aplicado. Preguntas activas: ", banco_preguntas.size(), " de ", banco_preguntas_maestro.size())
+	else:
+		print("⚠️ [DatosUsuario] Sin preguntas para las categorías: ", categorias_permitidas, ". Manteniendo banco maestro.")
+		banco_preguntas = banco_preguntas_maestro.duplicate()
+
+func obtener_preguntas_diagnostico(cat_solicitada: String, cantidad: int = 1) -> Array:
+	var pool_origen = banco_preguntas_maestro if not banco_preguntas_maestro.is_empty() else banco_preguntas
+	var candidatas: Array = []
+	var norm_solicitada = cat_solicitada.to_lower().strip_edges().replace("ó", "o").replace("í", "i")
+	
+	for p in pool_origen:
+		var cat = str(p.get("categoria", "")).to_lower().strip_edges().replace("ó", "o").replace("í", "i")
+		if cat == norm_solicitada:
+			candidatas.append(p)
+			
+	candidatas.shuffle()
+	if candidatas.size() >= cantidad:
+		return candidatas.slice(0, cantidad)
+	elif not candidatas.is_empty():
+		return candidatas
+	else:
+		match norm_solicitada:
+			"suma":
+				return [{"operacion": "15 + 12", "respuesta_correcta": "27", "opcion_falsa1": "25", "opcion_falsa2": "29", "opcion_falsa3": "30", "categoria": "suma"}]
+			"resta":
+				return [{"operacion": "28 - 13", "respuesta_correcta": "15", "opcion_falsa1": "14", "opcion_falsa2": "16", "opcion_falsa3": "12", "categoria": "resta"}]
+			"multiplicacion":
+				return [{"operacion": "6 × 4", "respuesta_correcta": "24", "opcion_falsa1": "20", "opcion_falsa2": "28", "opcion_falsa3": "18", "categoria": "multiplicacion"}]
+			_:
+				return [{"operacion": "20 ÷ 4", "respuesta_correcta": "5", "opcion_falsa1": "4", "opcion_falsa2": "6", "opcion_falsa3": "3", "categoria": "division"}]
+

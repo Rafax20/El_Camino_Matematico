@@ -7,6 +7,13 @@ signal audio_finalizado # 📢 NUEVA SEÑAL
 const API_KEY : String = "sk_fbd7e6c9a5453b81a31cde55f2d66f868811ad53ced06d87"
 const VOICE_ID : String = "vAcVPeEOlCrOxhRoCXb8"  
 
+const CONFIG_PATH : String = "user://config_audio.cfg"
+
+var volumen_master: float = 1.0
+var volumen_musica: float = 0.8
+var volumen_voz: float = 1.0
+var volumen_sfx: float = 0.9
+
 var http_request : HTTPRequest
 var audio_player : AudioStreamPlayer
 var sfx_player : AudioStreamPlayer
@@ -14,28 +21,112 @@ var musica_player : AudioStreamPlayer
 var musica_fondo_player : AudioStreamPlayer
 
 func _ready():
+	_configurar_buses_audio()
+
 	http_request = HTTPRequest.new()
 	add_child(http_request)
 	http_request.request_completed.connect(_on_request_completed)
 	
 	audio_player = AudioStreamPlayer.new()
 	audio_player.name = "VozPlayer"
+	audio_player.bus = "Voz"
 	add_child(audio_player)
 	audio_player.finished.connect(func(): audio_finalizado.emit())
 	
 	sfx_player = AudioStreamPlayer.new()
 	sfx_player.name = "SFXPlayer"
+	sfx_player.bus = "SFX"
 	add_child(sfx_player)
 	
 	musica_player = AudioStreamPlayer.new()
 	musica_player.name = "MusicaPlayer"
+	musica_player.bus = "Musica"
 	add_child(musica_player)
 	
 	# 🌌 Player dedicado para la música de fondo global (independiente de musica_player)
 	musica_fondo_player = AudioStreamPlayer.new()
 	musica_fondo_player.name = "MusicaFondoPlayer"
-	musica_fondo_player.bus = "Master"
+	musica_fondo_player.bus = "Musica"
 	add_child(musica_fondo_player)
+	
+	cargar_configuracion_audio()
+
+func _configurar_buses_audio() -> void:
+	if AudioServer.get_bus_index("Musica") == -1:
+		var idx = AudioServer.bus_count
+		AudioServer.add_bus(idx)
+		AudioServer.set_bus_name(idx, "Musica")
+		AudioServer.set_bus_send(idx, "Master")
+	if AudioServer.get_bus_index("Voz") == -1:
+		var idx = AudioServer.bus_count
+		AudioServer.add_bus(idx)
+		AudioServer.set_bus_name(idx, "Voz")
+		AudioServer.set_bus_send(idx, "Master")
+	if AudioServer.get_bus_index("SFX") == -1:
+		var idx = AudioServer.bus_count
+		AudioServer.add_bus(idx)
+		AudioServer.set_bus_name(idx, "SFX")
+		AudioServer.set_bus_send(idx, "Master")
+
+func establecer_volumen_bus(nombre_bus: String, valor_lineal: float) -> void:
+	var idx = AudioServer.get_bus_index(nombre_bus)
+	if idx != -1:
+		if valor_lineal <= 0.01:
+			AudioServer.set_bus_mute(idx, true)
+		else:
+			AudioServer.set_bus_mute(idx, false)
+			AudioServer.set_bus_volume_db(idx, linear_to_db(clamp(valor_lineal, 0.01, 1.0)))
+
+func establecer_volumen_master(valor: float) -> void:
+	volumen_master = clamp(valor, 0.0, 1.0)
+	establecer_volumen_bus("Master", volumen_master)
+	guardar_configuracion_audio()
+
+func establecer_volumen_musica(valor: float) -> void:
+	volumen_musica = clamp(valor, 0.0, 1.0)
+	establecer_volumen_bus("Musica", volumen_musica)
+	guardar_configuracion_audio()
+
+func establecer_volumen_voz(valor: float) -> void:
+	volumen_voz = clamp(valor, 0.0, 1.0)
+	establecer_volumen_bus("Voz", volumen_voz)
+	guardar_configuracion_audio()
+
+func establecer_volumen_sfx(valor: float) -> void:
+	volumen_sfx = clamp(valor, 0.0, 1.0)
+	establecer_volumen_bus("SFX", volumen_sfx)
+	guardar_configuracion_audio()
+
+func aplicar_volumenes() -> void:
+	establecer_volumen_bus("Master", volumen_master)
+	establecer_volumen_bus("Musica", volumen_musica)
+	establecer_volumen_bus("Voz", volumen_voz)
+	establecer_volumen_bus("SFX", volumen_sfx)
+
+func guardar_configuracion_audio() -> void:
+	var config = ConfigFile.new()
+	config.set_value("audio", "master", volumen_master)
+	config.set_value("audio", "musica", volumen_musica)
+	config.set_value("audio", "voz", volumen_voz)
+	config.set_value("audio", "sfx", volumen_sfx)
+	config.save(CONFIG_PATH)
+
+func cargar_configuracion_audio() -> void:
+	var config = ConfigFile.new()
+	var err = config.load(CONFIG_PATH)
+	if err == OK:
+		volumen_master = config.get_value("audio", "master", 1.0)
+		volumen_musica = config.get_value("audio", "musica", 0.8)
+		volumen_voz = config.get_value("audio", "voz", 1.0)
+		volumen_sfx = config.get_value("audio", "sfx", 0.9)
+	aplicar_volumenes()
+
+func probar_voz() -> void:
+	reproducir_audio_local(LISTA_ELOGIOS.pick_random())
+
+func probar_sfx() -> void:
+	reproducir_sfx("acierto_tv")
+
 
 # 🌟 Catálogo de frases de elogio y ánimo de July
 const LISTA_ELOGIOS: Array[String] = [
@@ -78,6 +169,8 @@ func reproducir_audio_local(nombre_archivo: String) -> void:
 		"res://Audios/" + nombre_archivo + ".mp3",
 		"res://Audios/" + nombre_archivo + ".wav",
 		"res://Audios/" + nombre_archivo + ".ogg",
+		"res://Audios/Instrucciones/" + nombre_archivo + ".mp3",
+		"res://Audios/Instrucciones/" + nombre_archivo + ".wav",
 		"res://Audios/Sonidos/" + nombre_archivo + ".wav",
 		"res://Audios/Sonidos/" + nombre_archivo + ".mp3"
 	]
