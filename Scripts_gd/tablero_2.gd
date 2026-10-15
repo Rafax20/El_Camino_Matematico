@@ -795,7 +795,6 @@ func _procesar_respuesta_casilla_normal(es_correcta: bool, tiempo_tardado: float
 					$CapaLogro/Control/TextureRect.texture = DatosUsuario.CATALOGO_LAMINAS[id_ganado]
 					$CapaLogro/Control/TextureRect/Label.text = "¡Ganaste una nueva lámina!"
 					ConexionSupabase.registrar_lamina_ganada(id_ganado)
-					DatosUsuario.laminas_poseidas.append(id_ganado)
 					
 					$CapaLogro.visible = true
 					$CapaLogro/Control.scale = Vector2.ZERO

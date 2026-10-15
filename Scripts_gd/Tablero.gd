@@ -182,8 +182,6 @@ func _on_interfaz_respuesta_completada(es_correcta: bool, tiempo_tardado: float)
 					
 					# ☁️ SOLO REGISTRAMOS EN LA NUBE SI ES NUEVA
 					ConexionSupabase.registrar_lamina_ganada(id_ganado)
-					# La agregamos al inventario local de inmediato
-					DatosUsuario.laminas_poseidas.append(id_ganado)
 				
 				# 3. Activamos la visibilidad y la animación de escala
 				$CapaLogro.visible = true

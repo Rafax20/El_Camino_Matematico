@@ -17,6 +17,7 @@ var total_paginas: int = 1
 var posicion_original_y: float = 0.0
 var posicion_original_x: float = 0.0
 var is_animating: bool = false
+var lbl_estado_sync: Label = null
 
 const TEXTO_DEFAULT = "[center]Toca o pasa el ratón sobre un logro para ver cómo conseguirlo[/center]"
 
@@ -67,6 +68,17 @@ func _ready():
 	if label_descripcion:
 		label_descripcion.text = TEXTO_DEFAULT
 	
+	lbl_estado_sync = Label.new()
+	lbl_estado_sync.name = "LabelEstadoSync"
+	lbl_estado_sync.text = "⏳ Sincronizando… tus trofeos están a salvo"
+	lbl_estado_sync.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	lbl_estado_sync.add_theme_font_size_override("font_size", 14)
+	lbl_estado_sync.add_theme_color_override("font_color", Color(1, 0.9, 0.4, 0.9))
+	lbl_estado_sync.set_anchors_preset(Control.PRESET_TOP_WIDE)
+	lbl_estado_sync.offset_top = 8
+	lbl_estado_sync.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(lbl_estado_sync)
+	
 	# ⚡ Cargar dinámicamente los IDs desde DatosUsuario.CATALOGO_LOGROS
 	lista_total_logros = DatosUsuario.CATALOGO_LOGROS.keys()
 	
@@ -77,10 +89,16 @@ func _ready():
 	if ConexionSupabase.has_method("cargar_album_nube"):
 		ConexionSupabase.cargar_album_nube()
 		
+	_actualizar_aviso_sync()
 	_calcular_total_paginas()
 	_mostrar_pagina(pagina_actual_indice, "derecha")
 
+func _actualizar_aviso_sync() -> void:
+	if lbl_estado_sync:
+		lbl_estado_sync.visible = DatosUsuario.esta_conectado_a_la_nube and not ConexionSupabase.album_nube_sincronizado
+
 func _on_album_y_logros_actualizados():
+	_actualizar_aviso_sync()
 	for hijo in grid_laminas.get_children():
 		if hijo.has_method("actualizar_estado"):
 			hijo.actualizar_estado()

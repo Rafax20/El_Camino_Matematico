@@ -22,12 +22,24 @@ var pagina_actual_indice: int = 0
 var posicion_original_y: float = 0.0 # 📌 Guardará la altura correcta
 var posicion_original_x: float = 0.0 # 📌 Nueva variable para bloquear la X inicial
 var is_animating: bool = false # 🔒 Bandera de bloqueo
+var lbl_estado_sync: Label = null
 
 func _ready():
 	pagina_actual_indice = 0
 	# Registramos la posición vertical inicial configurada desde el editor
 	posicion_original_y = grid_laminas.position.y
 	posicion_original_x = grid_laminas.position.x
+	
+	lbl_estado_sync = Label.new()
+	lbl_estado_sync.name = "LabelEstadoSync"
+	lbl_estado_sync.text = "⏳ Sincronizando… tus tarjetas están a salvo"
+	lbl_estado_sync.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	lbl_estado_sync.add_theme_font_size_override("font_size", 14)
+	lbl_estado_sync.add_theme_color_override("font_color", Color(1, 0.9, 0.4, 0.9))
+	lbl_estado_sync.set_anchors_preset(Control.PRESET_TOP_WIDE)
+	lbl_estado_sync.offset_top = 8
+	lbl_estado_sync.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(lbl_estado_sync)
 	
 	actualizar_ui_monedas()
 	if ConexionSupabase.has_signal("album_y_logros_actualizados"):
@@ -36,10 +48,16 @@ func _ready():
 	if ConexionSupabase.has_method("cargar_album_nube"):
 		ConexionSupabase.cargar_album_nube()
 	actualizar_ui_monedas()
+	_actualizar_aviso_sync()
 	_mostrar_pagina(pagina_actual_indice, "derecha")
+
+func _actualizar_aviso_sync() -> void:
+	if lbl_estado_sync:
+		lbl_estado_sync.visible = DatosUsuario.esta_conectado_a_la_nube and not ConexionSupabase.album_nube_sincronizado
 
 func _on_album_y_logros_actualizados():
 	actualizar_ui_monedas()
+	_actualizar_aviso_sync()
 	for hijo in grid_laminas.get_children():
 		if hijo.has_method("actualizar_estado"):
 			hijo.actualizar_estado()
@@ -296,22 +314,20 @@ func _abrir_tienda_sobres():
 			var id_inicio = p_info["inicio"]
 			var id_fin = p_info["fin"]
 			
-			var hubo_nuevas = false
+			var ids_nuevas: Array = []
 			for i in range(5):
 				var lamina_id = randi_range(id_inicio, id_fin)
-				var es_nueva = not DatosUsuario.laminas_poseidas.has(lamina_id)
+				var es_nueva = not DatosUsuario.laminas_poseidas.has(lamina_id) and not ids_nuevas.has(lamina_id)
 				if es_nueva:
-					DatosUsuario.laminas_poseidas.append(lamina_id)
-					hubo_nuevas = true
+					ids_nuevas.append(lamina_id)
 					
 				resultado_apertura.append({
 					"id": lamina_id,
 					"es_nueva": es_nueva
 				})
 			
-			if hubo_nuevas:
-				DatosUsuario.laminas_poseidas.sort()
-				ConexionSupabase.guardar_laminas_poseidas_en_nube()
+			if not ids_nuevas.is_empty():
+				ConexionSupabase.registrar_laminas_ganadas(ids_nuevas)
 				
 			capa_tienda.queue_free()
 			_mostrar_unboxing_sobre(p_info["pais"], resultado_apertura)

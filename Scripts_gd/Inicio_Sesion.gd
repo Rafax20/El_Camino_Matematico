@@ -162,6 +162,7 @@ func _on_request_completed(result, response_code, headers, body):
 			DatosUsuario.esta_conectado_a_la_nube = true
 			DatosUsuario.usuario_id_db = int(user_data.get("id", 0))
 			DatosUsuario.usuario_uuid = str(user_data.get("user_id", ""))
+			ConexionSupabase.reiniciar_estado_sincronizacion_album()
 			DatosUsuario.nombre_usuario = str(user_data.get("usuario", ""))
 			DatosUsuario.dificultad_actual = int(user_data.get("dificultad", 0))
 			DatosUsuario.rol = str(user_data.get("rol", "estudiante"))
