@@ -24,6 +24,7 @@ var _conteo_laminas_nube: int = 0           # último tamaño conocido en nube (
 var _conteo_logros_nube: int = 0
 var _reintento_get_en_espera: bool = false
 var _reintento_push_en_espera: bool = false
+var _rpc_unir_disponible: bool = true
 
 func _ready():
 	await get_tree().process_frame
@@ -492,8 +493,6 @@ func guardar_album_y_logros_local():
 						DatosUsuario.laminas_poseidas = _unir_listas(DatosUsuario.laminas_poseidas, prev_lams)
 					if prev_logs is Array:
 						DatosUsuario.logros_poseidos = _unir_listas(DatosUsuario.logros_poseidos, prev_logs)
-					if bool(json.data.get("album_sucio", false)):
-						album_sucio = true
 			
 			# Rotar a respaldo .bak antes de sobrescribir
 			var file_bak = FileAccess.open(ruta + ".bak", FileAccess.WRITE)
@@ -721,12 +720,81 @@ func _empujar_album_a_nube() -> void:
 	var log := _unir_listas(DatosUsuario.logros_poseidos, [])
 	
 	if lam.size() < _conteo_laminas_nube or log.size() < _conteo_logros_nube:
-		push_error("[SYNC] Abortado: el PATCH encogería la nube (lam: %d < %d, log: %d < %d). Re-sincronizando..." % [lam.size(), _conteo_laminas_nube, log.size(), _conteo_logros_nube])
+		push_error("[SYNC] Abortado: el push encogería la nube (lam: %d < %d, log: %d < %d). Re-sincronizando..." % [lam.size(), _conteo_laminas_nube, log.size(), _conteo_logros_nube])
 		album_nube_sincronizado = false
 		cargar_album_nube()
 		return
 		
 	_album_push_en_curso = true
+
+	if _rpc_unir_disponible:
+		_enviar_rpc_unir(lam, log)
+	else:
+		_enviar_patch_directo(lam, log)
+
+func _enviar_rpc_unir(lam: Array, log: Array) -> void:
+	var http_rpc = HTTPRequest.new()
+	add_child(http_rpc)
+	http_rpc.accept_gzip = false
+	
+	http_rpc.request_completed.connect(func(result, response_code, headers, body):
+		http_rpc.queue_free()
+		
+		if result == HTTPRequest.RESULT_SUCCESS and response_code in [200, 204]:
+			_album_push_en_curso = false
+			print("[SYNC] ⚡ RPC unir_album exitoso en servidor.")
+			var json = JSON.new()
+			if json.parse(body.get_string_from_utf8()) == OK and json.data is Array and json.data.size() > 0:
+				var res_lam = json.data[0].get("laminas_poseidas", [])
+				var res_log = json.data[0].get("logros_poseidos", [])
+				var res_lam_clean: Array = []
+				var res_log_clean: Array = []
+				if res_lam is Array:
+					for x in res_lam:
+						if x != null: res_lam_clean.append(int(x))
+				if res_log is Array:
+					for y in res_log:
+						if y != null: res_log_clean.append(int(y))
+				DatosUsuario.laminas_poseidas = _unir_listas(DatosUsuario.laminas_poseidas, res_lam_clean)
+				DatosUsuario.logros_poseidos = _unir_listas(DatosUsuario.logros_poseidos, res_log_clean)
+				_conteo_laminas_nube = DatosUsuario.laminas_poseidas.size()
+				_conteo_logros_nube = DatosUsuario.logros_poseidos.size()
+			else:
+				_conteo_laminas_nube = lam.size()
+				_conteo_logros_nube = log.size()
+				
+			album_sucio = false
+			_album_reintentos = 0
+			guardar_album_y_logros_local()
+			album_y_logros_actualizados.emit()
+			
+			if _album_push_pendiente:
+				_album_push_pendiente = false
+				_empujar_album_a_nube()
+		elif response_code == 404:
+			print("[SYNC] ℹ️ RPC unir_album no encontrado (404). Conmutando a PATCH directo...")
+			_rpc_unir_disponible = false
+			_enviar_patch_directo(lam, log)
+		else:
+			_album_push_en_curso = false
+			print("[SYNC] ❌ Error en RPC unir_album (result: %d, code: %d): %s" % [result, response_code, body.get_string_from_utf8()])
+			_programar_reintento_push()
+	)
+	
+	var url_final = _build_url("rpc/unir_album")
+	var hdrs = _obtener_cabeceras(true)
+	var payload = {
+		"p_user": DatosUsuario.usuario_uuid,
+		"p_laminas": lam,
+		"p_logros": log
+	}
+	var err = http_rpc.request(url_final, hdrs, HTTPClient.METHOD_POST, JSON.stringify(payload))
+	if err != OK:
+		_album_push_en_curso = false
+		http_rpc.queue_free()
+		_programar_reintento_push()
+
+func _enviar_patch_directo(lam: Array, log: Array) -> void:
 	var http_patch = HTTPRequest.new()
 	add_child(http_patch)
 	http_patch.accept_gzip = false

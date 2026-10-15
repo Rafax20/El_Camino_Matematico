@@ -611,3 +611,42 @@ ON CONFLICT DO NOTHING;
 -- Asegurar permisos completos para PostgREST
 GRANT ALL ON ALL TABLES IN SCHEMA public TO postgres;
 GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO postgres;
+
+-- =============================================================================
+-- FUNCIÓN RPC: unir_album (Sincronización atómica segura de álbum y logros)
+-- =============================================================================
+CREATE OR REPLACE FUNCTION public.unir_album(p_user text, p_laminas int[], p_logros int[])
+RETURNS TABLE (laminas_poseidas int[], logros_poseidos int[])
+LANGUAGE plpgsql SECURITY DEFINER AS $$
+DECLARE
+    v_filas_afectadas int;
+BEGIN
+    UPDATE progreso_album pa SET
+        laminas_poseidas = (SELECT COALESCE(ARRAY_AGG(DISTINCT x ORDER BY x), '{}')
+                            FROM UNNEST(COALESCE(pa.laminas_poseidas, '{}') || COALESCE(p_laminas, '{}')) x),
+        logros_poseidos  = (SELECT COALESCE(ARRAY_AGG(DISTINCT x ORDER BY x), '{}')
+                            FROM UNNEST(COALESCE(pa.logros_poseidos, '{}') || COALESCE(p_logros, '{}')) x),
+        updated_at = NOW()
+    WHERE pa.user_id::text = p_user::text;
+
+    GET DIAGNOSTICS v_filas_afectadas = ROW_COUNT;
+
+    IF v_filas_afectadas = 0 THEN
+        INSERT INTO progreso_album (user_id, laminas_poseidas, logros_poseidos)
+        VALUES (
+            p_user,
+            (SELECT COALESCE(ARRAY_AGG(DISTINCT x ORDER BY x), '{}') FROM UNNEST(COALESCE(p_laminas, '{}')) x),
+            (SELECT COALESCE(ARRAY_AGG(DISTINCT x ORDER BY x), '{}') FROM UNNEST(COALESCE(p_logros, '{}')) x)
+        );
+    END IF;
+
+    RETURN QUERY
+    SELECT pa.laminas_poseidas, pa.logros_poseidos
+    FROM progreso_album pa
+    WHERE pa.user_id::text = p_user::text
+    LIMIT 1;
+END;
+$$;
+
+GRANT EXECUTE ON FUNCTION public.unir_album(text, int[], int[]) TO anon;
+GRANT EXECUTE ON FUNCTION public.unir_album(text, int[], int[]) TO authenticated;
