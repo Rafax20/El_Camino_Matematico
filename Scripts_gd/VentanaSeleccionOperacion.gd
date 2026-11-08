@@ -19,6 +19,8 @@ signal seleccion_completada(operacion: String, modo: String)
 
 # Botones de Vista 2: Submodo
 @onready var lbl_submodo_titulo: Label = $PanelMarco/VistaSubmodo/TituloSubmodo
+@onready var lbl_submodo_subtitulo: Label = $PanelMarco/VistaSubmodo/SubtituloSubmodo
+@onready var hbox_submodo: HBoxContainer = $PanelMarco/VistaSubmodo/HBoxSubmodo
 @onready var btn_solo: TextureButton = $PanelMarco/VistaSubmodo/HBoxSubmodo/BtnSolo
 @onready var btn_todas: TextureButton = $PanelMarco/VistaSubmodo/HBoxSubmodo/BtnTodas
 @onready var btn_volver_submodo: Button = $PanelMarco/VistaSubmodo/BtnVolverSubmodo
@@ -105,6 +107,19 @@ func _on_operacion_seleccionada(op: String) -> void:
 	var nombre_mostrado = _obtener_nombre_operacion(op).to_upper()
 	
 	lbl_submodo_titulo.text = "¿CÓMO QUIERES PRACTICAR " + nombre_mostrado + "?"
+	
+	var es_primer_nivel = (op == "suma")
+	if btn_solo:
+		btn_solo.visible = true
+	if btn_todas:
+		btn_todas.visible = not es_primer_nivel
+	if hbox_submodo:
+		hbox_submodo.alignment = BoxContainer.ALIGNMENT_CENTER
+	if lbl_submodo_subtitulo:
+		if es_primer_nivel:
+			lbl_submodo_subtitulo.text = "Presiona el botón para comenzar a practicar este primer nivel"
+		else:
+			lbl_submodo_subtitulo.text = "Elige si deseas practicar solo este nivel o acumular los anteriores"
 	
 	vista_operaciones.visible = false
 	vista_submodo.visible = true

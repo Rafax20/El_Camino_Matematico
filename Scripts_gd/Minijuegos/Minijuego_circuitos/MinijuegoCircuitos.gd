@@ -16,7 +16,7 @@ var textura_corazon_vacio = preload("res://assets/Minijuegos/corazon_vacio.png")
 # --- ESTADO ---
 var vidas_actuales: int = 3
 var aciertos_actuales: int = 0
-var META_ACIERTOS: int = 5
+var META_ACIERTOS: int = 3
 var juego_activo: bool = false
 var tiempo_inicio_panel: float = 0.0
 
@@ -142,7 +142,7 @@ func _construir_interfaz():
 
 	label_aciertos = Label.new()
 	label_aciertos.name = "LabelAciertos"
-	label_aciertos.text = "Circuitos Reparados: 0/5"
+	label_aciertos.text = "Circuitos Reparados: 0/3"
 	label_aciertos.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	label_aciertos.add_theme_font_size_override("font_size", 22)
 	label_aciertos.add_theme_color_override("font_color", Color("#38bdf8")) # Cian brillante

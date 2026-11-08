@@ -43,13 +43,15 @@ func _inicializar_configuracion():
 						SUPABASE_ANON_KEY = valor
 						
 		if modo_local_activo:
-			print("🛡️ [GlobalConfig] MODO_LOCAL=true detectado en .env. Conmutando a PostgREST local:", POSTGREST_LOCAL_URL)
-			SUPABASE_URL = POSTGREST_LOCAL_URL
+			print("🛡️ [GlobalConfig] MODO_LOCAL=true detectado en .env. Priorizando conexión Web con respaldo a PostgREST local...")
 			if SUPABASE_ANON_KEY == "":
 				SUPABASE_ANON_KEY = "local_token"
 				
 		print("✅ GlobalConfig: Variables locales cargadas.")
 		_sincronizar_con_autoloads()
+		
+		if modo_local_activo:
+			_verificar_conexion_web_con_respaldo_local()
 
 	# 🌐 MODO PRODUCCIÓN (WEB)
 	else:
@@ -82,6 +84,45 @@ func _inicializar_configuracion():
 		var error_peticion = http_client.request(RENDER_SERVER_URL + "index.php?action=get_config")
 		if error_peticion != OK:
 			print("❌ Error al solicitar configuración a Render.")
+
+func _verificar_conexion_web_con_respaldo_local() -> void:
+	if SUPABASE_URL.begins_with(POSTGREST_LOCAL_URL):
+		return
+		
+	var http_check = HTTPRequest.new()
+	add_child(http_check)
+	http_check.timeout = 4.0
+	http_check.accept_gzip = false
+	
+	http_check.request_completed.connect(func(result, response_code, _headers, _body):
+		http_check.queue_free()
+		if result == HTTPRequest.RESULT_SUCCESS and response_code == 200:
+			print("🌐 [GlobalConfig] Conexión a internet verificada. Operando con Supabase Web: ", SUPABASE_URL)
+		else:
+			print("⚠️ [GlobalConfig] Sin conexión a Supabase Web (Código: ", response_code, ", Result: ", result, "). Conmutando a PostgREST local...")
+			conmutar_a_postgrest_local()
+	)
+	
+	var url_ping = SUPABASE_URL
+	if not url_ping.ends_with("/"):
+		url_ping += "/"
+	url_ping += "preguntas?select=id&limit=1"
+	
+	var headers = [
+		"apikey: " + SUPABASE_ANON_KEY,
+		"Authorization: Bearer " + SUPABASE_ANON_KEY
+	]
+	var err = http_check.request(url_ping, headers, HTTPClient.METHOD_GET)
+	if err != OK:
+		http_check.queue_free()
+		conmutar_a_postgrest_local()
+
+func conmutar_a_postgrest_local() -> void:
+	if SUPABASE_URL == POSTGREST_LOCAL_URL:
+		return
+	SUPABASE_URL = POSTGREST_LOCAL_URL
+	print("🛡️ [GlobalConfig] Conmutado a PostgREST local: ", POSTGREST_LOCAL_URL)
+	_sincronizar_con_autoloads()
 
 func _sincronizar_con_autoloads():
 	# Asegurar terminación en /

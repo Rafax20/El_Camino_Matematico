@@ -24,6 +24,8 @@ const RUTA_CONFIG_TUTORIAL = "user://config_tutorial.json"
 static func fue_completado() -> bool:
 	if DatosUsuario and DatosUsuario.tutorial_tablero_visto:
 		return true
+	if DatosUsuario and not DatosUsuario.esta_conectado_a_la_nube:
+		return false
 	if FileAccess.file_exists(RUTA_CONFIG_TUTORIAL):
 		var file = FileAccess.open(RUTA_CONFIG_TUTORIAL, FileAccess.READ)
 		if file:
@@ -154,13 +156,14 @@ func finalizar() -> void:
 	if GestionAudio and is_instance_valid(GestionAudio.audio_player) and GestionAudio.audio_player.playing:
 		GestionAudio.audio_player.stop()
 		
-	# 3. Persistir en archivo local (user://) para sesiones futuras de escritorio o IndexedDB
-	var file = FileAccess.open(RUTA_CONFIG_TUTORIAL, FileAccess.WRITE)
-	if file:
-		var datos = {"tutorial_tablero_visto": true}
-		file.store_string(JSON.stringify(datos))
-		file.close()
-		print("💾 [Tutorial] Registrado en config_tutorial.json exitosamente.")
+	# 3. Persistir en archivo local (user://) solo cuando hay sesión activa
+	if DatosUsuario and DatosUsuario.esta_conectado_a_la_nube:
+		var file = FileAccess.open(RUTA_CONFIG_TUTORIAL, FileAccess.WRITE)
+		if file:
+			var datos = {"tutorial_tablero_visto": true}
+			file.store_string(JSON.stringify(datos))
+			file.close()
+			print("💾 [Tutorial] Registrado en config_tutorial.json exitosamente.")
 		
 	if tween_pulso:
 		tween_pulso.kill()

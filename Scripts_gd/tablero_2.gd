@@ -233,6 +233,8 @@ func _on_preguntas_cargadas(lista):
 func _tutorial_ya_fue_completado() -> bool:
 	if DatosUsuario.tutorial_tablero_visto:
 		return true
+	if not DatosUsuario.esta_conectado_a_la_nube:
+		return false
 	var ruta_config = "user://config_tutorial.json"
 	if FileAccess.file_exists(ruta_config):
 		var file = FileAccess.open(ruta_config, FileAccess.READ)
@@ -248,6 +250,7 @@ func _tutorial_ya_fue_completado() -> bool:
 func _verificar_e_iniciar_tutorial() -> void:
 	if not _tutorial_ya_fue_completado():
 		print("🎓 [Tablero] Primera visita detectada: Iniciando tutorial guiado de bienvenida...")
+		DatosUsuario.tutorial_tablero_visto = true
 		var tutorial = ESCENA_TUTORIAL.instantiate()
 		add_child(tutorial)
 		if tutorial.has_method("iniciar"):

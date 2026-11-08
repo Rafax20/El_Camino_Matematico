@@ -23,7 +23,7 @@ var paleta_escotillas: Array[Dictionary] = [
 # --- ESTADO DEL JUEGO ---
 var vidas_actuales: int = 3
 var aciertos_actuales: int = 0
-var META_ACIERTOS: int = 5
+var META_ACIERTOS: int = 3
 var juego_activo: bool = false
 var tiempo_inicio_pregunta: float = 0.0
 
@@ -154,7 +154,7 @@ func _construir_interfaz():
 	hbox_header.add_child(label_dificultad)
 
 	label_aciertos = Label.new()
-	label_aciertos.text = "Aciertos: 0/5"
+	label_aciertos.text = "Aciertos: 0/3"
 	label_aciertos.add_theme_font_size_override("font_size", 20)
 	label_aciertos.add_theme_color_override("font_color", Color("#4ade80"))
 	hbox_header.add_child(label_aciertos)

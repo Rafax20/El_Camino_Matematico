@@ -5,7 +5,7 @@ extends Control
 ## Minijuego: Pilotaje de Cabina Espacial (Bifurcación de Caminos)
 ## El estudiante pilotea una nave espacial viendo desde la perspectiva de la cabina.
 ## Aparece una pregunta matemática en el HUD y 2 portales/aros hiperespaciales.
-## Debe elegir el camino correcto 5 veces seguidas para completar el minijuego.
+## Debe elegir el camino correcto 3 veces para completar el minijuego.
 
 signal minijuego_finalizado(es_correcto: bool)
 
@@ -16,7 +16,7 @@ var textura_corazon_vacio = preload("res://assets/Minijuegos/corazon_vacio.png")
 # --- ESTADO Y VARIABLES ---
 var vidas_actuales: int = 3
 var aciertos_actuales: int = 0
-var META_ACIERTOS: int = 5
+var META_ACIERTOS: int = 3
 var juego_activo: bool = false
 var animando_transicion: bool = false
 var tiempo_inicio_pregunta: float = 0.0
@@ -381,7 +381,7 @@ func _finalizar_minijuego(victoria: bool):
 		if victoria:
 			lbl_res_titulo.text = "¡NAVEGACIÓN ESPACIAL EXITOSA!"
 			lbl_res_titulo.modulate = Color("#fde047")
-			lbl_res_desc.text = "¡Has seleccionado los caminos correctos y completado los 5 saltos estelares!"
+			lbl_res_desc.text = "¡Has seleccionado los caminos correctos y completado los 3 saltos estelares!"
 			btn_res_continuar.text = "Continuar Aventura"
 		else:
 			lbl_res_titulo.text = "¡ESCUDOS AGOTADOS!"

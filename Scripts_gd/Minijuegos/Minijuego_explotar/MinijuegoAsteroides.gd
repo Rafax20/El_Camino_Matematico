@@ -58,7 +58,7 @@ var vidas_actuales: int = 3
 var pregunta_actual: Dictionary = {}
 
 var aciertos_actuales: int = 0
-var META_ACIERTOS: int = 5
+var META_ACIERTOS: int = 3
 
 var cola_preguntas: Array = []
 

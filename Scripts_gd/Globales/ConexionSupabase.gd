@@ -122,6 +122,8 @@ func descargar_preguntas(forzar: bool = false):
 	cliente_http.accept_gzip = false
 	cliente_http.timeout = 6.0 # Límite de 6 segundos para permitir handshake TLS inicial en redes reales
 	
+	var url_final = _build_url("preguntas?select=*")
+	
 	cliente_http.request_completed.connect(func(result, response_code, headers, body):
 		var exito = false
 		if result == HTTPRequest.RESULT_SUCCESS and response_code == 200:
@@ -144,7 +146,7 @@ func descargar_preguntas(forzar: bool = false):
 			print("⚠️ [API] Supabase no respondió adecuadamente (Código: ", response_code, ", Result: ", result, ")")
 		
 		if not exito:
-			if not SUPABASE_URL.begins_with("http://127.0.0.1:3000"):
+			if not url_final.begins_with("http://127.0.0.1:3000"):
 				print("🔄 [API Failover] Nube inaccesible. Verificando PostgREST local (puerto 3000)...")
 				_probar_conmutar_a_postgrest_local()
 			else:
@@ -155,11 +157,10 @@ func descargar_preguntas(forzar: bool = false):
 		cliente_http.queue_free()
 	)
 	
-	var url_final = _build_url("preguntas?select=*")
 	var error_request = cliente_http.request(url_final, _obtener_cabeceras(), HTTPClient.METHOD_GET)
 	if error_request != OK:
 		print("⚠️ [API] Error al iniciar la petición HTTP: ", error_request)
-		if not SUPABASE_URL.begins_with("http://127.0.0.1:3000"):
+		if not url_final.begins_with("http://127.0.0.1:3000"):
 			_probar_conmutar_a_postgrest_local()
 		else:
 			cargar_banco_preguntas_local_fallback()

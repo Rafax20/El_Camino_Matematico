@@ -15,6 +15,9 @@ signal sesion_actualizada(conectado: bool)
 @onready var http_request = $HTTPRequest 
 
 var operacion_actual: String = ""
+var _ultima_url: String = ""
+var _ultimo_metodo: int = HTTPClient.METHOD_GET
+var _ultimo_cuerpo: String = ""
 
 func _ready():
 	self.modulate.a = 0
@@ -107,6 +110,9 @@ func _on_boton_registrar_pressed() -> void:
 	enviar_peticion_supabase(url_base_usuarios, HTTPClient.METHOD_POST, JSON.stringify(datos))
 
 func enviar_peticion_supabase(url: String, metodo: int, cuerpo: String):
+	_ultima_url = url
+	_ultimo_metodo = metodo
+	_ultimo_cuerpo = cuerpo
 	print("📡 [HTTP ENVIANDO] URL Final: ", url) 
 	
 	# Extraemos la llave oficial inyectada desde Render
@@ -133,8 +139,20 @@ func _on_request_completed(result, response_code, headers, body):
 	var respuesta = body.get_string_from_utf8()
 	print("📡 Servidor respondió con código: " + str(response_code))
 	
-	# 🛠️ Manejo de fallos silenciosos en HTML5 (CORS o desconexión)
+	# 🛠️ Manejo de fallos silenciosos en HTML5 (CORS o desconexión) y failover a servidor local
 	if response_code == 0:
+		if GlobalConfig.modo_local_activo and not _ultima_url.begins_with(GlobalConfig.POSTGREST_LOCAL_URL):
+			print("🔄 [Login Failover] Sin respuesta de la nube. Conmutando a PostgREST local y reintentando...")
+			GlobalConfig.conmutar_a_postgrest_local()
+			var indice_rest = _ultima_url.find("/rest/v1/")
+			var sufijo = ""
+			if indice_rest != -1:
+				sufijo = _ultima_url.substr(indice_rest + 9)
+			else:
+				sufijo = _ultima_url.get_file()
+			var nueva_url = GlobalConfig.POSTGREST_LOCAL_URL + sufijo
+			enviar_peticion_supabase(nueva_url, _ultimo_metodo, _ultimo_cuerpo)
+			return
 		print("❌ ERROR CRÍTICO: Código 0 recibido. Esto suele ser un bloqueo de CORS en el navegador o URL caída.")
 		operacion_actual = ""
 		animar_error_infantil("¡Bloqueo de conexión Web!")
