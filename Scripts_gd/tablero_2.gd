@@ -936,8 +936,7 @@ func _on_minijuego_resuelto(es_correcto: bool):
 		ConexionSupabase.actualizar_progreso_en_nube(casilla_actual, false)
 		
 		# 🏆 Otorgar logro según el tipo de minijuego superado (solo si es nuevo)
-		var usa_derecho = DatosUsuario.tomo_camino_corto and casilla_actual >= 12
-		var target_mapa = mapa_casillas_derecha if usa_derecho else mapa_casillas
+		var target_mapa = _obtener_mapa_activo()
 		var datos_casilla = target_mapa.get(casilla_actual, {})
 		var tipo_minijuego = datos_casilla.get("tipo", "")
 		var id_logro = 0
