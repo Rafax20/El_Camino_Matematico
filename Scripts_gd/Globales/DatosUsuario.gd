@@ -164,6 +164,7 @@ func cerrar_sesion():
 	usuario_uuid = ""
 	nombre_usuario = ""
 	monedas = 0
+	dificultad_actual = 0
 	casilla_actual_db = 0
 	casilla_anterior = 0
 	ultimo_dado = 0

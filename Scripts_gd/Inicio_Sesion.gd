@@ -182,7 +182,8 @@ func _on_request_completed(result, response_code, headers, body):
 			DatosUsuario.usuario_uuid = str(user_data.get("user_id", ""))
 			ConexionSupabase.reiniciar_estado_sincronizacion_album()
 			DatosUsuario.nombre_usuario = str(user_data.get("usuario", ""))
-			DatosUsuario.dificultad_actual = int(user_data.get("dificultad", 0))
+			if user_data.has("dificultad") and user_data.get("dificultad") != null:
+				DatosUsuario.dificultad_actual = maxi(DatosUsuario.dificultad_actual, int(user_data.get("dificultad", 0)))
 			DatosUsuario.rol = str(user_data.get("rol", "estudiante"))
 			
 			print("👤 Usuario validado con rol: " + DatosUsuario.rol)
@@ -262,9 +263,9 @@ func _on_request_completed(result, response_code, headers, body):
 				DatosUsuario.examen_correctas = db_correctas
 				DatosUsuario.examen_preguntas_respondidas = db_respondidas
 				DatosUsuario.pregunta_pendiente_db = db_pendiente
-				# Si sumó monedas como invitado, actualizamos saldo en la nube
-				if local_monedas > 0:
-					ConexionSupabase.actualizar_monedas_en_nube(DatosUsuario.monedas)
+				# Si sumó monedas o subió dificultad como invitado, actualizamos en la nube
+				if local_monedas > 0 or local_dificultad > db_dificultad:
+					ConexionSupabase.actualizar_progreso_en_nube(DatosUsuario.casilla_actual_db, DatosUsuario.pregunta_pendiente_db)
 			
 			ConexionSupabase.cargar_album_nube()
 			_abrir_interfaz_bienvenida()

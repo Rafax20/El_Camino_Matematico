@@ -24,7 +24,7 @@ var _conteo_laminas_nube: int = 0           # último tamaño conocido en nube (
 var _conteo_logros_nube: int = 0
 var _reintento_get_en_espera: bool = false
 var _reintento_push_en_espera: bool = false
-var _rpc_unir_disponible: bool = true
+var _rpc_unir_disponible: bool = false
 
 func _ready():
 	await get_tree().process_frame
@@ -60,10 +60,10 @@ func _notification(what: int) -> void:
 	if what == NOTIFICATION_APPLICATION_FOCUS_IN:
 		if DatosUsuario.esta_conectado_a_la_nube and album_sucio:
 			print("[SYNC] Foco recuperado en ventana; sincronizando cambios pendientes...")
-			_empujar_album_a_nube()
+			_empujar_album_a_nube.call_deferred()
 		elif DatosUsuario.esta_conectado_a_la_nube and not album_nube_sincronizado:
 			print("[SYNC] Foco recuperado en ventana; reintentando carga de álbum...")
-			cargar_album_nube()
+			cargar_album_nube.call_deferred()
 
 func _build_url(endpoint: String) -> String:
 	var clean_endpoint = endpoint
@@ -517,6 +517,24 @@ func guardar_album_y_logros_local():
 		print("[SYNC] Local guardado en %s (Láminas: %d, Logros: %d, Sucio: %s)" % [ruta, DatosUsuario.laminas_poseidas.size(), DatosUsuario.logros_poseidos.size(), str(album_sucio)])
 
 func cargar_album_y_logros_local():
+	# Si acaba de iniciar sesión o registrarse y existe progreso previo de invitado en disco, fusionarlo primero
+	if DatosUsuario.esta_conectado_a_la_nube and FileAccess.file_exists("user://progreso_album_invitado.json"):
+		var file_inv = FileAccess.open("user://progreso_album_invitado.json", FileAccess.READ)
+		if file_inv:
+			var txt_inv = file_inv.get_as_text()
+			file_inv.close()
+			var json_inv = JSON.new()
+			if json_inv.parse(txt_inv) == OK and json_inv.data is Dictionary:
+				var lam_inv = json_inv.data.get("laminas_poseidas", [])
+				var log_inv = json_inv.data.get("logros_poseidos", [])
+				if lam_inv is Array and not lam_inv.is_empty():
+					DatosUsuario.laminas_poseidas = _unir_listas(DatosUsuario.laminas_poseidas, lam_inv)
+					album_sucio = true
+				if log_inv is Array and not log_inv.is_empty():
+					DatosUsuario.logros_poseidos = _unir_listas(DatosUsuario.logros_poseidos, log_inv)
+					album_sucio = true
+				print("[SYNC] Progreso local de invitado fusionado a la sesión (Láminas: %d, Logros: %d)" % [DatosUsuario.laminas_poseidas.size(), DatosUsuario.logros_poseidos.size()])
+
 	var ruta = _obtener_ruta_album_local()
 	var ruta_a_usar = ""
 	if FileAccess.file_exists(ruta):
@@ -675,6 +693,11 @@ func crear_fila_album_inicial(uuid_usuario: String):
 			_conteo_logros_nube = DatosUsuario.logros_poseidos.size()
 			album_sucio = false
 			guardar_album_y_logros_local()
+			if FileAccess.file_exists("user://progreso_album_invitado.json"):
+				DirAccess.remove_absolute("user://progreso_album_invitado.json")
+			if FileAccess.file_exists("user://progreso_album_invitado.json.bak"):
+				DirAccess.remove_absolute("user://progreso_album_invitado.json.bak")
+			album_y_logros_actualizados.emit()
 		elif rc == 409:
 			print("⚠️ [SYNC] 409 Conflicto al crear fila inicial (ya existía). Reintentando GET...")
 			cargar_album_nube()
@@ -772,13 +795,13 @@ func _enviar_rpc_unir(lam: Array, log: Array) -> void:
 			if _album_push_pendiente:
 				_album_push_pendiente = false
 				_empujar_album_a_nube()
-		elif response_code == 404:
-			print("[SYNC] ℹ️ RPC unir_album no encontrado (404). Conmutando a PATCH directo...")
+		elif response_code >= 400:
+			print("[SYNC] ℹ️ RPC unir_album no disponible o falló en servidor (code: %d). Conmutando a PATCH directo..." % response_code)
 			_rpc_unir_disponible = false
 			_enviar_patch_directo(lam, log)
 		else:
 			_album_push_en_curso = false
-			print("[SYNC] ❌ Error en RPC unir_album (result: %d, code: %d): %s" % [result, response_code, body.get_string_from_utf8()])
+			print("[SYNC] ❌ Error de red en RPC unir_album (result: %d, code: %d): %s" % [result, response_code, body.get_string_from_utf8()])
 			_programar_reintento_push()
 	)
 	
@@ -805,12 +828,18 @@ func _enviar_patch_directo(lam: Array, log: Array) -> void:
 		http_patch.queue_free()
 		
 		if result == HTTPRequest.RESULT_SUCCESS and response_code in [200, 204]:
+			var texto_resp = body.get_string_from_utf8().strip_edges()
+			if response_code == 200 and texto_resp == "[]":
+				print("[SYNC] ⚠️ PATCH devolvió 0 filas (no existía fila en progreso_album). Creando fila inicial...")
+				crear_fila_album_inicial(DatosUsuario.usuario_uuid)
+				return
 			print("[SYNC] 🎉 PATCH exitoso en Supabase. Láminas: %d, Logros: %d" % [lam.size(), log.size()])
 			album_sucio = false
 			_conteo_laminas_nube = lam.size()
 			_conteo_logros_nube = log.size()
 			_album_reintentos = 0
 			guardar_album_y_logros_local()
+			album_y_logros_actualizados.emit()
 			
 			if _album_push_pendiente:
 				_album_push_pendiente = false
@@ -822,7 +851,7 @@ func _enviar_patch_directo(lam: Array, log: Array) -> void:
 	
 	var url_final = _build_url("progreso_album?user_id=eq." + DatosUsuario.usuario_uuid)
 	var hdrs = _obtener_cabeceras(true)
-	hdrs.append("Prefer: return=minimal")
+	hdrs.append("Prefer: return=representation")
 	var payload = {
 		"laminas_poseidas": lam,
 		"logros_poseidos": log
